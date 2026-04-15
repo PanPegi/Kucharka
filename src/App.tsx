@@ -7,35 +7,46 @@ setupIonicReact();
 interface Ingredient {
   name: string;
   amount: string;
+  unit: string; // NOVÉ: Jednotka (g, ml, ks, lžíce...)
 }
 
-interface Recipe {
-  id: number;
+interface RecipeData {
   name: string;
   categories: string[];
   ingredients: Ingredient[];
+  subRecipeIds: number[];
   steps: string[]; 
   prepTime: string;
   cookTime: string;
   baseServings: number;
+  updatedAt: number;
+}
+
+interface Recipe extends RecipeData {
+  id: number;
+  history: RecipeData[];
 }
 
 const AddRecipeModal: React.FC<{ 
   isOpen: boolean, 
   onClose: () => void, 
-  onSave: (recipe: Omit<Recipe, 'id'>, id?: number) => void, 
+  onSave: (recipe: Omit<Recipe, 'id' | 'history'>, id?: number) => void, 
   availableCategories: string[],
-  availableIngredients: string[], // NOVÉ: Seznam všech existujících surovin
+  availableIngredients: string[],
+  allRecipes: Recipe[],
   editData?: Recipe | null 
-}> = ({ isOpen, onClose, onSave, availableCategories, availableIngredients, editData }) => {
+}> = ({ isOpen, onClose, onSave, availableCategories, availableIngredients, allRecipes, editData }) => {
   const [modalStep, setModalStep] = useState(1);
   const [name, setName] = useState('');
   const [categoryList, setCategoryList] = useState<string[]>(['']);
   const [prep, setPrep] = useState('');
   const [cook, setCook] = useState('');
   const [servings, setServings] = useState<number>(1);
-  const [ings, setIngs] = useState<Ingredient[]>([{ name: '', amount: '' }]);
+  const [ings, setIngs] = useState<Ingredient[]>([{ name: '', amount: '', unit: '' }]);
+  const [selectedSubIds, setSelectedSubIds] = useState<number[]>([]);
   const [steps, setSteps] = useState<string[]>(['']);
+
+  const commonUnits = ['g', 'kg', 'ml', 'l', 'ks', 'lžíce', 'lžička', 'hrst', 'špetka', 'balení'];
 
   useEffect(() => {
     if (isOpen) {
@@ -46,35 +57,81 @@ const AddRecipeModal: React.FC<{
         setPrep(editData.prepTime || ''); 
         setCook(editData.cookTime || '');
         setServings(editData.baseServings || 1);
-        setIngs(editData.ingredients || [{ name: '', amount: '' }]);
+        setIngs(editData.ingredients || [{ name: '', amount: '', unit: '' }]);
+        setSelectedSubIds(editData.subRecipeIds || []);
         setSteps(editData.steps || ['']);
       } else {
         setName(''); setCategoryList(['']); setPrep(''); setCook(''); setServings(1);
-        setIngs([{ name: '', amount: '' }]); setSteps(['']);
+        setIngs([{ name: '', amount: '', unit: '' }]); setSelectedSubIds([]); setSteps(['']);
       }
     }
   }, [editData, isOpen]);
 
   if (!isOpen) return null;
 
+  const handleFinalSave = () => {
+    const cleanedCats = categoryList.map(c => c.trim().toLowerCase()).filter(c => c !== "");
+    onSave({ 
+      name, 
+      categories: cleanedCats.length > 0 ? cleanedCats : ['ostatní'], 
+      prepTime: prep, 
+      cookTime: cook, 
+      baseServings: servings, 
+      ingredients: ings.filter(i => i.name.trim()), 
+      subRecipeIds: selectedSubIds,
+      steps: steps.filter(s => s.trim()),
+      updatedAt: Date.now()
+    }, editData?.id);
+    onClose();
+  };
+
   return (
     <div className="modal-overlay">
       <div className="modal-content">
         {modalStep === 1 ? (
           <div className="fade-in">
-            <h2>1. Základ a Suroviny</h2>
+            <h2>{editData ? 'Upravit recept' : 'Nový recept'}</h2>
             <label className="field-label">Název pokrmu</label>
-            <input className="custom-input" value={name} onChange={e => setName(e.target.value)} placeholder="např. Svíčková" />
+            <input className="custom-input" value={name} onChange={e => setName(e.target.value)} placeholder="např. Pizza" />
             
             <div className="vertical-inputs">
                 <label className="field-label">Základní porce</label>
-                <input className="custom-input" type="number" min="1" value={servings} onChange={e => setServings(parseInt(e.target.value) || 1)} />
-                <label className="field-label">Příprava (min)</label>
-                <input className="custom-input" value={prep} onChange={e => setPrep(e.target.value)} type="number" />
-                <label className="field-label">Vaření (min)</label>
-                <input className="custom-input" value={cook} onChange={e => setCook(e.target.value)} type="number" />
+                <input className="custom-input" type="number" value={servings} onChange={e => setServings(parseInt(e.target.value) || 1)} />
+                <div style={{display:'flex', gap:'10px'}}>
+                  <div style={{flex:1}}><label className="field-label">Příprava</label><input className="custom-input" value={prep} onChange={e => setPrep(e.target.value)} type="number" /></div>
+                  <div style={{flex:1}}><label className="field-label">Vaření</label><input className="custom-input" value={cook} onChange={e => setCook(e.target.value)} type="number" /></div>
+                </div>
             </div>
             
+            <label className="field-label">Použít podrecepty:</label>
+            <div className="sub-recipe-selector">
+                {allRecipes.filter(r => r.id !== editData?.id).map(r => (
+                    <button key={r.id} className={`sub-btn ${selectedSubIds.includes(r.id) ? 'active' : ''}`} onClick={() => setSelectedSubIds(prev => prev.includes(r.id) ? prev.filter(x => x !== r.id) : [...prev, r.id])}>
+                        {r.name}
+                    </button>
+                ))}
+            </div>
+
+            <label className="field-label">Suroviny (jméno | kolik | jednotka)</label>
+            <div className="scroll-area">
+                {ings.map((ing, idx) => (
+                    <div key={idx} className="ing-row-triple">
+                        <input className="custom-input flex-2" value={ing.name} onChange={e => { const n = [...ings]; n[idx].name = e.target.value; setIngs(n); }} placeholder="Surovina" list="modal-ing-names" />
+                        <input className="custom-input flex-1" value={ing.amount} onChange={e => { const n = [...ings]; n[idx].amount = e.target.value; setIngs(n); }} placeholder="Množství" type="number" />
+                        <input className="custom-input flex-1" value={ing.unit} onChange={e => { const n = [...ings]; n[idx].unit = e.target.value; setIngs(n); }} placeholder="jedn." list="unit-list" />
+                        <button className="remove-row-btn" onClick={() => setIngs(ings.filter((_, i) => i !== idx))}>×</button>
+                    </div>
+                ))}
+            </div>
+            <datalist id="unit-list">{commonUnits.map(u => <option key={u} value={u} />)}</datalist>
+            <datalist id="modal-ing-names">{availableIngredients.map(i => <option key={i} value={i} />)}</datalist>
+            <button className="btn secondary-btn small-btn" onClick={() => setIngs([...ings, {name:'', amount:'', unit:''}])}>+ DALŠÍ SUROVINA</button>
+
+            <button className="btn accent-btn" style={{marginTop:'20px'}} onClick={() => setModalStep(2)}>NASTAVIT POSTUP →</button>
+          </div>
+        ) : (
+          <div className="fade-in">
+            <h2>Postup a Kategorie</h2>
             <label className="field-label">Kategorie</label>
             <div className="scroll-area-mini">
                 {categoryList.map((cat, idx) => (
@@ -83,59 +140,31 @@ const AddRecipeModal: React.FC<{
                             const newList = [...categoryList];
                             newList[idx] = e.target.value;
                             setCategoryList(newList);
-                        }} placeholder="např. Oběd" list="modal-cat-list" />
-                        {categoryList.length > 1 && <button className="remove-row-btn" onClick={() => setCategoryList(categoryList.filter((_, i) => i !== idx))}>×</button>}
+                        }} placeholder="Kategorie" list="modal-cat-list" />
+                        <button className="remove-row-btn" onClick={() => setCategoryList(categoryList.filter((_, i) => i !== idx))}>×</button>
                     </div>
                 ))}
             </div>
             <datalist id="modal-cat-list">{availableCategories.map(c => <option key={c} value={c} />)}</datalist>
-            <button className="btn secondary-btn small-btn" onClick={() => setCategoryList([...categoryList, ''])}>+ PŘIDAT KATEGORII</button>
+            <button className="btn secondary-btn small-btn" onClick={() => setCategoryList([...categoryList, ''])}>+ DALŠÍ KATEGORII</button>
 
-            <label className="field-label" style={{marginTop:'15px'}}>Suroviny & Gramáž</label>
-            <div className="scroll-area">
-                {ings.map((ing, idx) => (
-                    <div key={idx} className="ing-row">
-                        <input 
-                            className="custom-input" 
-                            style={{flex:2}} 
-                            value={ing.name} 
-                            onChange={e => { const n = [...ings]; n[idx].name = e.target.value; setIngs(n); }} 
-                            placeholder="Surovina" 
-                            list="modal-ing-names" // PŘIPOJENÍ NASEPTÁVAČE
-                        />
-                        <input className="custom-input" style={{flex:1}} value={ing.amount} onChange={e => { const n = [...ings]; n[idx].amount = e.target.value; setIngs(n); }} placeholder="číslo" type="number" />
-                        {ings.length > 1 && <button className="remove-row-btn" onClick={() => setIngs(ings.filter((_, i) => i !== idx))}>×</button>}
-                    </div>
-                ))}
-            </div>
-            <datalist id="modal-ing-names">{availableIngredients.map(i => <option key={i} value={i} />)}</datalist>
-            <button className="btn secondary-btn small-btn" onClick={() => setIngs([...ings, {name:'', amount:''}])}>+ DALŠÍ SUROVINA</button>
-            <button className="btn accent-btn" style={{marginTop:'20px'}} onClick={() => setModalStep(2)}>POSTUP PŘÍPRAVY →</button>
-          </div>
-        ) : (
-          <div className="fade-in">
-            <h2>2. Postup</h2>
+            <label className="field-label" style={{marginTop:'20px'}}>Kroky postupu</label>
             <div className="scroll-area">
                 {steps.map((s, idx) => (
-                    <div key={idx} style={{marginBottom:'15px'}}>
-                        <label className="field-label">Odstavec {idx + 1}</label>
-                        <textarea className="custom-textarea" value={s} onChange={e => { const n = [...steps]; n[idx] = e.target.value; setSteps(n); }} placeholder="..." />
-                        {steps.length > 1 && <button className="remove-row-btn" style={{marginTop: '5px', borderRadius: '8px', width: 'auto', padding: '0 10px'}} onClick={() => setSteps(steps.filter((_, i) => i !== idx))}>Odstranit krok</button>}
+                    <div key={idx} style={{marginBottom:'10px'}}>
+                        <textarea className="custom-textarea" value={s} onChange={e => { const n = [...steps]; n[idx] = e.target.value; setSteps(n); }} placeholder={`Krok ${idx+1}...`} />
+                        <button className="remove-row-btn" style={{marginTop:'5px', width:'auto', padding:'0 10px'}} onClick={() => setSteps(steps.filter((_, i) => i !== idx))}>Smazat krok</button>
                     </div>
                 ))}
             </div>
-            <button className="btn secondary-btn small-btn" onClick={() => setSteps([...steps, ''])}>+ PŘIDAT ODSTAVEC</button>
+            <button className="btn secondary-btn small-btn" onClick={() => setSteps([...steps, ''])}>+ PŘIDAT KROK</button>
             <div style={{display:'flex', gap:'10px', marginTop:'20px'}}>
                 <button className="btn secondary-btn" style={{flex:1}} onClick={() => setModalStep(1)}>ZPĚT</button>
-                <button className="btn success-btn" style={{flex:2}} onClick={() => {
-                  const cleanedCats = categoryList.map(c => c.trim().toLowerCase()).filter(c => c !== "");
-                  onSave({ name, categories: cleanedCats.length > 0 ? cleanedCats : ['ostatní'], prepTime: prep, cookTime: cook, baseServings: servings, ingredients: ings.filter(i => i.name.trim()), steps: steps.filter(s => s.trim()) }, editData?.id);
-                  onClose();
-                }}>ULOŽIT RECEPT</button>
+                <button className="btn success-btn" style={{flex:2}} onClick={handleFinalSave}>ULOŽIT VŠE</button>
             </div>
           </div>
         )}
-        <button className="btn danger-btn" style={{marginTop:'15px', opacity:0.5, height: '45px'}} onClick={onClose}>ZRUŠIT</button>
+        <button className="btn danger-btn" style={{marginTop:'15px', opacity:0.5}} onClick={onClose}>ZRUŠIT</button>
       </div>
     </div>
   );
@@ -144,8 +173,9 @@ const AddRecipeModal: React.FC<{
 const App: React.FC = () => {
   const [scene, setScene] = useState<'fridge' | 'results' | 'manage' | 'detail'>('fridge');
   const [prevScene, setPrevScene] = useState<'results' | 'manage'>('results');
-  const [recipes, setRecipes] = useState<Recipe[]>(() => JSON.parse(localStorage.getItem('my_recipes') || '[]'));
+  const [recipes, setRecipes] = useState<Recipe[]>(() => JSON.parse(localStorage.getItem('my_recipes_v6') || '[]'));
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+  const [viewHistoryIndex, setViewHistoryIndex] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState<Recipe | null>(null);
   const [myIngredients, setMyIngredients] = useState<{[key: string]: string}>(() => JSON.parse(localStorage.getItem('my_fridge') || '{}'));
@@ -154,32 +184,56 @@ const App: React.FC = () => {
   const [viewServings, setViewServings] = useState<number>(1);
   const [searchTerm, setSearchTerm] = useState('');
 
-  useEffect(() => { localStorage.setItem('my_recipes', JSON.stringify(recipes)); }, [recipes]);
+  useEffect(() => { localStorage.setItem('my_recipes_v6', JSON.stringify(recipes)); }, [recipes]);
   useEffect(() => { localStorage.setItem('my_fridge', JSON.stringify(myIngredients)); }, [myIngredients]);
 
-  // Všechny unikátní kategorie
-  const allCategories = useMemo(() => {
-    const cats = recipes.flatMap(r => r.categories || []);
-    return [...new Set(cats)].sort();
-  }, [recipes]);
+  // LOGIKA SLUČOVÁNÍ S JEDNOTKAMI
+  const effectiveData = useMemo(() => {
+    if (!selectedRecipe) return null;
+    const base = viewHistoryIndex === null ? selectedRecipe : selectedRecipe.history[viewHistoryIndex];
+    const subRecipes = (base.subRecipeIds || []).map(id => recipes.find(r => r.id === id)).filter((r): r is Recipe => !!r);
 
-  // NOVÉ: Všechny unikátní názvy surovin pro našeptávač v modalu
-  const allIngredientNames = useMemo(() => {
-    const ings = recipes.flatMap(r => (r.ingredients || []).map(i => i.name));
-    return [...new Set(ings)].sort();
-  }, [recipes]);
-
-  const availableIngs = useMemo(() => {
-    let filteredRecipes = recipes;
-    if (selectedFilterCats.length > 0) {
-      filteredRecipes = recipes.filter(r => {
-        if (categoryLogic === 'OR') return r.categories?.some(cat => selectedFilterCats.includes(cat));
-        return selectedFilterCats.every(cat => r.categories?.includes(cat));
+    const ingredientMap = new Map<string, number>();
+    
+    const processIngs = (ings: Ingredient[], bServings: number) => {
+      ings.forEach(ing => {
+        // Klíčem je jméno + jednotka, aby se nesčítaly hrušky s jabkama
+        const key = `${ing.name.toLowerCase().trim()}|${ing.unit.toLowerCase().trim()}`;
+        const amount = parseFloat(ing.amount);
+        if (!isNaN(amount)) {
+          const scaled = (amount / bServings) * viewServings;
+          ingredientMap.set(key, (ingredientMap.get(key) || 0) + scaled);
+        }
       });
+    };
+
+    subRecipes.forEach(sub => processIngs(sub.ingredients, sub.baseServings));
+    processIngs(base.ingredients, base.baseServings);
+
+    const mergedIngredients: Ingredient[] = Array.from(ingredientMap.entries()).map(([key, amount]) => {
+      const [name, unit] = key.split('|');
+      return { name, amount: (Math.round(amount * 10) / 10).toString(), unit };
+    });
+
+    const mergedSections = [
+      ...subRecipes.map(sub => ({ title: `PŘÍPRAVA: ${sub.name}`, content: sub.steps })),
+      { title: `DOKONČENÍ: ${base.name}`, content: base.steps }
+    ];
+
+    return { ...base, ingredients: mergedIngredients, sections: mergedSections };
+  }, [selectedRecipe, viewHistoryIndex, recipes, viewServings]);
+
+  const allCategories = useMemo(() => [...new Set(recipes.flatMap(r => r.categories || []))].sort(), [recipes]);
+  const allIngredientNames = useMemo(() => [...new Set(recipes.flatMap(r => r.ingredients.map(i => i.name)))].sort(), [recipes]);
+
+  const handleSave = (newData: Omit<Recipe, 'id' | 'history'>, id?: number) => {
+    if (id) {
+      setRecipes(prev => prev.map(r => r.id === id ? { ...newData, id, history: [r as RecipeData, ...r.history] } : r));
+    } else {
+      setRecipes([...recipes, { ...newData, id: Date.now(), history: [] }]);
     }
-    const names = filteredRecipes.flatMap(r => (r.ingredients || []).map(i => i.name.toLowerCase()));
-    return [...new Set(names)].sort();
-  }, [recipes, selectedFilterCats, categoryLogic]);
+    setScene('manage');
+  };
 
   const matchedRecipes = useMemo(() => {
     return recipes.map(r => {
@@ -190,14 +244,7 @@ const App: React.FC = () => {
           : selectedFilterCats.every(cat => r.categories?.includes(cat));
       }
       if (!catMatch) return { ...r, score: 0, matchedCount: 0 };
-
-      const matched = r.ingredients.filter(ing => {
-        const name = ing.name.toLowerCase();
-        if (myIngredients[name] === undefined) return false;
-        const myAmt = parseFloat(myIngredients[name]);
-        const reqAmt = parseFloat(ing.amount);
-        return (!isNaN(myAmt) && !isNaN(reqAmt)) ? myAmt >= reqAmt : true;
-      });
+      const matched = r.ingredients.filter(ing => myIngredients[ing.name.toLowerCase()] !== undefined);
       const score = r.ingredients.length > 0 ? Math.round((matched.length / r.ingredients.length) * 100) : 0;
       return { ...r, score, matchedCount: matched.length };
     }).filter(r => r.matchedCount > 0).sort((a, b) => b.score - a.score);
@@ -209,13 +256,6 @@ const App: React.FC = () => {
         {scene === 'fridge' && (
           <div className="fade-in">
             <h2>Lednice</h2>
-            <div className="category-logic-bar">
-                <label className="field-label">Filtrovat kategorie:</label>
-                <div className="logic-toggle">
-                    <button className={`logic-btn ${categoryLogic === 'OR' ? 'active' : ''}`} onClick={() => setCategoryLogic('OR')}>OR</button>
-                    <button className={`logic-btn ${categoryLogic === 'AND' ? 'active' : ''}`} onClick={() => setCategoryLogic('AND')}>AND</button>
-                </div>
-            </div>
             <div className="category-selection-grid">
                 {allCategories.map(cat => (
                     <button key={cat} className={`cat-select-btn ${selectedFilterCats.includes(cat) ? 'selected' : ''}`} onClick={() => setSelectedFilterCats(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat])}>
@@ -224,49 +264,39 @@ const App: React.FC = () => {
                 ))}
             </div>
             <div className="responsive-grid">
-                {availableIngs.map(ing => (
+                {allIngredientNames.map(ing => (
                     <div key={ing} className="toggle-row-complex">
                         <div className="ing-main">
                             <span className="ing-name">{ing}</span>
                             <label className="switch">
-                                <input type="checkbox" checked={myIngredients[ing] !== undefined} onChange={() => {
+                                <input type="checkbox" checked={myIngredients[ing.toLowerCase()] !== undefined} onChange={() => {
                                     const next = { ...myIngredients };
-                                    if (next[ing] !== undefined) delete next[ing]; else next[ing] = "";
+                                    if (next[ing.toLowerCase()] !== undefined) delete next[ing.toLowerCase()]; else next[ing.toLowerCase()] = "";
                                     setMyIngredients(next);
                                 }} />
                                 <span className="slider"></span>
                             </label>
                         </div>
-                        {myIngredients[ing] !== undefined && (
-                            <input className="small-amount-input" type="number" placeholder="množství" value={myIngredients[ing]} onChange={(e) => setMyIngredients({...myIngredients, [ing]: e.target.value})} />
-                        )}
                     </div>
                 ))}
             </div>
-            {Object.keys(myIngredients).length > 0 && <button className="btn success-btn" style={{marginTop:'20px', maxWidth: '350px', marginInline: 'auto'}} onClick={() => setScene('results')}>UKÁZAT RECEPTY</button>}
+            <button className="btn success-btn" style={{marginTop:'20px'}} onClick={() => setScene('results')}>RECEPTY</button>
           </div>
         )}
 
         {(scene === 'results' || scene === 'manage') && (
           <div className="fade-in">
             <h2>{scene === 'results' ? 'Výsledky' : 'Kuchařka'}</h2>
-            {scene === 'manage' && (
-                <div className="search-wrapper">
-                    <input className="custom-input search-input" placeholder="🔍 Hledat jídlo..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-                </div>
-            )}
             <div className="recipe-grid">
                 {(scene === 'results' ? matchedRecipes : recipes.filter(r => r.name.toLowerCase().includes(searchTerm.toLowerCase()))).map((r: any) => (
                   <div key={r.id} className="recipe-card" onClick={() => {
                       setPrevScene(scene as 'results' | 'manage');
                       setSelectedRecipe(r);
+                      setViewHistoryIndex(null);
                       setViewServings(r.baseServings || 1);
                       setScene('detail');
                   }}>
-                    <div className="recipe-header">
-                        <span className="recipe-name">{r.name}</span>
-                        {scene === 'results' && <span className={`score ${r.score === 100 ? 'full' : ''}`}>{r.score}%</span>}
-                    </div>
+                    <span className="recipe-name">{r.name}</span>
                     <div className="time-info">🕒 {r.prepTime}m | 🔥 {r.cookTime}m</div>
                     <div className="category-rows">
                         {r.categories?.map((c: string) => <div key={c} className="tag cat-tag">{c}</div>)}
@@ -274,21 +304,29 @@ const App: React.FC = () => {
                   </div>
                 ))}
             </div>
-            <button className="btn secondary-btn" style={{marginTop: '40px', maxWidth: '350px', marginInline: 'auto'}} onClick={() => {setScene('fridge'); setSearchTerm('');}}>ZPĚT</button>
+            <button className="btn secondary-btn" style={{marginTop:'20px'}} onClick={() => setScene('fridge')}>ZPĚT</button>
           </div>
         )}
 
-        {scene === 'detail' && selectedRecipe && (
+        {scene === 'detail' && selectedRecipe && effectiveData && (
           <div className="fade-in detail-view">
             <button className="back-link" onClick={() => setScene(prevScene)}>← Zpět</button>
-            <h2>{selectedRecipe.name}</h2>
-            <div className="category-rows" style={{marginBottom: '20px'}}>
-                {selectedRecipe.categories?.map(c => <div key={c} className="tag cat-tag">{c}</div>)}
-            </div>
+            
+            {selectedRecipe.history.length > 0 && (
+                <div className="version-selector">
+                    <select className="custom-input" value={viewHistoryIndex === null ? "current" : viewHistoryIndex} onChange={(e) => setViewHistoryIndex(e.target.value === "current" ? null : parseInt(e.target.value))}>
+                        <option value="current">Verze {selectedRecipe.history.length + 1}</option>
+                        {selectedRecipe.history.map((_, idx) => <option key={idx} value={idx}>Verze {selectedRecipe.history.length - idx}</option>)}
+                    </select>
+                </div>
+            )}
+
+            <h2>{effectiveData.name}</h2>
+            
             <div className="detail-grid">
                 <div className="detail-left">
                     <div className="servings-control">
-                        <label className="field-label">Počet porcí:</label>
+                        <label className="field-label">Porce:</label>
                         <div className="counter-row">
                             <button className="counter-btn" onClick={() => setViewServings(Math.max(1, viewServings - 1))}>−</button>
                             <span className="counter-value">{viewServings}</span>
@@ -297,49 +335,49 @@ const App: React.FC = () => {
                     </div>
                     <label className="field-label">Suroviny:</label>
                     <div className="tag-container">
-                        {selectedRecipe.ingredients.map((i, idx) => (
+                        {effectiveData.ingredients.map((i, idx) => (
                             <span key={idx} className={`tag ${myIngredients[i.name.toLowerCase()] !== undefined ? 'tag-have' : 'tag-miss'}`}>
-                                {i.name} ({Math.round((parseFloat(i.amount) / selectedRecipe.baseServings * viewServings) * 10) / 10})
+                                {i.name} ({i.amount} {i.unit})
                             </span>
                         ))}
                     </div>
                 </div>
                 <div className="detail-right">
                     <label className="field-label">Postup:</label>
-                    {selectedRecipe.steps.map((s, idx) => (
-                        <div key={idx} className="step-item">
-                            <div className="step-num">{idx+1}</div>
-                            <div className="step-txt">{s}</div>
+                    {effectiveData.sections.map((section, sIdx) => (
+                        <div key={sIdx} className="recipe-section">
+                            <h4 className="section-title">{section.title}</h4>
+                            {section.content.map((s, idx) => (
+                                <div key={idx} className="step-item">
+                                    <div className="step-num">{idx+1}</div>
+                                    <div className="step-txt">{s}</div>
+                                </div>
+                            ))}
                         </div>
                     ))}
                 </div>
             </div>
-            <div className="card-actions" style={{marginTop: '40px'}}>
-                <button className="btn accent-btn small-btn" onClick={() => { setEditData(selectedRecipe); setIsModalOpen(true); }}>Upravit</button>
-                <button className="btn danger-btn small-btn" onClick={() => { if(confirm('Smazat?')) { setRecipes(recipes.filter(x => x.id !== selectedRecipe.id)); setScene('manage'); }}}>Smazat</button>
-            </div>
+
+            {viewHistoryIndex === null && (
+                <div className="card-actions" style={{marginTop: '40px'}}>
+                    <button className="btn accent-btn small-btn" onClick={() => { setEditData(selectedRecipe); setIsModalOpen(true); }}>Upravit</button>
+                    <button className="btn danger-btn small-btn" onClick={() => { if(confirm('Smazat?')) { setRecipes(recipes.filter(x => x.id !== selectedRecipe.id)); setScene('manage'); }}}>Smazat</button>
+                </div>
+            )}
           </div>
         )}
       </div>
 
       <nav className="nav-bar">
-        <button className={`nav-btn ${scene === 'fridge' || (scene === 'detail' && prevScene === 'results') ? 'active' : ''}`} onClick={() => {setScene('fridge'); setSearchTerm('');}}>LEDNICE</button>
-        <button className={`nav-btn ${scene === 'manage' || (scene === 'detail' && prevScene === 'manage') ? 'active' : ''}`} onClick={() => setScene('manage')}>RECEPTY</button>
+        <button className={`nav-btn ${scene === 'fridge' ? 'active' : ''}`} onClick={() => setScene('fridge')}>LEDNICE</button>
+        <button className={`nav-btn ${scene === 'manage' ? 'active' : ''}`} onClick={() => setScene('manage')}>RECEPTY</button>
         <button className="nav-btn" onClick={() => { setEditData(null); setIsModalOpen(true); }}>PŘIDAT</button>
       </nav>
 
       <AddRecipeModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        onSave={(d, id) => {
-          const updated = id ? recipes.map(r => r.id === id ? { ...d, id } : r) : [...recipes, { ...d, id: Date.now() }];
-          setRecipes(updated);
-          if (id) setSelectedRecipe({...d, id} as Recipe);
-          setScene('manage');
-        }} 
-        availableCategories={allCategories} 
-        availableIngredients={allIngredientNames} // PŘEDÁNÍ SUROVIN DO MODALU
-        editData={editData} 
+        isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={handleSave} 
+        availableCategories={allCategories} availableIngredients={allIngredientNames}
+        allRecipes={recipes} editData={editData} 
       />
     </IonApp>
   );
