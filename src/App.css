@@ -341,7 +341,22 @@ h2 {
 
 /* --- DETAIL --- */
 .back-link { background: none; border: none; color: var(--accent); font-weight: 700; cursor: pointer; margin-bottom: 15px; font-size: 1rem; }
-.card-actions { display: flex; gap: 10px; margin-top: 30px; }
+.card-actions { 
+    display: flex; 
+    gap: 12px; 
+    margin-top: 30px; 
+}
+
+.card-actions .btn {
+    flex: 1; /* Obě tlačítka budou stejně široká */
+    height: 48px; /* Příjemná výška pro mobil */
+    opacity: 1;
+    transform: scale(1);
+}
+
+.card-actions .btn:active {
+    transform: scale(0.96);
+}
 
 /* --- INGREDIENCE & POSTUP --- */
 .tag-container { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -378,3 +393,24 @@ h2 {
 
 .fade-in { animation: fadeIn 0.3s; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Oprava vzhledu tlačítka, aby nevypadalo zmáčknutě */
+.danger-btn { 
+    background: var(--danger) !important; 
+    color: white !important; 
+    opacity: 1 !important; /* Zrušíme tu předchozí poloprůhlednost */
+    transform: scale(1); /* Ujistíme se, že je v základní velikosti */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Přidá hloubku */
+    border: none;
+}
+
+/* Efekt zmáčknutí se aplikuje JEN při kliknutí */
+.danger-btn:active { 
+    transform: scale(0.95) !important; 
+    box-shadow: none !important;
+}
+
+/* Odstranění modrého obrysu, který může vypadat jako zmáčknutí */
+.danger-btn:focus {
+    outline: none;
+}
