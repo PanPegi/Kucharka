@@ -1,0 +1,23 @@
+:root {
+  --bg-color: #0f172a;
+  --card-bg: #1e293b;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --danger: #ef4444;
+  --success: #10b981;
+  --text: #f8fafc;
+  --nav-bg: rgba(17, 24, 39, 0.98);
+  --border: #334155;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text);
+  margin: 0;
+}
