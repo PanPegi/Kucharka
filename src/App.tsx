@@ -4,10 +4,12 @@ import './App.css';
 
 setupIonicReact();
 
+// --- INTERFACES ---
+
 interface Ingredient {
   name: string;
   amount: string;
-  unit: string; // NOVÉ: Jednotka (g, ml, ks, lžíce...)
+  unit: string;
 }
 
 interface RecipeData {
@@ -26,6 +28,8 @@ interface Recipe extends RecipeData {
   id: number;
   history: RecipeData[];
 }
+
+// --- MODAL COMPONENT (ADD / EDIT) ---
 
 const AddRecipeModal: React.FC<{ 
   isOpen: boolean, 
@@ -103,7 +107,7 @@ const AddRecipeModal: React.FC<{
                 </div>
             </div>
             
-            <label className="field-label">Použít podrecepty:</label>
+            <label className="field-label">Použít podrecepty jako základ:</label>
             <div className="sub-recipe-selector">
                 {allRecipes.filter(r => r.id !== editData?.id).map(r => (
                     <button key={r.id} className={`sub-btn ${selectedSubIds.includes(r.id) ? 'active' : ''}`} onClick={() => setSelectedSubIds(prev => prev.includes(r.id) ? prev.filter(x => x !== r.id) : [...prev, r.id])}>
@@ -112,14 +116,14 @@ const AddRecipeModal: React.FC<{
                 ))}
             </div>
 
-            <label className="field-label">Suroviny (jméno | kolik | jednotka)</label>
+            <label className="field-label">Suroviny (Surovina | Kolik | Jednotka)</label>
             <div className="scroll-area">
                 {ings.map((ing, idx) => (
                     <div key={idx} className="ing-row-triple">
                         <input className="custom-input flex-2" value={ing.name} onChange={e => { const n = [...ings]; n[idx].name = e.target.value; setIngs(n); }} placeholder="Surovina" list="modal-ing-names" />
                         <input className="custom-input flex-1" value={ing.amount} onChange={e => { const n = [...ings]; n[idx].amount = e.target.value; setIngs(n); }} placeholder="Množství" type="number" />
                         <input className="custom-input flex-1" value={ing.unit} onChange={e => { const n = [...ings]; n[idx].unit = e.target.value; setIngs(n); }} placeholder="jedn." list="unit-list" />
-                        <button className="remove-row-btn" onClick={() => setIngs(ings.filter((_, i) => i !== idx))}>×</button>
+                        <button className="remove-row-btn" onClick={() => setIngs(ings.filter((_, i) => i !== idx))}>-</button>
                     </div>
                 ))}
             </div>
@@ -127,48 +131,50 @@ const AddRecipeModal: React.FC<{
             <datalist id="modal-ing-names">{availableIngredients.map(i => <option key={i} value={i} />)}</datalist>
             <button className="btn secondary-btn small-btn" onClick={() => setIngs([...ings, {name:'', amount:'', unit:''}])}>+ DALŠÍ SUROVINA</button>
 
-            <button className="btn accent-btn" style={{marginTop:'20px'}} onClick={() => setModalStep(2)}>NASTAVIT POSTUP →</button>
+            <button className="btn accent-btn" style={{marginTop:'20px'}} onClick={() => setModalStep(2)}>DALŠÍ KROK →</button>
           </div>
         ) : (
           <div className="fade-in">
-            <h2>Postup a Kategorie</h2>
+            <h2>Kategorie a Postup</h2>
             <label className="field-label">Kategorie</label>
             <div className="scroll-area-mini">
                 {categoryList.map((cat, idx) => (
-                    <div key={idx} className="ing-row">
-                        <input className="custom-input" value={cat} onChange={e => {
+                    <div key={idx} className="ing-row-triple" style={{marginBottom:'5px'}}>
+                        <input className="custom-input" style={{flex:1}} value={cat} onChange={e => {
                             const newList = [...categoryList];
                             newList[idx] = e.target.value;
                             setCategoryList(newList);
                         }} placeholder="Kategorie" list="modal-cat-list" />
-                        <button className="remove-row-btn" onClick={() => setCategoryList(categoryList.filter((_, i) => i !== idx))}>×</button>
+                        <button className="remove-row-btn" onClick={() => setCategoryList(categoryList.filter((_, i) => i !== idx))}>-</button>
                     </div>
                 ))}
             </div>
             <datalist id="modal-cat-list">{availableCategories.map(c => <option key={c} value={c} />)}</datalist>
-            <button className="btn secondary-btn small-btn" onClick={() => setCategoryList([...categoryList, ''])}>+ DALŠÍ KATEGORII</button>
+            <button className="btn secondary-btn small-btn" onClick={() => setCategoryList([...categoryList, ''])}>+ PŘIDAT KATEGORII</button>
 
-            <label className="field-label" style={{marginTop:'20px'}}>Kroky postupu</label>
+            <label className="field-label" style={{marginTop:'20px'}}>Vlastní kroky postupu</label>
             <div className="scroll-area">
                 {steps.map((s, idx) => (
-                    <div key={idx} style={{marginBottom:'10px'}}>
+                    <div key={idx} style={{marginBottom:'10px', display:'flex', gap:'8px', alignItems:'flex-start'}}>
                         <textarea className="custom-textarea" value={s} onChange={e => { const n = [...steps]; n[idx] = e.target.value; setSteps(n); }} placeholder={`Krok ${idx+1}...`} />
-                        <button className="remove-row-btn" style={{marginTop:'5px', width:'auto', padding:'0 10px'}} onClick={() => setSteps(steps.filter((_, i) => i !== idx))}>Smazat krok</button>
+                        <button className="remove-row-btn" onClick={() => setSteps(steps.filter((_, i) => i !== idx))}>-</button>
                     </div>
                 ))}
             </div>
-            <button className="btn secondary-btn small-btn" onClick={() => setSteps([...steps, ''])}>+ PŘIDAT KROK</button>
+            <button className="btn secondary-btn small-btn" onClick={() => setSteps([...steps, ''])}>+ PŘIDAT KROK PŘÍPRAVY</button>
             <div style={{display:'flex', gap:'10px', marginTop:'20px'}}>
                 <button className="btn secondary-btn" style={{flex:1}} onClick={() => setModalStep(1)}>ZPĚT</button>
-                <button className="btn success-btn" style={{flex:2}} onClick={handleFinalSave}>ULOŽIT VŠE</button>
+                <button className="btn success-btn" style={{flex:2}} onClick={handleFinalSave}>ULOŽIT RECEPT</button>
             </div>
           </div>
         )}
-        <button className="btn danger-btn" style={{marginTop:'15px', opacity:0.5}} onClick={onClose}>ZRUŠIT</button>
+        <button className="btn danger-btn" style={{marginTop:'15px', opacity:0.5, height: '45px'}} onClick={onClose}>ZRUŠIT</button>
       </div>
     </div>
   );
 };
+
+// --- MAIN APP COMPONENT ---
 
 const App: React.FC = () => {
   const [scene, setScene] = useState<'fridge' | 'results' | 'manage' | 'detail'>('fridge');
@@ -183,21 +189,20 @@ const App: React.FC = () => {
   const [categoryLogic, setCategoryLogic] = useState<'AND' | 'OR'>('OR');
   const [viewServings, setViewServings] = useState<number>(1);
   const [searchTerm, setSearchTerm] = useState('');
+  const [categorySearchTerm, setCategorySearchTerm] = useState('');
 
   useEffect(() => { localStorage.setItem('my_recipes_v6', JSON.stringify(recipes)); }, [recipes]);
   useEffect(() => { localStorage.setItem('my_fridge', JSON.stringify(myIngredients)); }, [myIngredients]);
 
-  // LOGIKA SLUČOVÁNÍ S JEDNOTKAMI
+  // Výpočet sloučených dat receptu (včetně podreceptů a verzí)
   const effectiveData = useMemo(() => {
     if (!selectedRecipe) return null;
     const base = viewHistoryIndex === null ? selectedRecipe : selectedRecipe.history[viewHistoryIndex];
     const subRecipes = (base.subRecipeIds || []).map(id => recipes.find(r => r.id === id)).filter((r): r is Recipe => !!r);
 
     const ingredientMap = new Map<string, number>();
-    
     const processIngs = (ings: Ingredient[], bServings: number) => {
       ings.forEach(ing => {
-        // Klíčem je jméno + jednotka, aby se nesčítaly hrušky s jabkama
         const key = `${ing.name.toLowerCase().trim()}|${ing.unit.toLowerCase().trim()}`;
         const amount = parseFloat(ing.amount);
         if (!isNaN(amount)) {
@@ -216,8 +221,8 @@ const App: React.FC = () => {
     });
 
     const mergedSections = [
-      ...subRecipes.map(sub => ({ title: `PŘÍPRAVA: ${sub.name}`, content: sub.steps })),
-      { title: `DOKONČENÍ: ${base.name}`, content: base.steps }
+      ...subRecipes.map(sub => ({ title: `PŘÍPRAVA: ${sub.name.toUpperCase()}`, content: sub.steps })),
+      { title: `DOKONČENÍ: ${base.name.toUpperCase()}`, content: base.steps }
     ];
 
     return { ...base, ingredients: mergedIngredients, sections: mergedSections };
@@ -256,8 +261,15 @@ const App: React.FC = () => {
         {scene === 'fridge' && (
           <div className="fade-in">
             <h2>Lednice</h2>
+            <div className="category-logic-bar">
+                <input className="custom-input" placeholder="🔍 Hledat kategorii..." value={categorySearchTerm} onChange={(e) => setCategorySearchTerm(e.target.value)} />
+                <div className="logic-toggle" style={{marginTop:'10px'}}>
+                    <button className={`logic-btn ${categoryLogic === 'OR' ? 'active' : ''}`} onClick={() => setCategoryLogic('OR')}>OR (Aspoň jedna)</button>
+                    <button className={`logic-btn ${categoryLogic === 'AND' ? 'active' : ''}`} onClick={() => setCategoryLogic('AND')}>AND (Všechny)</button>
+                </div>
+            </div>
             <div className="category-selection-grid">
-                {allCategories.map(cat => (
+                {allCategories.filter(c => c.includes(categorySearchTerm.toLowerCase())).map(cat => (
                     <button key={cat} className={`cat-select-btn ${selectedFilterCats.includes(cat) ? 'selected' : ''}`} onClick={() => setSelectedFilterCats(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat])}>
                         {cat}
                     </button>
@@ -280,13 +292,18 @@ const App: React.FC = () => {
                     </div>
                 ))}
             </div>
-            <button className="btn success-btn" style={{marginTop:'20px'}} onClick={() => setScene('results')}>RECEPTY</button>
+            <button className="btn success-btn" style={{marginTop:'20px', maxWidth:'350px', marginInline:'auto'}} onClick={() => setScene('results')}>NAJÍT RECEPTY</button>
           </div>
         )}
 
         {(scene === 'results' || scene === 'manage') && (
           <div className="fade-in">
-            <h2>{scene === 'results' ? 'Výsledky' : 'Kuchařka'}</h2>
+            <h2>{scene === 'results' ? 'Výsledky hledání' : 'Moje kuchařka'}</h2>
+            {scene === 'manage' && (
+                <div className="search-wrapper">
+                    <input className="custom-input search-input" placeholder="🔍 Vyhledat jídlo..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                </div>
+            )}
             <div className="recipe-grid">
                 {(scene === 'results' ? matchedRecipes : recipes.filter(r => r.name.toLowerCase().includes(searchTerm.toLowerCase()))).map((r: any) => (
                   <div key={r.id} className="recipe-card" onClick={() => {
@@ -304,18 +321,19 @@ const App: React.FC = () => {
                   </div>
                 ))}
             </div>
-            <button className="btn secondary-btn" style={{marginTop:'20px'}} onClick={() => setScene('fridge')}>ZPĚT</button>
+            <button className="btn secondary-btn" style={{marginTop: '40px', maxWidth: '350px', marginInline: 'auto'}} onClick={() => {setScene('fridge'); setSearchTerm('');}}>ZPĚT</button>
           </div>
         )}
 
         {scene === 'detail' && selectedRecipe && effectiveData && (
           <div className="fade-in detail-view">
-            <button className="back-link" onClick={() => setScene(prevScene)}>← Zpět</button>
+            <button className="back-link" onClick={() => setScene(prevScene)}>← Zpět na seznam</button>
             
             {selectedRecipe.history.length > 0 && (
                 <div className="version-selector">
+                    <label className="field-label">Historie úprav:</label>
                     <select className="custom-input" value={viewHistoryIndex === null ? "current" : viewHistoryIndex} onChange={(e) => setViewHistoryIndex(e.target.value === "current" ? null : parseInt(e.target.value))}>
-                        <option value="current">Verze {selectedRecipe.history.length + 1}</option>
+                        <option value="current">Verze {selectedRecipe.history.length + 1} (Aktuální)</option>
                         {selectedRecipe.history.map((_, idx) => <option key={idx} value={idx}>Verze {selectedRecipe.history.length - idx}</option>)}
                     </select>
                 </div>
@@ -333,7 +351,7 @@ const App: React.FC = () => {
                             <button className="counter-btn" onClick={() => setViewServings(viewServings + 1)}>+</button>
                         </div>
                     </div>
-                    <label className="field-label">Suroviny:</label>
+                    <label className="field-label">Suroviny (sloučeno):</label>
                     <div className="tag-container">
                         {effectiveData.ingredients.map((i, idx) => (
                             <span key={idx} className={`tag ${myIngredients[i.name.toLowerCase()] !== undefined ? 'tag-have' : 'tag-miss'}`}>
@@ -343,7 +361,7 @@ const App: React.FC = () => {
                     </div>
                 </div>
                 <div className="detail-right">
-                    <label className="field-label">Postup:</label>
+                    <label className="field-label">Kompletní postup:</label>
                     {effectiveData.sections.map((section, sIdx) => (
                         <div key={sIdx} className="recipe-section">
                             <h4 className="section-title">{section.title}</h4>
@@ -360,8 +378,8 @@ const App: React.FC = () => {
 
             {viewHistoryIndex === null && (
                 <div className="card-actions" style={{marginTop: '40px'}}>
-                    <button className="btn accent-btn small-btn" onClick={() => { setEditData(selectedRecipe); setIsModalOpen(true); }}>Upravit</button>
-                    <button className="btn danger-btn small-btn" onClick={() => { if(confirm('Smazat?')) { setRecipes(recipes.filter(x => x.id !== selectedRecipe.id)); setScene('manage'); }}}>Smazat</button>
+                    <button className="btn accent-btn small-btn" onClick={() => { setEditData(selectedRecipe); setIsModalOpen(true); }}>Upravit recept</button>
+                    <button className="btn danger-btn small-btn" onClick={() => { if(confirm('Smazat recept?')) { setRecipes(recipes.filter(x => x.id !== selectedRecipe.id)); setScene('manage'); }}}>Smazat</button>
                 </div>
             )}
           </div>
@@ -369,15 +387,19 @@ const App: React.FC = () => {
       </div>
 
       <nav className="nav-bar">
-        <button className={`nav-btn ${scene === 'fridge' ? 'active' : ''}`} onClick={() => setScene('fridge')}>LEDNICE</button>
-        <button className={`nav-btn ${scene === 'manage' ? 'active' : ''}`} onClick={() => setScene('manage')}>RECEPTY</button>
+        <button className={`nav-btn ${scene === 'fridge' || (scene === 'detail' && prevScene === 'results') ? 'active' : ''}`} onClick={() => setScene('fridge')}>LEDNICE</button>
+        <button className={`nav-btn ${scene === 'manage' || (scene === 'detail' && prevScene === 'manage') ? 'active' : ''}`} onClick={() => setScene('manage')}>KUCHAŘKA</button>
         <button className="nav-btn" onClick={() => { setEditData(null); setIsModalOpen(true); }}>PŘIDAT</button>
       </nav>
 
       <AddRecipeModal 
-        isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={handleSave} 
-        availableCategories={allCategories} availableIngredients={allIngredientNames}
-        allRecipes={recipes} editData={editData} 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onSave={handleSave} 
+        availableCategories={allCategories} 
+        availableIngredients={allIngredientNames}
+        allRecipes={recipes}
+        editData={editData} 
       />
     </IonApp>
   );
