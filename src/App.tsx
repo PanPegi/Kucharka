@@ -178,27 +178,44 @@ const App: React.FC = () => {
     setScene('editor');
   };
 
-  const handleSave = () => {
+ const handleSave = () => {
     const newData: RecipeData = {
-      name: editName,
-      categories: editCategoryList.map(c => c.trim().toLowerCase()),
+      name: editName.trim(),
+      categories: editCategoryList.map(c => c.trim().toLowerCase()).filter(c => c !== ""),
       prepTime: editPrep,
       cookTime: editCook,
       baseServings: editServings,
-      ingredients: editIngs,
+      ingredients: editIngs.filter(i => i.name.trim() !== ""),
       subRecipeIds: editSelectedSubIds,
-      steps: editSteps,
+      steps: editSteps.filter(s => s.trim() !== ""),
       updatedAt: Date.now()
     };
 
-    let updated: Recipe[];
+    let updatedRecipes: Recipe[];
+
     if (editId) {
-      updated = recipes.map(r => r.id === editId ? { ...newData, id: editId, history: [r as RecipeData, ...r.history] } : r);
+      updatedRecipes = recipes.map(r => {
+        if (r.id === editId) {
+          // Číslo aktuální verze bude počet prvků v historii + 1
+          const currentVersionNum = (r.history?.length || 0) + 1;
+          
+          return {
+            ...newData,
+            id: editId,
+            history: [
+              { ...r, versionLabel: currentVersionNum }, // Uložíme starou verzi s číslem
+              ...(r.history || [])
+            ]
+          };
+        }
+        return r;
+      });
     } else {
-      updated = [...recipes, { ...newData, id: Date.now(), history: [] }];
+      updatedRecipes = [...recipes, { ...newData, id: Date.now(), history: [] }];
     }
-    setRecipes(updated);
-    saveData(updated);
+
+    setRecipes(updatedRecipes);
+    saveData(updatedRecipes);
     setScene('manage');
   };
 
@@ -300,54 +317,136 @@ const App: React.FC = () => {
         )}
 
         {/* --- DETAIL RECEPTU --- */}
-        {scene === 'detail' && selectedRecipe && effectiveData && (
-          <div className="fade-in detail-view">
-             <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-                <button className="back-link" onClick={() => openEditor(selectedRecipe)}>Upravit</button>
-             </div>
-            <h2>{effectiveData.name}</h2>
-            <div className="detail-grid">
-                <div className="detail-left">
-                    <div className="servings-control">
-                        <label className="field-label">Porce:</label>
-                        <div className="counter-row">
-                            <button className="counter-btn" onClick={() => setViewServings(Math.max(1, viewServings - 1))}>−</button>
-                            <span className="counter-value">{viewServings}</span>
-                            <button className="counter-btn" onClick={() => setViewServings(viewServings + 1)}>+</button>
-                        </div>
-                    </div>
-                    <label className="field-label">Suroviny:</label>
-                    <div className="tag-container">
-                        {effectiveData.ingredients.map((i, idx) => (
-                            <span key={idx} className={`tag ${myIngredients[i.name.toLowerCase()] !== undefined ? 'tag-have' : 'tag-miss'}`}>
-                                {i.name} ({i.amount} {i.unit})
-                            </span>
-                        ))}
-                    </div>
-                </div>
-                <div className="detail-right">
-                    <label className="field-label">Postup:</label>
-                    {effectiveData.sections.map((section, sIdx) => (
-                        <div key={sIdx} className="recipe-section">
-                            <h4 className="section-title">{section.title}</h4>
-                            {section.content.map((s, idx) => (
-                                <div key={idx} className="step-item">
-                                    <div className="step-num">{idx+1}</div>
-                                    <div className="step-txt">{s}</div>
-                                </div>
-                            ))}
-                        </div>
-                    ))}
-                </div>
-            </div>
-            {viewHistoryIndex === null && (
-                <div className="card-actions">
-                    <button className="btn accent-btn small-btn" onClick={() => setScene(prevScene)}>Zpět</button>
-                    <button className="btn danger-btn small-btn" onClick={() => handleDelete(selectedRecipe.id)}>Smazat</button>
-                </div>
-            )}
+{scene === 'detail' && selectedRecipe && effectiveData && (
+  <div className="fade-in detail-view">
+    {/* Horní lišta s navigací a úpravou */}
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+      {/* <button className="back-link" onClick={() => setScene(prevScene)}>← Zpět</button> */}
+      {/* {viewHistoryIndex === null && (
+        <button className="back-link" onClick={() => openEditor(selectedRecipe)}>Upravit recept</button>
+      )} */}
+    </div>
+
+    {/* Výběr verzí z historie */}
+
+{selectedRecipe.history && selectedRecipe.history.length > 0 && (
+  <div className="version-bar" style={{ marginBottom: '20px', padding: '15px', background: 'var(--card-bg)', borderRadius: '12px', border: '1px solid var(--border)' }}>
+    <label className="field-label" style={{ margin: 0, fontSize: '14px', opacity: 0.8 }}>Zvolit verzi:</label>
+    <select 
+      className="custom-input" 
+      style={{ marginTop: '8px', height: '40px' }}
+      value={viewHistoryIndex === null ? "current" : viewHistoryIndex} 
+      onChange={(e) => setViewHistoryIndex(e.target.value === "current" ? null : parseInt(e.target.value))}
+    >
+      {/* Aktuální verze je vždy ta nejvyšší */}
+      <option value="current">{selectedRecipe.history.length + 1} (Aktuální)</option>
+      
+      {/* Historie se vypisuje od nejnovější po nejstarší */}
+      {selectedRecipe.history.map((h: any, idx) => (
+        <option key={idx} value={idx}>
+          Verze {h.versionLabel || (selectedRecipe.history.length - idx)}
+        </option>
+      ))}
+    </select>
+  </div>
+)}
+
+    <h2>
+      {effectiveData.name} 
+      {viewHistoryIndex !== null && <span style={{ color: 'var(--accent)', marginLeft: '10px', fontSize: '0.6em' }}>(ARCHIVNÍ VERZE)</span>}
+    </h2>
+
+    <div className="detail-grid">
+      {/* Levý sloupec: Porce a Suroviny */}
+      <div className="detail-left">
+        <div className="servings-control">
+          <label className="field-label">Porce:</label>
+          <div className="counter-row">
+            <button className="counter-btn" onClick={() => setViewServings(Math.max(1, viewServings - 1))}>−</button>
+            <span className="counter-value">{viewServings}</span>
+            <button className="counter-btn" onClick={() => setViewServings(viewServings + 1)}>+</button>
           </div>
-        )}
+        </div>
+
+        <label className="field-label">Suroviny:</label>
+        <div className="tag-container">
+          {effectiveData.ingredients.map((i, idx) => {
+            // Kontrola dostupnosti suroviny v lednici
+            const myVal = myIngredients[i.name.toLowerCase()];
+            let statusClass = 'tag-miss';
+            if (myVal !== undefined) {
+              if (myVal === "") statusClass = 'tag-have'; // Mám "dost"
+              else if (parseFloat(myVal) >= parseFloat(i.amount)) statusClass = 'tag-have'; // Mám dostatečné množství
+            }
+
+            return (
+              <span key={idx} className={`tag ${statusClass}`}>
+                {i.name} ({i.amount} {i.unit})
+              </span>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* --- DETAIL: Pravý sloupec --- */}
+<div className="detail-right">
+  <label className="field-label">Postup:</label>
+  {effectiveData.sections.map((section, sIdx) => (
+    <div key={sIdx} className="recipe-section" style={{ marginBottom: '25px' }}>
+      <h4 className="section-title" style={{ color: 'var(--accent)', borderBottom: '1px solid var(--border)', paddingBottom: '5px' }}>
+        {section.title}
+      </h4>
+      {section.content.map((step, idx) => (
+        <div key={idx} className="step-item" style={{ display: 'flex', gap: '15px', marginBottom: '15px', alignItems: 'flex-start' }}>
+          {/* MODRÝ KROUŽEK S ČÍSLEM */}
+          <div className="step-num" style={{ 
+            backgroundColor: '#3880ff', // Ionic modrá
+            color: 'white',
+            minWidth: '28px',
+            height: '28px',
+            borderRadius: '50%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            fontSize: '14px',
+            fontWeight: 'bold',
+            flexShrink: 0,
+            marginTop: '2px'
+          }}>
+            {idx + 1}
+          </div>
+          <div className="step-txt" style={{ lineHeight: '1.5' }}>{step}</div>
+        </div>
+      ))}
+    </div>
+  ))}
+</div>
+    </div>
+
+    {/* Spodní Akce: Smazání nebo Práce s historií */}
+<div className="card-actions" style={{ marginTop: '40px', borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
+  {viewHistoryIndex === null ? (
+    // JSEM V AKTUÁLNÍ VERZI
+    <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
+      <button className="btn danger-btn" style={{ flex: 1 }} onClick={() => handleDelete(selectedRecipe.id)}>
+        Smazat
+      </button>
+      <button className="btn accent-btn" style={{ flex: 1 }} onClick={() => openEditor(selectedRecipe)}>
+        Upravit recept
+      </button>
+    </div>
+  ) : (
+    // JSEM V HISTORII (ARCHIVU)
+    <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
+      <button className="btn secondary-btn" style={{ flex: 1 }} onClick={() => setViewHistoryIndex(null)}>
+        Zpět
+      </button>
+    </div>
+  )}
+</div>
+  </div>
+)}
+
 
         {/* --- CELOOBRAZOVKOVÝ EDITOR (Původně modal) --- */}
         {scene === 'editor' && (
