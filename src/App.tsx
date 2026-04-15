@@ -12,7 +12,7 @@ interface Ingredient {
 interface Recipe {
   id: number;
   name: string;
-  category: string;
+  categories: string[];
   ingredients: Ingredient[];
   steps: string[]; 
   prepTime: string;
@@ -24,12 +24,13 @@ const AddRecipeModal: React.FC<{
   isOpen: boolean, 
   onClose: () => void, 
   onSave: (recipe: Omit<Recipe, 'id'>, id?: number) => void, 
-  categories: string[],
+  availableCategories: string[],
   editData?: Recipe | null 
-}> = ({ isOpen, onClose, onSave, categories, editData }) => {
+}> = ({ isOpen, onClose, onSave, availableCategories, editData }) => {
   const [modalStep, setModalStep] = useState(1);
   const [name, setName] = useState('');
-  const [cat, setCat] = useState('');
+  // Dynamický seznam kategorií
+  const [categoryList, setCategoryList] = useState<string[]>(['']);
   const [prep, setPrep] = useState('');
   const [cook, setCook] = useState('');
   const [servings, setServings] = useState<number>(1);
@@ -40,13 +41,15 @@ const AddRecipeModal: React.FC<{
     if (isOpen) {
       setModalStep(1);
       if (editData) {
-        setName(editData.name || ''); setCat(editData.category || '');
-        setPrep(editData.prepTime || ''); setCook(editData.cookTime || '');
+        setName(editData.name || ''); 
+        setCategoryList(editData.categories?.length ? editData.categories : ['']);
+        setPrep(editData.prepTime || ''); 
+        setCook(editData.cookTime || '');
         setServings(editData.baseServings || 1);
         setIngs(editData.ingredients || [{ name: '', amount: '' }]);
         setSteps(editData.steps || ['']);
       } else {
-        setName(''); setCat(''); setPrep(''); setCook(''); setServings(1);
+        setName(''); setCategoryList(['']); setPrep(''); setCook(''); setServings(1);
         setIngs([{ name: '', amount: '' }]); setSteps(['']);
       }
     }
@@ -59,9 +62,10 @@ const AddRecipeModal: React.FC<{
       <div className="modal-content">
         {modalStep === 1 ? (
           <div className="fade-in">
-            <h2>1. Suroviny</h2>
+            <h2>1. Základ a Suroviny</h2>
             <label className="field-label">Název pokrmu</label>
-            <input className="custom-input" value={name} onChange={e => setName(e.target.value)} placeholder="např. Guláš" />
+            <input className="custom-input" value={name} onChange={e => setName(e.target.value)} placeholder="např. Svíčková" />
+            
             <div className="vertical-inputs">
                 <label className="field-label">Základní porce</label>
                 <input className="custom-input" type="number" min="1" value={servings} onChange={e => setServings(parseInt(e.target.value) || 1)} />
@@ -70,43 +74,71 @@ const AddRecipeModal: React.FC<{
                 <label className="field-label">Vaření (min)</label>
                 <input className="custom-input" value={cook} onChange={e => setCook(e.target.value)} type="number" />
             </div>
-            <label className="field-label">Kategorie</label>
-            <input className="custom-input" value={cat} onChange={e => setCat(e.target.value)} list="clist" />
-            <datalist id="clist">{categories.map(c => <option key={c} value={c} />)}</datalist>
-            <label className="field-label">Suroviny & Množství</label>
+            
+            <label className="field-label">Kategorie (každá na řádek)</label>
+            <div className="scroll-area-mini">
+                {categoryList.map((cat, idx) => (
+                    <div key={idx} className="ing-row">
+                        <input 
+                            className="custom-input" 
+                            value={cat} 
+                            onChange={e => {
+                                const newList = [...categoryList];
+                                newList[idx] = e.target.value;
+                                setCategoryList(newList);
+                            }} 
+                            placeholder="např. Oběd" 
+                            list="clist"
+                        />
+                    </div>
+                ))}
+            </div>
+            <datalist id="clist">{availableCategories.map(c => <option key={c} value={c} />)}</datalist>
+            <button className="btn secondary-btn small-btn" onClick={() => setCategoryList([...categoryList, ''])}>+ PŘIDAT KATEGORII</button>
+
+            <label className="field-label" style={{marginTop:'15px'}}>Suroviny & Gramáž</label>
             <div className="scroll-area">
                 {ings.map((ing, idx) => (
                     <div key={idx} className="ing-row">
                         <input className="custom-input" style={{flex:2}} value={ing.name} onChange={e => { const n = [...ings]; n[idx].name = e.target.value; setIngs(n); }} placeholder="Surovina" />
-                        <input className="custom-input" style={{flex:1}} value={ing.amount} onChange={e => { const n = [...ings]; n[idx].amount = e.target.value; setIngs(n); }} placeholder="množství" type="number" />
+                        <input className="custom-input" style={{flex:1}} value={ing.amount} onChange={e => { const n = [...ings]; n[idx].amount = e.target.value; setIngs(n); }} placeholder="číslo" type="number" />
                     </div>
                 ))}
             </div>
             <button className="btn secondary-btn small-btn" onClick={() => setIngs([...ings, {name:'', amount:''}])}>+ DALŠÍ SUROVINA</button>
-            <button className="btn accent-btn" style={{marginTop:'20px'}} onClick={() => setModalStep(2)}>POSTUP →</button>
+            <button className="btn accent-btn" style={{marginTop:'20px'}} onClick={() => setModalStep(2)}>POSTUP PŘÍPRAVY →</button>
           </div>
         ) : (
           <div className="fade-in">
-            <h2>2. Postup</h2>
+            <h2>2. Postup (Odstavce)</h2>
             <div className="scroll-area">
                 {steps.map((s, idx) => (
                     <div key={idx} style={{marginBottom:'15px'}}>
                         <label className="field-label">Odstavec {idx + 1}</label>
-                        <textarea className="custom-textarea" value={s} onChange={e => { const n = [...steps]; n[idx] = e.target.value; setSteps(n); }} />
+                        <textarea className="custom-textarea" value={s} onChange={e => { const n = [...steps]; n[idx] = e.target.value; setSteps(n); }} placeholder="..." />
                     </div>
                 ))}
             </div>
-            <button className="btn secondary-btn small-btn" onClick={() => setSteps([...steps, ''])}>+ DALŠÍ ODSTAVEC</button>
+            <button className="btn secondary-btn small-btn" onClick={() => setSteps([...steps, ''])}>+ PŘIDAT ODSTAVEC</button>
             <div style={{display:'flex', gap:'10px', marginTop:'20px'}}>
                 <button className="btn secondary-btn" style={{flex:1}} onClick={() => setModalStep(1)}>ZPĚT</button>
                 <button className="btn success-btn" style={{flex:2}} onClick={() => {
-                  onSave({ name, category: cat || 'ostatní', prepTime: prep, cookTime: cook, baseServings: servings, ingredients: ings.filter(i => i.name.trim()), steps: steps.filter(s => s.trim()) }, editData?.id);
+                  const cleanedCats = categoryList.map(c => c.trim().toLowerCase()).filter(c => c !== "");
+                  onSave({ 
+                    name, 
+                    categories: cleanedCats.length > 0 ? cleanedCats : ['ostatní'], 
+                    prepTime: prep, 
+                    cookTime: cook, 
+                    baseServings: servings, 
+                    ingredients: ings.filter(i => i.name.trim()), 
+                    steps: steps.filter(s => s.trim()) 
+                  }, editData?.id);
                   onClose();
-                }}>ULOŽIT</button>
+                }}>ULOŽIT RECEPT</button>
             </div>
           </div>
         )}
-        <button className="btn danger-btn" style={{marginTop:'15px', opacity:0.5}} onClick={onClose}>ZRUŠIT</button>
+        <button className="btn danger-btn" style={{marginTop:'15px', opacity:0.5, height: '45px'}} onClick={onClose}>ZRUŠIT</button>
       </div>
     </div>
   );
@@ -127,10 +159,13 @@ const App: React.FC = () => {
   useEffect(() => { localStorage.setItem('my_recipes', JSON.stringify(recipes)); }, [recipes]);
   useEffect(() => { localStorage.setItem('my_fridge', JSON.stringify(myIngredients)); }, [myIngredients]);
 
-  const categories = useMemo(() => ['vše', ...new Set(recipes.map(r => r.category))].filter(Boolean), [recipes]);
+  const allCategories = useMemo(() => {
+    const cats = recipes.flatMap(r => r.categories || []);
+    return ['vše', ...new Set(cats)].filter(Boolean);
+  }, [recipes]);
 
   const availableIngs = useMemo(() => {
-    const filtered = filterCat === 'vše' ? recipes : recipes.filter(r => r.category === filterCat);
+    const filtered = filterCat === 'vše' ? recipes : recipes.filter(r => r.categories?.includes(filterCat));
     const names = filtered.flatMap(r => (r.ingredients || []).map(i => i.name.toLowerCase()));
     return [...new Set(names)].sort();
   }, [recipes, filterCat]);
@@ -175,7 +210,7 @@ const App: React.FC = () => {
           <div className="fade-in">
             <h2>Lednice</h2>
             <select className="custom-input" value={filterCat} onChange={e => setFilterCat(e.target.value)}>
-                {categories.map(c => <option key={c} value={c}>{c.toUpperCase()}</option>)}
+                {allCategories.map(c => <option key={c} value={c}>{c.toUpperCase()}</option>)}
             </select>
             <div className="responsive-grid" style={{marginTop:'20px'}}>
                 {availableIngs.map(ing => (
@@ -192,22 +227,22 @@ const App: React.FC = () => {
                             </label>
                         </div>
                         {myIngredients[ing] !== undefined && (
-                            <input className="small-amount-input" type="number" placeholder="množství" value={myIngredients[ing]} onChange={(e) => setMyIngredients({...myIngredients, [ing]: e.target.value})} />
+                            <input className="small-amount-input" type="number" placeholder="mám v lednici" value={myIngredients[ing]} onChange={(e) => setMyIngredients({...myIngredients, [ing]: e.target.value})} />
                         )}
                     </div>
                 ))}
             </div>
-            {Object.keys(myIngredients).length > 0 && <button className="btn success-btn" style={{marginTop:'20px', maxWidth: '350px', marginInline: 'auto'}} onClick={() => setScene('results')}>UKÁZAT VÝSLEDKY</button>}
+            {Object.keys(myIngredients).length > 0 && <button className="btn success-btn" style={{marginTop:'20px', maxWidth: '350px', marginInline: 'auto'}} onClick={() => setScene('results')}>UKÁZAT RECEPTY</button>}
           </div>
         )}
 
         {(scene === 'results' || scene === 'manage') && (
           <div className="fade-in">
-            <h2>{scene === 'results' ? 'Výsledky' : 'Kuchařka'}</h2>
+            <h2>{scene === 'results' ? 'Nalezené výsledky' : 'Moje kuchařka'}</h2>
             
             {scene === 'manage' && (
                 <div className="search-wrapper">
-                    <input className="custom-input search-input" placeholder="🔍 Hledat recept..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                    <input className="custom-input search-input" placeholder="🔍 Vyhledat jídlo..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                 </div>
             )}
 
@@ -216,25 +251,28 @@ const App: React.FC = () => {
                   <div key={r.id} className="recipe-card" onClick={() => openDetail(r)}>
                     <div className="recipe-header">
                         <span className="recipe-name">{r.name}</span>
-                        {scene === 'results' && <span className={`score ${r.score === 100 ? 'full' : ''}`}>{r.score}%</span>}
+                        {scene === 'results' && <span className={`score ${r.score === 100 ? 'full' : ''}`}>{r.score}% shoda</span>}
                     </div>
-                    <div className="time-info">🕒 {r.prepTime}m | 🔥 {r.cookTime}m | 📁 {r.category}</div>
+                    <div className="time-info">🕒 {r.prepTime}m | 🔥 {r.cookTime}m</div>
+                    
+                    <div className="category-rows">
+                        {r.categories?.map((c: string) => <div key={c} className="tag cat-tag">{c}</div>)}
+                    </div>
                   </div>
                 ))}
             </div>
-            
-            {(scene === 'manage' && filteredManageRecipes.length === 0) && (
-                <p style={{textAlign: 'center', opacity: 0.5, marginTop: '20px'}}>Žádný recept neodpovídá názvu</p>
-            )}
-
             <button className="btn secondary-btn" style={{marginTop: '40px', maxWidth: '350px', marginInline: 'auto'}} onClick={() => {setScene('fridge'); setSearchTerm('');}}>ZPĚT DO LEDNICE</button>
           </div>
         )}
 
         {scene === 'detail' && selectedRecipe && (
           <div className="fade-in detail-view">
-            <button className="back-link" onClick={() => setScene(prevScene)}>← Zpět</button>
+            <button className="back-link" onClick={() => setScene(prevScene)}>← Zpět na seznam</button>
             <h2 style={{textAlign: 'left'}}>{selectedRecipe.name}</h2>
+            
+            <div className="category-rows" style={{marginBottom: '20px'}}>
+                {selectedRecipe.categories?.map(c => <div key={c} className="tag cat-tag">{c}</div>)}
+            </div>
             
             <div className="detail-grid">
                 <div className="detail-left">
@@ -246,8 +284,7 @@ const App: React.FC = () => {
                             <button className="counter-btn" onClick={() => setViewServings(viewServings + 1)}>+</button>
                         </div>
                     </div>
-
-                    <label className="field-label">Suroviny:</label>
+                    <label className="field-label">Suroviny (pro {viewServings} porcí):</label>
                     <div className="tag-container">
                         {selectedRecipe.ingredients.map((i, idx) => (
                             <span key={idx} className={`tag ${myIngredients[i.name.toLowerCase()] !== undefined ? 'tag-have' : 'tag-miss'}`}>
@@ -256,7 +293,6 @@ const App: React.FC = () => {
                         ))}
                     </div>
                 </div>
-
                 <div className="detail-right">
                     <label className="field-label">Postup přípravy:</label>
                     {selectedRecipe.steps.map((s, idx) => (
@@ -270,7 +306,7 @@ const App: React.FC = () => {
 
             <div className="card-actions" style={{marginTop: '40px'}}>
                 <button className="btn accent-btn small-btn" onClick={() => { setEditData(selectedRecipe); setIsModalOpen(true); }}>Upravit</button>
-                <button className="btn danger-btn small-btn" onClick={() => { if(confirm('Smazat?')) { setRecipes(recipes.filter(x => x.id !== selectedRecipe.id)); setScene('manage'); }}}>Smazat</button>
+                <button className="btn danger-btn small-btn" onClick={() => { if(confirm('Smazat recept?')) { setRecipes(recipes.filter(x => x.id !== selectedRecipe.id)); setScene('manage'); }}}>Smazat</button>
             </div>
           </div>
         )}
@@ -287,7 +323,7 @@ const App: React.FC = () => {
         setRecipes(updated);
         if (id) { setSelectedRecipe({...d, id} as Recipe); }
         setScene('manage');
-      }} categories={categories.filter(c => c !== 'vše')} editData={editData} />
+      }} availableCategories={allCategories.filter(c => c !== 'vše')} editData={editData} />
     </IonApp>
   );
 };
