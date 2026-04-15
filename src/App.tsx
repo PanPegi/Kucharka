@@ -197,7 +197,7 @@ const App: React.FC = () => {
                     </div>
                 ))}
             </div>
-            {Object.keys(myIngredients).length > 0 && <button className="btn success-btn" style={{marginTop:'20px', maxWidth: '400px', marginInline: 'auto'}} onClick={() => setScene('results')}>UKÁZAT VÝSLEDKY</button>}
+            {Object.keys(myIngredients).length > 0 && <button className="btn success-btn" style={{marginTop:'20px', maxWidth: '350px', marginInline: 'auto'}} onClick={() => setScene('results')}>UKÁZAT VÝSLEDKY</button>}
           </div>
         )}
 
@@ -227,7 +227,7 @@ const App: React.FC = () => {
                 <p style={{textAlign: 'center', opacity: 0.5, marginTop: '20px'}}>Žádný recept neodpovídá názvu</p>
             )}
 
-            <button className="btn secondary-btn" style={{marginTop: '40px', maxWidth: '400px', marginInline: 'auto'}} onClick={() => {setScene('fridge'); setSearchTerm('');}}>ZPĚT DO LEDNICE</button>
+            <button className="btn secondary-btn" style={{marginTop: '40px', maxWidth: '350px', marginInline: 'auto'}} onClick={() => {setScene('fridge'); setSearchTerm('');}}>ZPĚT DO LEDNICE</button>
           </div>
         )}
 
