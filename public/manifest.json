@@ -1,15 +1,19 @@
 {
   "short_name": "Kuchařka",
-  "name": "Chytrá Kuchařka",
+  "name": "Moje Chytrá Kuchařka",
+  "description": "Aplikace pro správu receptů a lednice.",
   "icons": [
     {
       "src": "favicon.png",
+      "type": "image/png",
       "sizes": "any",
-      "type": "image/png"
+      "purpose": "any maskable"
     }
   ],
-  "start_url": ".",
+  "start_url": "./index.html",
+  "background_color": "#0f172a",
   "display": "standalone",
+  "scope": "./",
   "theme_color": "#0f172a",
-  "background_color": "#0f172a"
+  "orientation": "portrait-primary"
 }

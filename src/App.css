@@ -771,3 +771,68 @@ h2 {
 .editor-tag-recipe {
   background: #4caf50; /* Zelená pro podrecepty */
 }
+.help-modal {
+    max-height: 80vh;
+    overflow-y: auto;
+    border-left: 4px solid var(--accent); /* Elegantní proužek na straně */
+}
+
+/* Styl pro text nápovědy, aby body (puntíky) byly výraznější */
+.help-modal div {
+    color: #eee;
+}
+
+.textarea-container {
+  position: relative;
+  display: grid;
+  width: 100%;
+  /* Fix pro scroll: */
+  overflow: hidden; 
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.textarea-common {
+  grid-area: 1 / 1;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  padding: 12px;
+  margin: 0;
+  border: none !important; /* Border má teď kontejner */
+  min-height: 120px;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  /* DŮLEŽITÉ PRO SCROLL: */
+  overflow-y: auto; 
+}
+
+.textarea-real {
+  z-index: 1;
+  background: transparent !important;
+  color: transparent !important;
+  caret-color: white;
+  resize: vertical;
+}
+
+.textarea-visual {
+  z-index: 2;
+  pointer-events: none; /* Propouští scroll i kliky dolů */
+  background: transparent;
+  color: #fff;
+  /* Schováme scrollbar vizuální vrstvy, aby nebyly dva vedle sebe */
+  scrollbar-width: none; 
+}
+.textarea-visual::-webkit-scrollbar {
+  display: none;
+}
+
+.editor-tag {
+  pointer-events: auto !important; /* Bubliny musí reagovat */
+  display: inline-block;
+  position: relative;
+  z-index: 10;
+}

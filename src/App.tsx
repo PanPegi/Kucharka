@@ -46,7 +46,7 @@ const App: React.FC = () => {
   const [viewServings, setViewServings] = useState<number>(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [categorySearchTerm, setCategorySearchTerm] = useState('');
-
+const [showHelpModal, setShowHelpModal] = useState(false);
   // --- EDITOR STATES (Původně v Modalu) ---
   const [editId, setEditId] = useState<number | null>(null);
   const [modalStep, setModalStep] = useState(1);
@@ -316,9 +316,8 @@ const helpTexts: { [key: string]: string } = {
   };
 
   const showContextHelp = () => {
-    const text = helpTexts[scene] || "💡 TIP\n\nPro tuto sekci zatím není nápověda.";
-    alert(text);
-  };
+  setShowHelpModal(true);
+};
 
  const handleSave = () => {
     // --- NOVÁ LOGIKA: Výpočet celkového množství surovin z textu kroků ---
@@ -868,7 +867,16 @@ if (found || idPart.startsWith("RECIPE:")) {
   <textarea 
     className="textarea-common textarea-real" 
     value={s} 
-    onChange={e => { const n = [...editSteps]; n[idx] = e.target.value; setEditSteps(n); }} 
+    onChange={e => { const n = [...editSteps]; n[idx] = e.target.value; setEditSteps(n); }}
+    /* SYNCHRONIZACE SCROLLU */
+    onScroll={e => {
+      const target = e.target as HTMLTextAreaElement;
+      const visual = target.nextElementSibling as HTMLDivElement;
+      if (visual) {
+        visual.scrollTop = target.scrollTop;
+      }
+    }}
+    placeholder="Popište tento krok..."
   />
   <div className="textarea-common textarea-visual">
     {renderVisualText(s, idx)}
@@ -954,6 +962,26 @@ if (found || idPart.startsWith("RECIPE:")) {
           </div>
         )}
       </div>
+{/* --- MODÁLNÍ OKNO NÁPOVĚDY --- */}
+{showHelpModal && (
+  <div className="tag-edit-overlay fade-in" onClick={() => setShowHelpModal(false)}>
+    <div className="tag-edit-modal help-modal" onClick={e => e.stopPropagation()}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+        <h2 style={{ margin: 0, color: 'var(--accent)' }}>Nápověda</h2>
+        {/* <button className="remove-row-btn" onClick={() => setShowHelpModal(false)}>✕</button> */}
+      </div>
+      
+      <div style={{ whiteSpace: 'pre-line', lineHeight: '1.6', fontSize: '0.95rem', color: '#ccc' }}>
+        {helpTexts[scene] || "Pro tuto sekci zatím není nápověda."}
+      </div>
+
+      <div className="modal-actions" style={{ marginTop: '25px' }}>
+        <button className="btn success-btn" onClick={() => setShowHelpModal(false)}>ROZUMÍM</button>
+      </div>
+    </div>
+  </div>
+)}
+
 {editingTag && (
   <div className="tag-edit-overlay fade-in">
     <div className="tag-edit-modal">
