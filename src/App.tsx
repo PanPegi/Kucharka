@@ -758,94 +758,124 @@ if (found || idPart.startsWith("RECIPE:")) {
                 <label className="field-label" style={{marginTop:'20px'}}>Kroky postupu</label>
               
 
-                {editSteps.map((s, idx) => (
-                  <div key={idx} style={{ marginBottom: '25px', padding: '10px', background: 'rgba(0,0,0,0.05)', borderRadius: '8px' }}>
-                    
-                    {/* HORNÍ ČÁST: ČÍSLO, TEXTAREA A MAZÁNÍ KROKU */}
-                    <div style={{ marginBottom: '10px', display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                      <div style={{ 
-                        backgroundColor: '#3880ff', color: 'white', minWidth: '24px', height: '24px', borderRadius: '50%', 
-                        display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '12px', fontWeight: 'bold', 
-                        marginTop: '8px', flexShrink: 0 
-                      }}>
-                        {idx + 1}
-                      </div>
-                      <textarea 
-                        className="custom-textarea" 
-                        value={s} 
-                        onChange={e => { const n = [...editSteps]; n[idx] = e.target.value; setEditSteps(n); }} 
-                        placeholder="Popište tento krok..."
-                      />
-                      <button className="remove-row-btn" onClick={() => setEditSteps(editSteps.filter((_, i) => i !== idx))}>-</button>
-                    </div>
+                {editSteps.map((s, idx) => {
+  // Pomocná funkce pro vykreslení "hezkého" textu pod textareou
+  const renderVisualText = (text: string) => {
+    const parts = text.split(/(\{\{.*?\}\})/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('{{') && part.endsWith('}}')) {
+        const content = part.slice(2, -2).split('|');
+        const idPart = content[0];
+        const amount = content[1] || "";
+        const unit = content[2] || "";
+        
+        const isRecipe = idPart.startsWith('RECIPE:');
+        const name = isRecipe ? idPart.split(':')[2] : idPart;
 
-                    {/* SPODNÍ ČÁST: PANEL PRO VLOŽENÍ (SUROVINY I VYBRANÉ RECEPTY) */}
-                    {/* SPODNÍ ČÁST: PANEL PRO VLOŽENÍ (SUROVINY I VYBRANÉ RECEPTY) */}
-                    <div className="ing-row-triple" style={{ marginTop: '10px', display: 'flex', alignItems: 'center' }}>
-                      <select id={`ing-name-select-${idx}`} className="custom-input flex-2" style={{ color: '#fff' }}>
-                        <option value="" style={{background: '#1a1d21'}}>Surovina nebo Podrecept...</option>
-                        
-                        <optgroup label="SUROVINY" style={{background: '#1a1d21', color: '#aaa'}}>
-                          {editIngs.filter(i => i.name.trim() !== "").map((ing, iIdx) => (
-                            <option key={`ing-${iIdx}`} value={ing.name} style={{background: '#1a1d21', color: '#fff'}}>{ing.name}</option>
-                          ))}
-                        </optgroup>
+        return (
+          <span key={i} className={`editor-tag ${isRecipe ? 'editor-tag-recipe' : ''}`}>
+            {amount} {unit} {name}
+          </span>
+        );
+      }
+      return part;
+    });
+  };
 
-                        <optgroup label="PODRECEPTY" style={{background: '#1a1d21', color: '#aaa'}}>
-                          {recipes
-                            .filter(r => editSelectedSubIds.includes(r.id))
-                            .map(r => (
-                              <option key={`rec-${r.id}`} value={`RECIPE:${r.id}:${r.name}`} style={{background: '#1a1d21', color: '#fff'}}>
-                                {r.name}
-                              </option>
-                            ))
-                          }
-                        </optgroup>
-                      </select>
+  return (
+    <div key={idx} style={{ marginBottom: '25px', padding: '10px', background: 'rgba(0,0,0,0.05)', borderRadius: '8px' }}>
+      
+      {/* HORNÍ ČÁST: ČÍSLO A RICH TEXT EDITOR */}
+      <div style={{ marginBottom: '10px', display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+        <div style={{ 
+          backgroundColor: '#3880ff', color: 'white', minWidth: '24px', height: '24px', borderRadius: '50%', 
+          display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '12px', fontWeight: 'bold', 
+          marginTop: '8px', flexShrink: 0 
+        }}>
+          {idx + 1}
+        </div>
 
-                      <input id={`ing-val-input-${idx}`} type="number" className="custom-input flex-1" placeholder="Mn." style={{ textAlign: 'center', color: '#fff' }} />
-                      
-                      {/* NOVÉ: Vstup pro jednotku s našeptávačem (umožňuje psát vlastní) */}
-                      <input 
-                        id={`ing-unit-select-${idx}`} 
-                        className="custom-input flex-1" 
-                        placeholder="Jedn." 
-                        style={{ color: '#fff', textAlign: 'center' }} 
-                        list={`common-units-list-${idx}`}
-                      />
-                      <datalist id={`common-units-list-${idx}`}>
-                        {commonUnits.map(u => ( <option key={u} value={u} /> ))}
-                      </datalist>
+        <div className="textarea-container">
+          <textarea 
+            className="textarea-common textarea-real" 
+            value={s} 
+            onChange={e => { const n = [...editSteps]; n[idx] = e.target.value; setEditSteps(n); }} 
+            placeholder="Popište tento krok..."
+          />
+          <div className="textarea-common textarea-visual">
+            {renderVisualText(s)}
+            {/* Fix pro zachování výšky při prázdném řádku na konci */}
+            {s.endsWith('\n') ? ' ' : ''}
+          </div>
+        </div>
 
-                      <button 
-                        className="btn" 
-                        style={{ height: '38px', width: '80px', flex: 'none', backgroundColor: '#3880ff', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.7rem', cursor: 'pointer', marginLeft: '4px' }}
-                        onClick={() => {
-                          const selectEl = document.getElementById(`ing-name-select-${idx}`) as HTMLSelectElement;
-                          const valInput = document.getElementById(`ing-val-input-${idx}`) as HTMLInputElement;
-                          // Změněno na HTMLInputElement pro podporu vlastního textu
-                          const unitInput = document.getElementById(`ing-unit-select-${idx}`) as HTMLInputElement;
-                          
-                          if (!selectEl.value || !valInput.value) { alert("Vyberte položku a zadejte množství."); return; }
+        <button className="remove-row-btn" onClick={() => setEditSteps(editSteps.filter((_, i) => i !== idx))}>-</button>
+      </div>
 
-                          let tag = "";
-                          if (selectEl.value.startsWith("RECIPE:")) {
-                            const parts = selectEl.value.split(':');
-                            tag = `{{RECIPE:${parts[1]}:${parts[2]}|${valInput.value}|${unitInput.value}}}`;
-                          } else {
-                            tag = `{{${selectEl.value}|${valInput.value}|${unitInput.value}}}`;
-                          }
+      {/* SPODNÍ ČÁST: PANEL PRO VLOŽENÍ */}
+      <div className="ing-row-triple" style={{ marginTop: '10px', display: 'flex', alignItems: 'center' }}>
+        <select id={`ing-name-select-${idx}`} className="custom-input flex-2" style={{ color: '#fff' }}>
+          <option value="" style={{background: '#1a1d21'}}>Surovina nebo Podrecept...</option>
+          
+          <optgroup label="SUROVINY" style={{background: '#1a1d21', color: '#aaa'}}>
+            {editIngs.filter(i => i.name.trim() !== "").map((ing, iIdx) => (
+              <option key={`ing-${iIdx}`} value={ing.name} style={{background: '#1a1d21', color: '#fff'}}>{ing.name}</option>
+            ))}
+          </optgroup>
 
-                          const n = [...editSteps];
-                          n[idx] = n[idx] + (n[idx].length > 0 && !n[idx].endsWith(' ') ? ' ' : '') + tag;
-                          setEditSteps(n);
-                          valInput.value = ""; 
-                          // unitInput.value = ""; // Jednotku můžete nechat vyplněnou pro další surovinu
-                        }}
-                      >VLOŽIT</button>
-                    </div>
-                  </div>
-                ))}
+          <optgroup label="PODRECEPTY" style={{background: '#1a1d21', color: '#aaa'}}>
+            {recipes
+              .filter(r => editSelectedSubIds.includes(r.id))
+              .map(r => (
+                <option key={`rec-${r.id}`} value={`RECIPE:${r.id}:${r.name}`} style={{background: '#1a1d21', color: '#fff'}}>
+                  {r.name}
+                </option>
+              ))
+            }
+          </optgroup>
+        </select>
+
+        <input id={`ing-val-input-${idx}`} type="number" className="custom-input flex-1" placeholder="Mn." style={{ textAlign: 'center', color: '#fff' }} />
+        
+        <input 
+          id={`ing-unit-select-${idx}`} 
+          className="custom-input flex-1" 
+          placeholder="Jedn." 
+          style={{ color: '#fff', textAlign: 'center' }} 
+          list={`common-units-list-${idx}`}
+        />
+        <datalist id={`common-units-list-${idx}`}>
+          {commonUnits.map(u => ( <option key={u} value={u} /> ))}
+        </datalist>
+
+        <button 
+          className="btn" 
+          style={{ height: '38px', width: '80px', flex: 'none', backgroundColor: '#3880ff', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.7rem', cursor: 'pointer', marginLeft: '4px' }}
+          onClick={() => {
+            const selectEl = document.getElementById(`ing-name-select-${idx}`) as HTMLSelectElement;
+            const valInput = document.getElementById(`ing-val-input-${idx}`) as HTMLInputElement;
+            const unitInput = document.getElementById(`ing-unit-select-${idx}`) as HTMLInputElement;
+            
+            if (!selectEl.value || !valInput.value) { alert("Vyberte položku a zadejte množství."); return; }
+
+            let tag = "";
+            if (selectEl.value.startsWith("RECIPE:")) {
+              const parts = selectEl.value.split(':');
+              tag = `{{RECIPE:${parts[1]}:${parts[2]}|${valInput.value}|${unitInput.value}}}`;
+            } else {
+              tag = `{{${selectEl.value}|${valInput.value}|${unitInput.value}}}`;
+            }
+
+            const n = [...editSteps];
+            n[idx] = n[idx] + (n[idx].length > 0 && !n[idx].endsWith(' ') ? ' ' : '') + tag;
+            setEditSteps(n);
+            valInput.value = ""; 
+          }}
+        >VLOŽIT</button>
+      </div>
+    </div>
+  );
+})}
 
                 <button className="btn secondary-btn small-btn" onClick={() => setEditSteps([...editSteps, ''])}>+ PŘIDAT KROK</button>
 
