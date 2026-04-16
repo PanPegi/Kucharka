@@ -85,7 +85,22 @@ const App: React.FC = () => {
   useEffect(() => { localStorage.setItem('my_fridge', JSON.stringify(myIngredients)); }, [myIngredients]);
 
   // --- COMPUTED ---
-  const allIngredientNames = useMemo(() => [...new Set(recipes.flatMap(r => r.ingredients.map(i => i.name)))].sort(), [recipes]);
+  const allIngredientNames = useMemo(() => {
+    // Pokud nejsou vybrané kategorie, zobrazíme všechny suroviny jako dřív
+    let relevantRecipes = recipes;
+
+    // Pokud uživatel vybral kategorie, omezíme suroviny pouze na ty z odpovídajících receptů
+    if (selectedFilterCats.length > 0) {
+      relevantRecipes = recipes.filter(r => {
+        return categoryLogic === 'OR' 
+          ? r.categories?.some(cat => selectedFilterCats.includes(cat))
+          : selectedFilterCats.every(cat => r.categories?.includes(cat));
+      });
+    }
+
+    const names = relevantRecipes.flatMap(r => r.ingredients.map(i => i.name));
+    return [...new Set(names)].sort();
+  }, [recipes, selectedFilterCats, categoryLogic]);
   const allCategories = useMemo(() => [...new Set(recipes.flatMap(r => r.categories || []))].sort(), [recipes]);
 
   const matchedRecipes = useMemo(() => {
@@ -232,6 +247,7 @@ const App: React.FC = () => {
     <IonApp>
       <div id="app-container">
         {/* --- LEDNICE --- */}
+{/* --- LEDNICE --- */}
         {scene === 'fridge' && (
           <div className="fade-in">
             <h2>Lednice</h2>
@@ -250,6 +266,7 @@ const App: React.FC = () => {
                   <button className="btn secondary-btn small-btn" onClick={() => setMyIngredients({})}>ZRUŠIT VŠE</button>
                 </div>
             </div>
+
             <div className="category-selection-grid">
                 {allCategories.filter(c => c.includes(categorySearchTerm.toLowerCase())).map(cat => (
                     <button key={cat} className={`cat-select-btn ${selectedFilterCats.includes(cat) ? 'selected' : ''}`} onClick={() => setSelectedFilterCats(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat])}>
@@ -257,31 +274,39 @@ const App: React.FC = () => {
                     </button>
                 ))}
             </div>
-            <div className="responsive-grid">
-                {allIngredientNames.map(ing => (
-                    <div key={ing} className="toggle-row-complex">
-                        <div className="ing-main">
-                            <span className="ing-name">{ing}</span>
-                            <label className="switch">
-                                <input type="checkbox" checked={myIngredients[ing.toLowerCase()] !== undefined} onChange={() => {
-                                    const next = { ...myIngredients };
-                                    if (next[ing.toLowerCase()] !== undefined) delete next[ing.toLowerCase()]; else next[ing.toLowerCase()] = "";
-                                    setMyIngredients(next);
-                                }} />
-                                <span className="slider"></span>
-                            </label>
+
+            {/* SEZAM SUROVIN FILTROVANÝ PODLE KATEGORIÍ */}
+            <div style={{ marginTop: '30px', borderTop: '2px solid var(--border)', paddingTop: '20px' }}> 
+                <div className="responsive-grid">
+                    {allIngredientNames.map(ing => (
+                        <div key={ing} className="toggle-row-complex">
+                            <div className="ing-main">
+                                <span className="ing-name">{ing}</span>
+                                <label className="switch">
+                                    <input type="checkbox" checked={myIngredients[ing.toLowerCase()] !== undefined} onChange={() => {
+                                        const next = { ...myIngredients };
+                                        if (next[ing.toLowerCase()] !== undefined) delete next[ing.toLowerCase()]; 
+                                        else next[ing.toLowerCase()] = "";
+                                        setMyIngredients(next);
+                                    }} />
+                                    <span className="slider"></span>
+                                </label>
+                            </div>
+                            {myIngredients[ing.toLowerCase()] !== undefined && (
+                              <input className="small-amount-input" type="number" placeholder="Množství" value={myIngredients[ing.toLowerCase()]} onChange={(e) => {
+                                  const next = { ...myIngredients };
+                                  next[ing.toLowerCase()] = e.target.value;
+                                  setMyIngredients(next);
+                              }} />
+                            )}
                         </div>
-                        {myIngredients[ing.toLowerCase()] !== undefined && (
-                          <input className="small-amount-input" type="number" placeholder="Množství" value={myIngredients[ing.toLowerCase()]} onChange={(e) => {
-                              const next = { ...myIngredients };
-                              next[ing.toLowerCase()] = e.target.value;
-                              setMyIngredients(next);
-                          }} />
-                        )}
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
-            <button className="btn success-btn" style={{marginTop:'20px'}} onClick={() => setScene('results')}>NAJÍT RECEPTY</button>
+
+            <button className="btn success-btn" style={{marginTop:'30px', width: '100%'}} onClick={() => setScene('results')}>
+              NAJÍT RECEPTY
+            </button>
           </div>
         )}
 
@@ -511,7 +536,7 @@ const App: React.FC = () => {
                 </div>
               </div>
             )}
-            <button className="btn danger-btn" style={{marginTop:'15px'}} onClick={() => setScene('manage')}>ZRUŠIT</button>
+            {/* <button className="btn danger-btn" style={{marginTop:'15px'}} onClick={() => setScene('manage')}>ZRUŠIT</button> */}
           </div>
         )}
       </div>
