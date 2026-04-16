@@ -174,9 +174,18 @@ const App: React.FC = () => {
     return recipes.filter(r => r.id !== editId && r.name.toLowerCase().includes(subSearch.toLowerCase()));
   }, [recipes, subSearch, editId]);
 
-  const isStep1Valid = useMemo(() => {
-    return editName.trim() !== "" && editPrep !== "" && editCook !== "" && editIngs.every(i => i.name.trim() !== "" && i.amount !== "" && i.unit !== "");
-  }, [editName, editPrep, editCook, editIngs]);
+const isStep1Valid = useMemo(() => {
+  // Kontroluje:
+  // 1. Jméno receptu není prázdné
+  // 2. Časy přípravy a vaření nejsou prázdné
+  // 3. Všechny přidané suroviny mají vyplněný název (množství a jednotku teď ignorujeme)
+  return (
+    editName.trim() !== "" && 
+    editPrep !== "" && 
+    editCook !== "" && 
+    editIngs.every(i => i.name.trim() !== "")
+  );
+}, [editName, editPrep, editCook, editIngs]);
 
   const isStep2Valid = useMemo(() => {
     return editCategoryList.every(c => c.trim() !== "") && editSteps.every(s => s.trim() !== "");
@@ -250,6 +259,7 @@ const App: React.FC = () => {
     saveData(updatedRecipes);
     setScene('manage');
   };
+  
 
   const handleShare = (e: React.MouseEvent, recipeId: number) => {
     e.stopPropagation();
@@ -269,6 +279,60 @@ const App: React.FC = () => {
       saveData(updated);
       setScene('manage');
     }
+  };
+
+ const renderStepWithIngredients = (stepText: string) => {
+    const parts = stepText.split(/(\{\{.*?\}\})/g);
+    
+    return parts.map((part, index) => {
+      if (part.startsWith('{{') && part.endsWith('}}')) {
+        const rawContent = part.slice(2, -2).trim();
+        // Rozdělíme na název, hodnotu a jednotku
+        const [ingName, customVal, customUnit] = rawContent.split('|').map(s => s?.trim());
+        
+        const found = recipes.find(r => r.id === selectedRecipe?.id)?.ingredients.find(i => i.name.toLowerCase() === ingName.toLowerCase());
+        
+        if (found) {
+          // Pokud je zadána vlastní hodnota, použijeme ji, jinak bereme základ ze suroviny
+          const baseAmount = customVal ? parseFloat(customVal) : parseFloat(found.amount);
+          const unit = customUnit || found.unit;
+
+          // Škálování
+          const scaled = (baseAmount / (selectedRecipe?.baseServings || 1)) * viewServings;
+          const finalAmount = Math.round(scaled * 10) / 10;
+
+          return (
+            <strong key={index} style={{ color: 'var(--accent)' }}>
+              {finalAmount} {unit} {found.name}
+            </strong>
+          );
+        }
+        return <span key={index} style={{ color: 'red' }}>{part}</span>;
+      }
+      return <span key={index}>{part}</span>;
+    });
+  }; 
+     
+
+  const insertIngredientToStep = (stepIdx: number, ing: Ingredient) => {
+    const tag = `{{${ing.name}}}`;
+    const newSteps = [...editSteps];
+    const currentText = newSteps[stepIdx];
+    
+    // Vloží tag na konec textu (nebo by se dalo vylepšit o pozici kurzoru)
+    newSteps[stepIdx] = currentText + (currentText.length > 0 && !currentText.endsWith(' ') ? ' ' : '') + tag;
+    setEditSteps(newSteps);
+  };
+
+  const insertCustomValueToStep = (stepIdx: number, ing: Ingredient) => {
+    const val = prompt(`Zadejte množství pro ${ing.name} (vztaženo na ${editServings} porce):`, ing.amount);
+    if (val === null || val === "") return; // Storno
+
+    // Formát: {{název_suroviny|vlastní_číslo}}
+    const tag = `{{${ing.name}|${val}}}`;
+    const n = [...editSteps];
+    n[stepIdx] = n[stepIdx] + (n[stepIdx].length > 0 && !n[stepIdx].endsWith(' ') ? ' ' : '') + tag;
+    setEditSteps(n);
   };
 
   return (
@@ -344,7 +408,7 @@ const App: React.FC = () => {
             <h2>{scene === 'results' ? 'Výsledky' : 'Kuchařka'}</h2>
             {scene === 'manage' && (
                 <div className="search-wrapper">
-                    <input className="custom-input search-input" placeholder="🔍 Vyhledat..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                    <input className="custom-input search-input" placeholder=" Vyhledat..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                 </div>
             )}
             <div className="recipe-grid">
@@ -443,6 +507,7 @@ const App: React.FC = () => {
 
       {/* --- DETAIL: Pravý sloupec --- */}
 <div className="detail-right">
+  
   <label className="field-label">Postup:</label>
   {effectiveData.sections.map((section, sIdx) => (
     <div key={sIdx} className="recipe-section" style={{ marginBottom: '25px' }}>
@@ -468,7 +533,10 @@ const App: React.FC = () => {
           }}>
             {idx + 1}
           </div>
-          <div className="step-txt" style={{ lineHeight: '1.5' }}>{step}</div>
+          <div className="step-txt" style={{ lineHeight: '1.5' }}>
+  {renderStepWithIngredients(step)}
+</div>
+          
         </div>
       ))}
     </div>
@@ -504,14 +572,16 @@ const App: React.FC = () => {
 )}
 
 
-        {/* --- CELOOBRAZOVKOVÝ EDITOR (Původně modal) --- */}
+        {/* --- CELOOBRAZOVKOVÝ EDITOR --- */}
         {scene === 'editor' && (
           <div className="fade-in">
             {modalStep === 1 ? (
+              /* KROK 1: ZÁKLADNÍ INFO A SUROVINY */
               <div>
                 <h2>{editId ? 'Upravit recept' : 'Nový recept'}</h2>
                 <label className="field-label">Jméno jídla</label>
                 <input className="custom-input" value={editName} onChange={e => setEditName(e.target.value)} />
+                
                 <div className="vertical-inputs">
                   <label className="field-label">Základní porce</label>
                   <input className="custom-input" type="number" value={editServings} onChange={e => setEditServings(parseInt(e.target.value) || 1)} />
@@ -520,28 +590,54 @@ const App: React.FC = () => {
                     <div style={{flex:1}}><label className="field-label">Vaření (min)</label><input className="custom-input" value={editCook} onChange={e => setEditCook(e.target.value)} type="number" /></div>
                   </div>
                 </div>
+
                 <label className="field-label">Podrecepty:</label>
-                <input className="custom-input" style={{ marginBottom: '10px' }} placeholder="🔍 Hledat..." value={subSearch} onChange={e => setSubSearch(e.target.value)} />
+                <input className="custom-input" style={{ marginBottom: '10px' }} placeholder="Hledat..." value={subSearch} onChange={e => setSubSearch(e.target.value)} />
                 <div className="sub-recipe-selector" style={{ maxHeight: '120px', overflowY: 'auto' }}>
                   {filteredSubRecipes.map(r => (
                     <button key={r.id} className={`sub-btn ${editSelectedSubIds.includes(r.id) ? 'active' : ''}`} onClick={() => setEditSelectedSubIds(prev => prev.includes(r.id) ? prev.filter(x => x !== r.id) : [...prev, r.id])}>{r.name}</button>
                   ))}
                 </div>
-                <label className="field-label">Suroviny</label>
-                {editIngs.map((ing, idx) => (
-                  <div key={idx} className="ing-row-triple">
-                    <input className="custom-input flex-2" value={ing.name} onChange={e => { const n = [...editIngs]; n[idx].name = e.target.value; setEditIngs(n); }} placeholder="Surovina" list="modal-ing-names" />
-                    <input className="custom-input flex-1" value={ing.amount} onChange={e => { const n = [...editIngs]; n[idx].amount = e.target.value; setEditIngs(n); }} placeholder="Mn." type="number" />
-                    <input className="custom-input flex-1" value={ing.unit} onChange={e => { const n = [...editIngs]; n[idx].unit = e.target.value; setEditIngs(n); }} placeholder="jedn." list="unit-list" />
-                    <button className="remove-row-btn" onClick={() => setEditIngs(editIngs.filter((_, i) => i !== idx))}>-</button>
-                  </div>
-                ))}
-                <datalist id="unit-list">{commonUnits.map(u => <option key={u} value={u} />)}</datalist>
-                <datalist id="modal-ing-names">{allIngredientNames.map(i => <option key={i} value={i} />)}</datalist>
+
+   <label className="field-label">Seznam použitých surovin</label>
+{editIngs.map((ing, idx) => (
+  <div key={idx} style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+    <input 
+      className="custom-input" 
+      style={{ flex: 1, color: '#fff' }}
+      value={ing.name} 
+      onChange={e => { 
+        const oldName = ing.name.trim();
+        const newName = e.target.value;
+        const nIngs = [...editIngs]; 
+        nIngs[idx].name = newName; 
+        
+        if (oldName !== "" && oldName !== newName) {
+          const nSteps = editSteps.map(step => {
+            const escapedOldName = oldName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`\\{\\{${escapedOldName}(\\||\\}\\})`, 'gi');
+            return step.replace(regex, (match, suffix) => `{{${newName}${suffix}`);
+          });
+          setEditSteps(nSteps);
+        }
+        setEditIngs(nIngs); 
+      }} 
+      placeholder="" 
+      list="modal-ing-names" 
+    />
+    <button className="remove-row-btn" onClick={() => setEditIngs(editIngs.filter((_, i) => i !== idx))}>-</button>
+  </div>
+))}
+{/* PŘIDÁNO: Našeptávač surovin */}
+<datalist id="modal-ing-names">{allIngredientNames.map(i => <option key={i} value={i} />)}</datalist>
+
+{/* <button className="btn secondary-btn small-btn" onClick={() => setEditIngs([...editIngs, {name:'', amount:'', unit:''}])}>+ DALŠÍ SUROVINA</button> */}
+
                 <button className="btn secondary-btn small-btn" onClick={() => setEditIngs([...editIngs, {name:'', amount:'', unit:''}])}>+ DALŠÍ SUROVINA</button>
-                <button className="btn accent-btn" style={{marginTop:'20px', opacity: isStep1Valid ? 1 : 0.4}} onClick={() => isStep1Valid ? setModalStep(2) : alert("Vyplňte pole")}>DALŠÍ KROK →</button>
+                <button className="btn accent-btn" style={{marginTop:'20px', opacity: isStep1Valid ? 1 : 0.4}} onClick={() => isStep1Valid ? setModalStep(2) : alert("Vyplňte všechna pole surovin (jméno, množství, jednotka)")}>DALŠÍ KROK →</button>
               </div>
             ) : (
+              /* KROK 2: KATEGORIE A POSTUP */
               <div>
                 <h2>Kategorie a Postup</h2>
                 <label className="field-label">Kategorie</label>
@@ -553,21 +649,134 @@ const App: React.FC = () => {
                 ))}
                 <datalist id="modal-cat-list">{allCategories.map(c => <option key={c} value={c} />)}</datalist>
                 <button className="btn secondary-btn small-btn" onClick={() => setEditCategoryList([...editCategoryList, ''])}>+ KATEGORIE</button>
+
                 <label className="field-label" style={{marginTop:'20px'}}>Kroky postupu</label>
+                <p style={{ fontSize: '0.8rem', opacity: 0.6, marginBottom: '10px' }}>
+                  Tip: Kliknutím na tlačítko suroviny ji vložíte do textu pro automatické škálování.
+                </p>
+
                 {editSteps.map((s, idx) => (
-                  <div key={idx} style={{marginBottom:'10px', display:'flex', gap:'8px'}}>
-                    <textarea className="custom-textarea" value={s} onChange={e => { const n = [...editSteps]; n[idx] = e.target.value; setEditSteps(n); }} />
-                    <button className="remove-row-btn" onClick={() => setEditSteps(editSteps.filter((_, i) => i !== idx))}>-</button>
+                  <div key={idx} style={{ marginBottom: '25px', padding: '10px', background: 'rgba(0,0,0,0.05)', borderRadius: '8px' }}>
+                    <div style={{ marginBottom: '10px', display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                      {/* MODRÝ KROUŽEK S ČÍSLEM */}
+                      <div style={{ 
+                        backgroundColor: '#3880ff', 
+                        color: 'white', 
+                        minWidth: '24px', 
+                        height: '24px', 
+                        borderRadius: '50%', 
+                        display: 'flex', 
+                        justifyContent: 'center', 
+                        alignItems: 'center', 
+                        fontSize: '12px', 
+                        fontWeight: 'bold', 
+                        marginTop: '8px',
+                        flexShrink: 0 
+                      }}>
+                        {idx + 1}
+                      </div>
+                      
+                      <textarea 
+                        className="custom-textarea" 
+                        value={s} 
+                        onChange={e => { const n = [...editSteps]; n[idx] = e.target.value; setEditSteps(n); }} 
+                        placeholder="Popište tento krok..."
+                      />
+                      <button className="remove-row-btn" onClick={() => setEditSteps(editSteps.filter((_, i) => i !== idx))}>-</button>
+                    </div>
+
+                 {/* --- TENTO BLOK VLOŽÍŠ MÍSTO TOHO KOMENTÁŘE --- */}
+
+        <div className="ing-row-triple" style={{ marginTop: '10px', marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
+  
+  {/* Výběr suroviny */}
+  <select 
+    id={`ing-name-select-${idx}`}
+    className="custom-input flex-2"
+    style={{ color: '#fff' }}
+    onChange={(e) => {
+      const selectedName = e.target.value;
+      const ing = editIngs.find(i => i.name === selectedName);
+      if (ing) {
+        const valInput = document.getElementById(`ing-val-input-${idx}`) as HTMLInputElement;
+        const unitSelect = document.getElementById(`ing-unit-select-${idx}`) as HTMLSelectElement;
+        if (valInput) valInput.value = ing.amount;
+        if (unitSelect) unitSelect.value = ing.unit;
+      }
+    }}
+  >
+    <option value="" style={{background: '#1a1d21'}}>Surovina...</option>
+    {editIngs.filter(i => i.name.trim() !== "").map((ing, iIdx) => (
+      <option key={iIdx} value={ing.name} style={{background: '#1a1d21'}}>{ing.name}</option>
+    ))}
+  </select>
+
+  {/* Vstup pro množství */}
+  <input 
+    id={`ing-val-input-${idx}`}
+    type="number" 
+    className="custom-input flex-1"
+    placeholder="Mn."
+    style={{ textAlign: 'center', color: '#fff' }} 
+  />
+
+  {/* Výběr jednotky */}
+  <select 
+    id={`ing-unit-select-${idx}`}
+    className="custom-input flex-1"
+    style={{ color: '#fff' }}
+  >
+    {commonUnits.map(u => (
+      <option key={u} value={u} style={{background: '#1a1d21'}}>{u}</option>
+    ))}
+  </select>
+
+  {/* Tlačítko VLOŽIT - Nyní s fixní malou šířkou */}
+  <button 
+    className="btn" 
+    style={{ 
+        height: '38px',
+        width: '80px',            // FIXNÍ ŠÍŘKA: Už se neroztáhne
+        minWidth: '80px',         // POJISTKA
+        flex: 'none',             // ZÁKAZ ROZTAHOVÁNÍ
+        padding: '0', 
+        backgroundColor: '#3880ff', 
+        color: '#fff',
+        border: 'none',
+        borderRadius: '8px',
+        fontWeight: 'bold',
+        fontSize: '0.7rem',
+        cursor: 'pointer',
+        marginLeft: '4px'
+    }}
+    onClick={() => {
+      const name = (document.getElementById(`ing-name-select-${idx}`) as HTMLSelectElement).value;
+      const val = (document.getElementById(`ing-val-input-${idx}`) as HTMLInputElement).value;
+      const unit = (document.getElementById(`ing-unit-select-${idx}`) as HTMLSelectElement).value;
+      
+      if (!name) return;
+
+      const tag = `{{${name}|${val}|${unit}}}`;
+      const n = [...editSteps];
+      n[idx] = n[idx] + (n[idx].length > 0 && !n[idx].endsWith(' ') ? ' ' : '') + tag;
+      setEditSteps(n);
+    }}
+  >
+    VLOŽIT
+  </button>
+</div>
+
                   </div>
                 ))}
+
                 <button className="btn secondary-btn small-btn" onClick={() => setEditSteps([...editSteps, ''])}>+ PŘIDAT KROK</button>
+
                 <div style={{display:'flex', gap:'10px', marginTop:'20px'}}>
                   <button className="btn secondary-btn" style={{flex:1}} onClick={() => setModalStep(1)}>ZPĚT</button>
                   <button className="btn success-btn" style={{flex:2, opacity: isStep2Valid ? 1 : 0.4}} onClick={handleSave}>ULOŽIT RECEPT</button>
                 </div>
               </div>
             )}
-            {/* <button className="btn danger-btn" style={{marginTop:'15px'}} onClick={() => setScene('manage')}>ZRUŠIT</button> */}
           </div>
         )}
       </div>
