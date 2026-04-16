@@ -599,3 +599,175 @@ h2 {
 
 /* Pokud jsi předtím přidal .header-with-help, doporučuji ho 
    předělat zpět na obyčejné h2, aby aplikace nebyla překombinovaná. */
+
+   .tag-edit-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+}
+
+.tag-edit-modal {
+    background: var(--card-bg);
+    padding: 25px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.textarea-visual {
+    pointer-events: auto; /* Zajistí, že vrstva reaguje na kliky */
+}
+.editor-tag {
+    position: relative;
+    z-index: 5;
+    pointer-events: all;
+}.tag-edit-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7); /* Zatemnění pozadí */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999; /* Musí být nejvýš! */
+}
+
+.tag-edit-modal {
+    background: #1a1d21; /* Nebo tvá barva pozadí */
+    padding: 20px;
+    border-radius: 12px;
+    min-width: 300px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}.tag-edit-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7); /* Zatemnění pozadí */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999; /* Musí být nejvýš! */
+}
+
+.tag-edit-modal {
+    background: #1a1d21; /* Nebo tvá barva pozadí */
+    padding: 20px;
+    border-radius: 12px;
+    min-width: 300px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}.textarea-container {
+  position: relative;
+  display: block;
+}
+
+/* Ta, do které píšeš */
+.textarea-real {
+  width: 100%;
+  min-height: 100px;
+  background: transparent !important;
+  color: transparent !important; /* Text nevidíme */
+  caret-color: white; /* Vidíme jen blikající čárku */
+  position: relative;
+  z-index: 1; /* JE DOLE */
+}
+
+/* Ta, na které jsou bubliny */
+.textarea-visual {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: inherit; /* Musí mít stejný padding jako textarea! */
+  z-index: 5; /* JE NAHOŘE */
+  pointer-events: none; /* PROPOUŠTÍ KLIKY DOLŮ NA TEXTAREU... */
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Bublina uvnitř vizuální vrstvy */
+.editor-tag {
+  pointer-events: auto !important; /* ...ALE SAMA KLIKY ZACHYTÁVÁ! */
+  cursor: pointer;
+  background: var(--accent);
+  border-radius: 4px;
+  padding: 0 4px;
+  position: relative;
+  z-index: 10;
+}
+/* Kontejner pro editor, který drží obě vrstvy přes sebe */
+.textarea-container {
+  position: relative;
+  display: grid;
+  width: 100%;
+}
+
+/* Společné vlastnosti pro obě vrstvy - KLÍČOVÉ PRO SYNCHRONIZACI */
+.textarea-common {
+  grid-area: 1 / 1; /* Položí je přesně na sebe */
+  font-family: inherit; /* Musí mít stejný font */
+  font-size: 1rem;      /* Musí mít stejnou velikost */
+  line-height: 1.5;     /* Musí mít stejné řádkování */
+  padding: 12px;        /* Musí mít stejný vnitřní okraj */
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-height: 120px;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+  /* Zabrání posunům způsobeným bílými znaky */
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Vrstva, do které píšeš */
+.textarea-real {
+  z-index: 1;
+  background: transparent !important;
+  color: transparent !important; /* Text nevidíme */
+  caret-color: white; /* Vidíme jen kurzor */
+  resize: vertical; /* Povolí měnit velikost, ale jen vertikálně */
+}
+
+/* Vrstva, kde jsou bubliny */
+.textarea-visual {
+  z-index: 2; /* JE NAHOŘE pro klikání */
+  pointer-events: none; /* Ignoruje kliky na čistý text */
+  background: transparent;
+  color: #fff; /* Barva běžného textu */
+  overflow: hidden; /* Textarea-real určuje velikost */
+}
+
+/* Klikatelný tag uvnitř vizuální vrstvy */
+.editor-tag {
+  pointer-events: auto !important; /* Povolí kliknutí jen na bublinu */
+  display: inline-block;
+  background: var(--accent);
+  color: white;
+  border-radius: 4px;
+  padding: 0 4px;
+  cursor: pointer;
+  font-weight: bold;
+  vertical-align: baseline; /* Aby bublina neskákala nahoru/dolů */
+}
+
+.editor-tag-recipe {
+  background: #4caf50; /* Zelená pro podrecepty */
+}

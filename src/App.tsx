@@ -71,6 +71,42 @@ const App: React.FC = () => {
     } catch (e) { console.error("Chyba load:", e); }
   };
 
+  const [editingTag, setEditingTag] = useState<{ stepIdx: number, tagRaw: string, name: string, amount: string, unit: string } | null>(null);
+
+  const handleTagClick = (stepIdx: number, tagRaw: string) => {
+  // tagRaw vypadá takto: {{Smetana|200|ml}} nebo {{RECIPE:123:Základ|1|ks}}
+  const content = tagRaw.slice(2, -2).split('|');
+  setEditingTag({
+    stepIdx,
+    tagRaw,
+    name: content[0],
+    amount: content[1] || "",
+    unit: content[2] || ""
+  });
+};
+
+const updateTag = (newName: string, newAmount: string, newUnit: string) => {
+  if (!editingTag) return;
+  
+  // Vytvoříme nový tag s novým názvem, množstvím a jednotkou
+  const newTag = `{{${newName}|${newAmount}|${newUnit}}}`;
+  const nSteps = [...editSteps];
+  
+  // Nahradíme původní surovinu tou novou
+  nSteps[editingTag.stepIdx] = nSteps[editingTag.stepIdx].replace(editingTag.tagRaw, newTag);
+  
+  setEditSteps(nSteps);
+  setEditingTag(null);
+};
+
+const deleteTag = () => {
+  if (!editingTag) return;
+  const nSteps = [...editSteps];
+  nSteps[editingTag.stepIdx] = nSteps[editingTag.stepIdx].replace(editingTag.tagRaw, "");
+  setEditSteps(nSteps);
+  setEditingTag(null);
+};
+
   const saveData = async (updatedRecipes: Recipe[]) => {
     try {
       await fetch('save_kucharka.php', {
@@ -81,6 +117,17 @@ const App: React.FC = () => {
     } catch (e) { console.error("Chyba save:", e); }
   };
 
+  // Registrace Service Workeru pro PWA
+useEffect(() => {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      // Použijeme relativní cestu './sw.js' místo '/sw.js'
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('SW OK', reg.scope))
+        .catch(err => console.log('SW ERR', err));
+    });
+  }
+}, []);
   useEffect(() => { loadData(); }, []);
   useEffect(() => { localStorage.setItem('my_fridge', JSON.stringify(myIngredients)); }, [myIngredients]);
 // Automatické otevření receptu z URL parametrů
@@ -773,27 +820,36 @@ if (found || idPart.startsWith("RECIPE:")) {
 
                 {editSteps.map((s, idx) => {
   // Pomocná funkce pro vykreslení "hezkého" textu pod textareou
-  const renderVisualText = (text: string) => {
-    const parts = text.split(/(\{\{.*?\}\})/g);
-    return parts.map((part, i) => {
-      if (part.startsWith('{{') && part.endsWith('}}')) {
-        const content = part.slice(2, -2).split('|');
-        const idPart = content[0];
-        const amount = content[1] || "";
-        const unit = content[2] || "";
-        
-        const isRecipe = idPart.startsWith('RECIPE:');
-        const name = isRecipe ? idPart.split(':')[2] : idPart;
-
-        return (
-          <span key={i} className={`editor-tag ${isRecipe ? 'editor-tag-recipe' : ''}`}>
-            {amount} {unit} {name}
-          </span>
-        );
-      }
-      return part;
-    });
-  };
+  const renderVisualText = (text: string, stepIdx: number) => {
+  const parts = text.split(/(\{\{.*?\}\})/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('{{') && part.endsWith('}}')) {
+      const content = part.slice(2, -2).split('|');
+      const isRecipe = content[0].startsWith('RECIPE:');
+      const displayName = isRecipe ? content[0].split(':')[2] : content[0];
+      
+      return (
+        <span 
+  key={i} 
+  className={`editor-tag ${isRecipe ? 'editor-tag-recipe' : ''}`}
+  onMouseDown={(e) => {
+    e.preventDefault(); // Zabráníme textarei, aby vzala fokus
+    handleTagClick(stepIdx, part);
+  }}
+  style={{ 
+    cursor: 'pointer', 
+    position: 'relative', 
+    zIndex: 100 
+  }}
+>
+  {content[1]} {content[2]} {displayName}
+</span>
+       
+      );
+    }
+    return part;
+  });
+};
 
   return (
     <div key={idx} style={{ marginBottom: '25px', padding: '10px', background: 'rgba(0,0,0,0.05)', borderRadius: '8px' }}>
@@ -808,19 +864,16 @@ if (found || idPart.startsWith("RECIPE:")) {
           {idx + 1}
         </div>
 
-        <div className="textarea-container">
-          <textarea 
-            className="textarea-common textarea-real" 
-            value={s} 
-            onChange={e => { const n = [...editSteps]; n[idx] = e.target.value; setEditSteps(n); }} 
-            placeholder="Popište tento krok..."
-          />
-          <div className="textarea-common textarea-visual">
-            {renderVisualText(s)}
-            {/* Fix pro zachování výšky při prázdném řádku na konci */}
-            {s.endsWith('\n') ? ' ' : ''}
-          </div>
-        </div>
+       <div className="textarea-container">
+  <textarea 
+    className="textarea-common textarea-real" 
+    value={s} 
+    onChange={e => { const n = [...editSteps]; n[idx] = e.target.value; setEditSteps(n); }} 
+  />
+  <div className="textarea-common textarea-visual">
+    {renderVisualText(s, idx)}
+  </div>
+</div>
 
         <button className="remove-row-btn" onClick={() => setEditSteps(editSteps.filter((_, i) => i !== idx))}>-</button>
       </div>
@@ -828,7 +881,7 @@ if (found || idPart.startsWith("RECIPE:")) {
       {/* SPODNÍ ČÁST: PANEL PRO VLOŽENÍ */}
       <div className="ing-row-triple" style={{ marginTop: '10px', display: 'flex', alignItems: 'center' }}>
         <select id={`ing-name-select-${idx}`} className="custom-input flex-2" style={{ color: '#fff' }}>
-          <option value="" style={{background: '#1a1d21'}}>Surovina nebo Podrecept...</option>
+          {/* <option value="" style={{background: '#1a1d21'}}></option> */}
           
           <optgroup label="SUROVINY" style={{background: '#1a1d21', color: '#aaa'}}>
             {editIngs.filter(i => i.name.trim() !== "").map((ing, iIdx) => (
@@ -901,7 +954,75 @@ if (found || idPart.startsWith("RECIPE:")) {
           </div>
         )}
       </div>
+{editingTag && (
+  <div className="tag-edit-overlay fade-in">
+    <div className="tag-edit-modal">
+      <h3>Upravit položku</h3>
+      
+      <label className="field-label">Změnit surovinu / podrecept</label>
+      <select 
+        className="custom-input" 
+        value={editingTag.name} 
+        onChange={e => setEditingTag({...editingTag, name: e.target.value})}
+        style={{ color: '#fff', background: '#1a1d21' }}
+      >
+        {/* Pokud je tam něco, co není v seznamu (třeba starý název), zobrazíme to jako první */}
+        {!editIngs.some(i => i.name === editingTag.name) && 
+         !recipes.some(r => `RECIPE:${r.id}:${r.name}` === editingTag.name) && (
+          <option value={editingTag.name}>{editingTag.name.startsWith("RECIPE:") ? editingTag.name.split(':')[2] : editingTag.name}</option>
+        )}
 
+        <optgroup label="SUROVINY" style={{background: '#1a1d21'}}>
+          {editIngs.filter(i => i.name.trim() !== "").map((ing, iIdx) => (
+            <option key={`edit-opt-ing-${iIdx}`} value={ing.name}>{ing.name}</option>
+          ))}
+        </optgroup>
+
+        <optgroup label="PODRECEPTY" style={{background: '#1a1d21'}}>
+          {recipes
+            .filter(r => editSelectedSubIds.includes(r.id))
+            .map(r => (
+              <option key={`edit-opt-rec-${r.id}`} value={`RECIPE:${r.id}:${r.name}`}>
+                {r.name}
+              </option>
+            ))
+          }
+        </optgroup>
+      </select>
+      
+      <div style={{display:'flex', gap:'10px', marginTop:'15px'}}>
+        <div style={{flex:1}}>
+          <label className="field-label">Množství</label>
+          <input 
+            className="custom-input" 
+            type="number" 
+            value={editingTag.amount} 
+            onChange={e => setEditingTag({...editingTag, amount: e.target.value})} 
+          />
+        </div>
+        <div style={{flex:1}}>
+          <label className="field-label">Jednotka</label>
+          <input 
+            className="custom-input" 
+            value={editingTag.unit} 
+            onChange={e => setEditingTag({...editingTag, unit: e.target.value})} 
+          />
+        </div>
+      </div>
+
+      <div className="modal-actions" style={{marginTop:'25px'}}>
+        <button 
+          className="btn success-btn" 
+          onClick={() => updateTag(editingTag.name, editingTag.amount, editingTag.unit)}
+        >
+          ULOŽIT ZMĚNY
+        </button>
+        <button className="btn danger-btn" onClick={deleteTag}>SMAZAT</button>
+        <button className="btn secondary-btn" onClick={() => setEditingTag(null)}>ZRUŠIT</button>
+      </div>
+    </div>
+  </div>
+)}
      <nav className="nav-bar">
   <button 
     className={`nav-btn ${scene === 'fridge' || (scene === 'detail' && prevScene === 'results') ? 'active' : ''}`} 
