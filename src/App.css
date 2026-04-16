@@ -584,3 +584,18 @@ h2 {
     color: #34d399;
     border-color: rgba(16, 185, 129, 0.4);
 }
+
+
+.help-nav-btn {
+    color: var(--accent) !important; /* Odlišení barvou */
+    font-weight: 900;
+    opacity: 0.8;
+}
+
+.help-nav-btn:active {
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 12px;
+}
+
+/* Pokud jsi předtím přidal .header-with-help, doporučuji ho 
+   předělat zpět na obyčejné h2, aby aplikace nebyla překombinovaná. */

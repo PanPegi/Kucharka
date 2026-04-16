@@ -260,6 +260,19 @@ const isStep1Valid = useMemo(() => {
     setScene('editor');
   };
 
+const helpTexts: { [key: string]: string } = {
+    fridge: "LEDNICE\n\n• Zaklikávání kategorií filtruje zobrazované recepty a suroviny.\n• Po kliknutí tlačítka suroviny se budou zobrazovat více recepty s touto surovinou.\n• Po zakliknutí se zobrazí možnost zadat přesné množství.\n• Pokud se tam nedá nic, aplikace bude počítat s tím, že máte vždy dostatek suroviny, jinak bude brát v potaz zadané množství.\n• Tlačítka vybrat/zrušit vše změní stav všech surovin.",
+    results: "VÝSLEDKY\n\n• Recepty seřazené podle shody.",
+    manage: "KUCHAŘKA\n\n• Seznam všech receptů.\n• Pomocí hledání najdete jídlo podle názvu.",
+    detail: "POPIS RECEPTU\n\n• Porce - podle zadaného čísla se škálují ingredience v receptu.\n• Kliknutím na podrecept v textu na něj přejdete.\n• Barevné tagy ukazují, co máte v lednici.",
+    editor: "EDITOR\n\n• KROK 1: Základní info a suroviny - všechny zadané suroviny se poté dají přidat v receptu.\n• KROK 2: Postup. Tlačítkem VLOŽIT vytvoříte v kroku receptu odkaz na ingredienci s její váhou a jednotkou, která se bude moct měnit podle počtu porcí."
+  };
+
+  const showContextHelp = () => {
+    const text = helpTexts[scene] || "💡 TIP\n\nPro tuto sekci zatím není nápověda.";
+    alert(text);
+  };
+
  const handleSave = () => {
     // --- NOVÁ LOGIKA: Výpočet celkového množství surovin z textu kroků ---
     const extractedIngredients: Ingredient[] = [];
@@ -907,6 +920,9 @@ if (found || idPart.startsWith("RECIPE:")) {
     onClick={() => openEditor()}
   >
     PŘIDAT
+  </button>
+  <button className="nav-btn help-nav-btn" onClick={showContextHelp}>
+    HELP
   </button>
 </nav>
     </IonApp>
