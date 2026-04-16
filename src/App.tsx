@@ -83,6 +83,23 @@ const App: React.FC = () => {
 
   useEffect(() => { loadData(); }, []);
   useEffect(() => { localStorage.setItem('my_fridge', JSON.stringify(myIngredients)); }, [myIngredients]);
+// Automatické otevření receptu z URL parametrů
+  useEffect(() => {
+    if (recipes.length > 0) {
+      const params = new URLSearchParams(window.location.search);
+      const recipeId = params.get('recipe');
+      if (recipeId) {
+        const shared = recipes.find(r => r.id === parseInt(recipeId));
+        if (shared) {
+          setSelectedRecipe(shared);
+          setViewHistoryIndex(null);
+          setViewServings(shared.baseServings || 1);
+          setPrevScene('manage');
+          setScene('detail');
+        }
+      }
+    }
+  }, [recipes]);
 
   // --- COMPUTED ---
   const allIngredientNames = useMemo(() => {
@@ -232,6 +249,17 @@ const App: React.FC = () => {
     setRecipes(updatedRecipes);
     saveData(updatedRecipes);
     setScene('manage');
+  };
+
+  const handleShare = (e: React.MouseEvent, recipeId: number) => {
+    e.stopPropagation();
+    const shareUrl = `${window.location.origin}${window.location.pathname}?recipe=${recipeId}`;
+    
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      alert('Odkaz na recept byl zkopírován!');
+    }).catch(err => {
+      console.error('Chyba při kopírování:', err);
+    });
   };
 
   const handleDelete = (id: number) => {
@@ -458,6 +486,9 @@ const App: React.FC = () => {
       </button>
       <button className="btn accent-btn" style={{ flex: 1 }} onClick={() => openEditor(selectedRecipe)}>
         Upravit recept
+      </button>
+      <button className="btn share-btn" style={{ flex: 1 }} onClick={(e) => handleShare(e, selectedRecipe.id)}>
+        Sdílet
       </button>
     </div>
   ) : (

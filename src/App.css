@@ -414,3 +414,21 @@ h2 {
 .danger-btn:focus {
     outline: none;
 }
+/* Základní styl pro zelené tlačítko sdílení */
+.share-btn {
+  background-color: #2dd36f !important; /* Zelená barva */
+  color: #ffffff !important;
+  border: none;
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* Efekt při podržení prstu/myši */
+.share-btn:hover {
+  opacity: 0.8;
+}
+
+/* Efekt při kliknutí */
+.share-btn:active {
+  transform: scale(0.98);
+  background-color: #28ba62 !important; /* Mírně tmavší zelená při stisku */
+}
