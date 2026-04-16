@@ -433,3 +433,30 @@ h2 {
   background-color: #28ba62 !important; /* Mírně tmavší zelená při stisku */
 }
 
+/* ZÁKLADNÍ STAV (Před kliknutím) */
+.custom-input {
+  background: var(--card-bg);
+  border: 1px solid var(--border); /* Barva okraje v klidu */
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  width: 100%;
+  
+  /* ODSTRANIT: Pokud zde máš box-shadow nebo border: 1px solid var(--accent), smaž to */
+  box-shadow: none !important; 
+  
+  transition: border-color 0.2s, box-shadow 0.2s; /* Plynulá animace */
+}
+
+/* AKTIVNÍ STAV (Po kliknutí do pole) */
+.custom-input:focus {
+  outline: none;
+  border-color: var(--accent); /* Zvýrazní se až teď */
+  box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.4) !important; /* Záře až po kliku */
+}
+
+/* POJISTKA PRO SEKCI RECEPTY */
+.search-input-field {
+    outline: none;
+    -webkit-appearance: none;
+}

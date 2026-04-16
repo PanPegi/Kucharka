@@ -122,24 +122,65 @@ const App: React.FC = () => {
 
   const matchedRecipes = useMemo(() => {
     return recipes.map(r => {
+      // 1. Logika kategorií (zůstává stejná)
       let catMatch = true;
       if (selectedFilterCats.length > 0) {
         catMatch = categoryLogic === 'OR' 
           ? r.categories?.some(cat => selectedFilterCats.includes(cat))
           : selectedFilterCats.every(cat => r.categories?.includes(cat));
       }
+      
       if (!catMatch) return { ...r, score: 0, matchedCount: 0 };
-      const matched = r.ingredients.filter(ing => {
-        const myVal = myIngredients[ing.name.toLowerCase()];
-        if (myVal === undefined) return false;
-        if (myVal === "") return true;
-        const myAmount = parseFloat(myVal);
-        const reqAmount = parseFloat(ing.amount);
-        return !isNaN(myAmount) && myAmount >= reqAmount;
+
+      // --- NOVÁ LOGIKA: Sběr všech surovin včetně podreceptů ---
+      const allRequiredIngs = new Map<string, number>();
+
+      const collectIngs = (recipe: Recipe) => {
+        // Přidat suroviny z podreceptů (rekurzivně)
+        (recipe.subRecipeIds || []).forEach(subId => {
+          const sub = recipes.find(x => x.id === subId);
+          if (sub) collectIngs(sub);
+        });
+
+        // Přidat suroviny z aktuálního receptu
+        recipe.ingredients.forEach(ing => {
+          const key = ing.name.toLowerCase().trim();
+          const amount = parseFloat(ing.amount.replace(',', '.'));
+          if (!isNaN(amount)) {
+            allRequiredIngs.set(key, (allRequiredIngs.get(key) || 0) + amount);
+          } else {
+            // Pokud je množství text (např. "dle chuti"), započítáme aspoň existenci
+            if (!allRequiredIngs.has(key)) allRequiredIngs.set(key, 0);
+          }
+        });
+      };
+
+      collectIngs(r);
+
+      // 2. Výpočet shody z agregovaného seznamu
+      const requiredNames = Array.from(allRequiredIngs.keys());
+      if (requiredNames.length === 0) return { ...r, score: 100, matchedCount: 0 };
+
+      let matchedCount = 0;
+      requiredNames.forEach(name => {
+        const myVal = myIngredients[name];
+        if (myVal === undefined) return; // Nemám v lednici
+        if (myVal === "") { matchedCount++; return; } // Mám bez omezení množství
+
+        const myAmount = parseFloat(myVal.replace(',', '.'));
+        const reqAmount = allRequiredIngs.get(name) || 0;
+
+        if (!isNaN(myAmount) && myAmount >= reqAmount) {
+          matchedCount++;
+        }
       });
-      const score = r.ingredients.length > 0 ? Math.round((matched.length / r.ingredients.length) * 100) : 0;
-      return { ...r, score, matchedCount: matched.length };
-    }).filter(r => r.matchedCount > 0).sort((a, b) => b.score - a.score);
+
+      // Výpočet procent na základě TOTALITY všech surovin
+      const score = Math.round((matchedCount / requiredNames.length) * 100);
+
+      return { ...r, score, matchedCount };
+    })
+    .sort((a, b) => b.score - a.score); 
   }, [recipes, myIngredients, selectedFilterCats, categoryLogic]);
 
   const effectiveData = useMemo(() => {
@@ -220,13 +261,54 @@ const isStep1Valid = useMemo(() => {
   };
 
  const handleSave = () => {
+    // --- NOVÁ LOGIKA: Výpočet celkového množství surovin z textu kroků ---
+    const extractedIngredients: Ingredient[] = [];
+    const ingredientTotals = new Map<string, { amount: number, unit: string }>();
+
+    // Projdeme všechny kroky a hledáme tagy {{název|množství|jednotka}}
+    editSteps.forEach(step => {
+const regex = /\{\{(?:RECIPE:\d+:|)(.*?)\|(.*?)\|(.*?)\}\}/g;
+      let match;
+      while ((match = regex.exec(step)) !== null) {
+        const name = match[1].trim();
+        const amount = parseFloat(match[2].replace(',', '.'));
+        const unit = match[3].trim();
+
+        if (!isNaN(amount)) {
+          const key = name.toLowerCase();
+          const existing = ingredientTotals.get(key);
+          if (existing) {
+            existing.amount += amount;
+          } else {
+            ingredientTotals.set(key, { amount, unit });
+          }
+        }
+      }
+    });
+
+    // Převedeme Mapu na pole objektů Ingredient
+    // Prioritně bereme ty, co jsou v textu, zbytek (pokud uživatel přidal surovinu a nepoužil ji v textu) přidáme s nulou
+    editIngs.forEach(ing => {
+      const key = ing.name.toLowerCase();
+      const total = ingredientTotals.get(key);
+      if (total) {
+        extractedIngredients.push({
+          name: ing.name,
+          amount: (Math.round(total.amount * 10) / 10).toString(),
+          unit: total.unit
+        });
+      } else if (ing.name.trim() !== "") {
+        extractedIngredients.push({ name: ing.name, amount: "0", unit: "" });
+      }
+    });
+
     const newData: RecipeData = {
       name: editName.trim(),
       categories: editCategoryList.map(c => c.trim().toLowerCase()).filter(c => c !== ""),
       prepTime: editPrep,
       cookTime: editCook,
       baseServings: editServings,
-      ingredients: editIngs.filter(i => i.name.trim() !== ""),
+      ingredients: extractedIngredients, // Ukládáme vypočtené suroviny
       subRecipeIds: editSelectedSubIds,
       steps: editSteps.filter(s => s.trim() !== ""),
       updatedAt: Date.now()
@@ -237,14 +319,12 @@ const isStep1Valid = useMemo(() => {
     if (editId) {
       updatedRecipes = recipes.map(r => {
         if (r.id === editId) {
-          // Číslo aktuální verze bude počet prvků v historii + 1
           const currentVersionNum = (r.history?.length || 0) + 1;
-          
           return {
             ...newData,
             id: editId,
             history: [
-              { ...r, versionLabel: currentVersionNum }, // Uložíme starou verzi s číslem
+              { ...r, versionLabel: currentVersionNum },
               ...(r.history || [])
             ]
           };
@@ -281,37 +361,59 @@ const isStep1Valid = useMemo(() => {
     }
   };
 
- const renderStepWithIngredients = (stepText: string) => {
-    const parts = stepText.split(/(\{\{.*?\}\})/g);
-    
-    return parts.map((part, index) => {
-      if (part.startsWith('{{') && part.endsWith('}}')) {
-        const rawContent = part.slice(2, -2).trim();
-        // Rozdělíme na název, hodnotu a jednotku
-        const [ingName, customVal, customUnit] = rawContent.split('|').map(s => s?.trim());
-        
-        const found = recipes.find(r => r.id === selectedRecipe?.id)?.ingredients.find(i => i.name.toLowerCase() === ingName.toLowerCase());
-        
-        if (found) {
-          // Pokud je zadána vlastní hodnota, použijeme ji, jinak bereme základ ze suroviny
-          const baseAmount = customVal ? parseFloat(customVal) : parseFloat(found.amount);
-          const unit = customUnit || found.unit;
+const renderStepWithIngredients = (stepText: string) => {
+  const parts = stepText.split(/(\{\{.*?\}\})/g);
+  
+  return parts.map((part, index) => {
+    if (part.startsWith('{{') && part.endsWith('}}')) {
+      const rawContent = part.slice(2, -2).trim();
+      const [idPart, customVal, customUnit] = rawContent.split('|').map(s => s?.trim());
 
-          // Škálování
-          const scaled = (baseAmount / (selectedRecipe?.baseServings || 1)) * viewServings;
-          const finalAmount = Math.round(scaled * 10) / 10;
-
-          return (
-            <strong key={index} style={{ color: 'var(--accent)' }}>
-              {finalAmount} {unit} {found.name}
-            </strong>
-          );
-        }
-        return <span key={index} style={{ color: 'red' }}>{part}</span>;
+      // POKUD JE TO PODRECEPT
+      if (idPart.startsWith("RECIPE:")) {
+        const [, recipeId, recipeName] = idPart.split(':');
+        return (
+          <strong 
+            key={index} 
+            style={{ color: '#4caf50', cursor: 'pointer', textDecoration: 'underline' }}
+            onClick={() => {
+              const target = recipes.find(r => r.id === Number(recipeId));
+              if (target) {
+                setSelectedRecipe(target);
+                setViewHistoryIndex(null);
+                setScene('detail');
+              }
+            }}
+          >
+            {customVal} {customUnit} {recipeName}
+          </strong>
+        );
       }
-      return <span key={index}>{part}</span>;
-    });
-  }; 
+
+      // POKUD JE TO KLASICKÁ SUROVINA
+    // Najdi ve funkci tento blok a nahraď ho:
+const found = effectiveData?.ingredients.find(i => i.name.toLowerCase() === idPart.toLowerCase());
+
+if (found || idPart.startsWith("RECIPE:")) {
+  const baseAmount = parseFloat(customVal || "0");
+  const unit = customUnit || (found ? found.unit : "");
+  const name = idPart.startsWith("RECIPE:") ? idPart.split(':')[2] : (found ? found.name : idPart);
+
+  // Výpočet škálování: (Zadané množství / základní porce) * aktuální porce
+  const scaled = (baseAmount / (selectedRecipe?.baseServings || 1)) * viewServings;
+  const finalAmount = Math.round(scaled * 10) / 10;
+
+  return (
+    <strong key={index} style={{ color: idPart.startsWith("RECIPE:") ? '#4caf50' : 'var(--accent)', cursor: idPart.startsWith("RECIPE:") ? 'pointer' : 'default' }}>
+      {finalAmount} {unit} {name}
+    </strong>
+  );
+}
+      return <span key={index} style={{ color: 'red' }}>{part}</span>;
+    }
+    return <span key={index}>{part}</span>;
+  });
+};
      
 
   const insertIngredientToStep = (stepIdx: number, ing: Ingredient) => {
@@ -347,7 +449,9 @@ const isStep1Valid = useMemo(() => {
                 <input className="custom-input" placeholder="Hledat kategorii" value={categorySearchTerm} onChange={(e) => setCategorySearchTerm(e.target.value)} />
                 <div className="logic-toggle" style={{marginTop:'10px'}}>
                     <button className={`logic-btn ${categoryLogic === 'OR' ? 'active' : ''}`} onClick={() => setCategoryLogic('OR')}>JÍDLA OBSAHUJÍCÍ ALESPOŇ JEDNU Z TĚCHTO KATEGORIÍ</button>
-                    <button className={`logic-btn ${categoryLogic === 'AND' ? 'active' : ''}`} onClick={() => setCategoryLogic('AND')}>JÍDLA OBSAHUJÍCÍ VŠECHNY TYTO KATEGORIE</button>
+                       </div>
+                <div className="logic-toggle" style={{marginTop:'10px'}}>
+                       <button className={`logic-btn ${categoryLogic === 'AND' ? 'active' : ''}`} onClick={() => setCategoryLogic('AND')}>JÍDLA OBSAHUJÍCÍ VŠECHNY TYTO KATEGORIE</button>
                 </div>
                 <div style={{display:'flex', gap:'10px', marginTop:'10px'}}>
                   <button className="btn secondary-btn small-btn" onClick={() => {
@@ -413,7 +517,9 @@ const isStep1Valid = useMemo(() => {
             )}
             <div className="recipe-grid">
                 {(scene === 'results' ? matchedRecipes : recipes.filter(r => r.name.toLowerCase().includes(searchTerm.toLowerCase()))).map((r: any) => (
-                  <div key={r.id} className="recipe-card" onClick={() => {
+                  <div key={r.id} className="recipe-card"
+                  style={{ opacity: r.score === 0 ? 0.6 : 1 }}
+                  onClick={() => {
                       setPrevScene(scene as 'results' | 'manage');
                       setSelectedRecipe(r);
                       setViewHistoryIndex(null);
@@ -505,9 +611,8 @@ const isStep1Valid = useMemo(() => {
         </div>
       </div>
 
-      {/* --- DETAIL: Pravý sloupec --- */}
+{/* --- DETAIL: Pravý sloupec --- */}
 <div className="detail-right">
-  
   <label className="field-label">Postup:</label>
   {effectiveData.sections.map((section, sIdx) => (
     <div key={sIdx} className="recipe-section" style={{ marginBottom: '25px' }}>
@@ -518,7 +623,7 @@ const isStep1Valid = useMemo(() => {
         <div key={idx} className="step-item" style={{ display: 'flex', gap: '15px', marginBottom: '15px', alignItems: 'flex-start' }}>
           {/* MODRÝ KROUŽEK S ČÍSLEM */}
           <div className="step-num" style={{ 
-            backgroundColor: '#3880ff', // Ionic modrá
+            backgroundColor: '#3880ff', 
             color: 'white',
             minWidth: '28px',
             height: '28px',
@@ -534,9 +639,9 @@ const isStep1Valid = useMemo(() => {
             {idx + 1}
           </div>
           <div className="step-txt" style={{ lineHeight: '1.5' }}>
-  {renderStepWithIngredients(step)}
-</div>
-          
+            {/* TADY JE OPRAVA: Používáme renderStepWithIngredients i pro podrecepty */}
+            {renderStepWithIngredients(step)}
+          </div>
         </div>
       ))}
     </div>
@@ -651,31 +756,20 @@ const isStep1Valid = useMemo(() => {
                 <button className="btn secondary-btn small-btn" onClick={() => setEditCategoryList([...editCategoryList, ''])}>+ KATEGORIE</button>
 
                 <label className="field-label" style={{marginTop:'20px'}}>Kroky postupu</label>
-                <p style={{ fontSize: '0.8rem', opacity: 0.6, marginBottom: '10px' }}>
-                  Tip: Kliknutím na tlačítko suroviny ji vložíte do textu pro automatické škálování.
-                </p>
+              
 
                 {editSteps.map((s, idx) => (
                   <div key={idx} style={{ marginBottom: '25px', padding: '10px', background: 'rgba(0,0,0,0.05)', borderRadius: '8px' }}>
+                    
+                    {/* HORNÍ ČÁST: ČÍSLO, TEXTAREA A MAZÁNÍ KROKU */}
                     <div style={{ marginBottom: '10px', display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                      {/* MODRÝ KROUŽEK S ČÍSLEM */}
                       <div style={{ 
-                        backgroundColor: '#3880ff', 
-                        color: 'white', 
-                        minWidth: '24px', 
-                        height: '24px', 
-                        borderRadius: '50%', 
-                        display: 'flex', 
-                        justifyContent: 'center', 
-                        alignItems: 'center', 
-                        fontSize: '12px', 
-                        fontWeight: 'bold', 
-                        marginTop: '8px',
-                        flexShrink: 0 
+                        backgroundColor: '#3880ff', color: 'white', minWidth: '24px', height: '24px', borderRadius: '50%', 
+                        display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '12px', fontWeight: 'bold', 
+                        marginTop: '8px', flexShrink: 0 
                       }}>
                         {idx + 1}
                       </div>
-                      
                       <textarea 
                         className="custom-textarea" 
                         value={s} 
@@ -685,87 +779,71 @@ const isStep1Valid = useMemo(() => {
                       <button className="remove-row-btn" onClick={() => setEditSteps(editSteps.filter((_, i) => i !== idx))}>-</button>
                     </div>
 
-                 {/* --- TENTO BLOK VLOŽÍŠ MÍSTO TOHO KOMENTÁŘE --- */}
+                    {/* SPODNÍ ČÁST: PANEL PRO VLOŽENÍ (SUROVINY I VYBRANÉ RECEPTY) */}
+                    {/* SPODNÍ ČÁST: PANEL PRO VLOŽENÍ (SUROVINY I VYBRANÉ RECEPTY) */}
+                    <div className="ing-row-triple" style={{ marginTop: '10px', display: 'flex', alignItems: 'center' }}>
+                      <select id={`ing-name-select-${idx}`} className="custom-input flex-2" style={{ color: '#fff' }}>
+                        <option value="" style={{background: '#1a1d21'}}>Surovina nebo Podrecept...</option>
+                        
+                        <optgroup label="SUROVINY" style={{background: '#1a1d21', color: '#aaa'}}>
+                          {editIngs.filter(i => i.name.trim() !== "").map((ing, iIdx) => (
+                            <option key={`ing-${iIdx}`} value={ing.name} style={{background: '#1a1d21', color: '#fff'}}>{ing.name}</option>
+                          ))}
+                        </optgroup>
 
-        <div className="ing-row-triple" style={{ marginTop: '10px', marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
-  
-  {/* Výběr suroviny */}
-  <select 
-    id={`ing-name-select-${idx}`}
-    className="custom-input flex-2"
-    style={{ color: '#fff' }}
-    onChange={(e) => {
-      const selectedName = e.target.value;
-      const ing = editIngs.find(i => i.name === selectedName);
-      if (ing) {
-        const valInput = document.getElementById(`ing-val-input-${idx}`) as HTMLInputElement;
-        const unitSelect = document.getElementById(`ing-unit-select-${idx}`) as HTMLSelectElement;
-        if (valInput) valInput.value = ing.amount;
-        if (unitSelect) unitSelect.value = ing.unit;
-      }
-    }}
-  >
-    <option value="" style={{background: '#1a1d21'}}>Surovina...</option>
-    {editIngs.filter(i => i.name.trim() !== "").map((ing, iIdx) => (
-      <option key={iIdx} value={ing.name} style={{background: '#1a1d21'}}>{ing.name}</option>
-    ))}
-  </select>
+                        <optgroup label="PODRECEPTY" style={{background: '#1a1d21', color: '#aaa'}}>
+                          {recipes
+                            .filter(r => editSelectedSubIds.includes(r.id))
+                            .map(r => (
+                              <option key={`rec-${r.id}`} value={`RECIPE:${r.id}:${r.name}`} style={{background: '#1a1d21', color: '#fff'}}>
+                                {r.name}
+                              </option>
+                            ))
+                          }
+                        </optgroup>
+                      </select>
 
-  {/* Vstup pro množství */}
-  <input 
-    id={`ing-val-input-${idx}`}
-    type="number" 
-    className="custom-input flex-1"
-    placeholder="Mn."
-    style={{ textAlign: 'center', color: '#fff' }} 
-  />
+                      <input id={`ing-val-input-${idx}`} type="number" className="custom-input flex-1" placeholder="Mn." style={{ textAlign: 'center', color: '#fff' }} />
+                      
+                      {/* NOVÉ: Vstup pro jednotku s našeptávačem (umožňuje psát vlastní) */}
+                      <input 
+                        id={`ing-unit-select-${idx}`} 
+                        className="custom-input flex-1" 
+                        placeholder="Jedn." 
+                        style={{ color: '#fff', textAlign: 'center' }} 
+                        list={`common-units-list-${idx}`}
+                      />
+                      <datalist id={`common-units-list-${idx}`}>
+                        {commonUnits.map(u => ( <option key={u} value={u} /> ))}
+                      </datalist>
 
-  {/* Výběr jednotky */}
-  <select 
-    id={`ing-unit-select-${idx}`}
-    className="custom-input flex-1"
-    style={{ color: '#fff' }}
-  >
-    {commonUnits.map(u => (
-      <option key={u} value={u} style={{background: '#1a1d21'}}>{u}</option>
-    ))}
-  </select>
+                      <button 
+                        className="btn" 
+                        style={{ height: '38px', width: '80px', flex: 'none', backgroundColor: '#3880ff', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.7rem', cursor: 'pointer', marginLeft: '4px' }}
+                        onClick={() => {
+                          const selectEl = document.getElementById(`ing-name-select-${idx}`) as HTMLSelectElement;
+                          const valInput = document.getElementById(`ing-val-input-${idx}`) as HTMLInputElement;
+                          // Změněno na HTMLInputElement pro podporu vlastního textu
+                          const unitInput = document.getElementById(`ing-unit-select-${idx}`) as HTMLInputElement;
+                          
+                          if (!selectEl.value || !valInput.value) { alert("Vyberte položku a zadejte množství."); return; }
 
-  {/* Tlačítko VLOŽIT - Nyní s fixní malou šířkou */}
-  <button 
-    className="btn" 
-    style={{ 
-        height: '38px',
-        width: '80px',            // FIXNÍ ŠÍŘKA: Už se neroztáhne
-        minWidth: '80px',         // POJISTKA
-        flex: 'none',             // ZÁKAZ ROZTAHOVÁNÍ
-        padding: '0', 
-        backgroundColor: '#3880ff', 
-        color: '#fff',
-        border: 'none',
-        borderRadius: '8px',
-        fontWeight: 'bold',
-        fontSize: '0.7rem',
-        cursor: 'pointer',
-        marginLeft: '4px'
-    }}
-    onClick={() => {
-      const name = (document.getElementById(`ing-name-select-${idx}`) as HTMLSelectElement).value;
-      const val = (document.getElementById(`ing-val-input-${idx}`) as HTMLInputElement).value;
-      const unit = (document.getElementById(`ing-unit-select-${idx}`) as HTMLSelectElement).value;
-      
-      if (!name) return;
+                          let tag = "";
+                          if (selectEl.value.startsWith("RECIPE:")) {
+                            const parts = selectEl.value.split(':');
+                            tag = `{{RECIPE:${parts[1]}:${parts[2]}|${valInput.value}|${unitInput.value}}}`;
+                          } else {
+                            tag = `{{${selectEl.value}|${valInput.value}|${unitInput.value}}}`;
+                          }
 
-      const tag = `{{${name}|${val}|${unit}}}`;
-      const n = [...editSteps];
-      n[idx] = n[idx] + (n[idx].length > 0 && !n[idx].endsWith(' ') ? ' ' : '') + tag;
-      setEditSteps(n);
-    }}
-  >
-    VLOŽIT
-  </button>
-</div>
-
+                          const n = [...editSteps];
+                          n[idx] = n[idx] + (n[idx].length > 0 && !n[idx].endsWith(' ') ? ' ' : '') + tag;
+                          setEditSteps(n);
+                          valInput.value = ""; 
+                          // unitInput.value = ""; // Jednotku můžete nechat vyplněnou pro další surovinu
+                        }}
+                      >VLOŽIT</button>
+                    </div>
                   </div>
                 ))}
 
