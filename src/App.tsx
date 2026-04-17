@@ -59,6 +59,10 @@ const App: React.FC = () => {
   const [editSteps, setEditSteps] = useState<string[]>(['']);
   const [subSearch, setSubSearch] = useState('');
   const [editingTag, setEditingTag] = useState<{ stepIdx: number, tagRaw: string, name: string, amount: string, unit: string } | null>(null);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [theme, setTheme] = useState(localStorage.getItem('app-theme') || 'dark');
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [isInstallable, setIsInstallable] = useState(false);
 
   const commonUnits = ['g', 'kg', 'ml', 'l', 'ks', 'lžíce', 'lžička', 'hrst', 'špetka', 'balení'];
 
@@ -90,6 +94,18 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
+  const handler = (e: any) => {
+    // Zabráníme prohlížeči v automatickém zobrazení výzvy
+    e.preventDefault();
+    setDeferredPrompt(e);
+    setIsInstallable(true);
+  };
+
+  window.addEventListener('beforeinstallprompt', handler);
+
+  return () => window.removeEventListener('beforeinstallprompt', handler);
+}, []);
+  useEffect(() => {
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
@@ -100,6 +116,7 @@ const App: React.FC = () => {
     loadData();
   }, []);
 
+  
   useEffect(() => { 
     localStorage.setItem('my_fridge', JSON.stringify(myIngredients)); 
   }, [myIngredients]);
@@ -121,6 +138,11 @@ const App: React.FC = () => {
     }
   }, [recipes]);
 
+  useEffect(() => {
+  // Aplikuje třídu motivu na <html> prvek
+  document.documentElement.className = `theme-${theme}`;
+  localStorage.setItem('app-theme', theme);
+}, [theme]);
   // --- COMPUTED ---
   const allIngredientNames = useMemo(() => {
     let relevantRecipes = recipes;
@@ -137,32 +159,52 @@ const App: React.FC = () => {
 
   const allCategories = useMemo(() => [...new Set(recipes.flatMap(r => r.categories || []))].sort(), [recipes]);
 
-  const matchedRecipes = useMemo(() => {
-    return recipes.map(r => {
-      let catMatch = true;
-      if (selectedFilterCats.length > 0) {
-        catMatch = categoryLogic === 'OR' 
-          ? r.categories?.some(cat => selectedFilterCats.includes(cat))
-          : selectedFilterCats.every(cat => r.categories?.includes(cat));
-      }
-      if (!catMatch) return { ...r, score: 0, matchedCount: 0 };
+  const handleInstallApp = async () => {
+  if (!deferredPrompt) return;
 
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  
+  if (outcome === 'accepted') {
+    console.log('Uživatel přijal instalaci');
+  }
+  
+  setDeferredPrompt(null);
+  setIsInstallable(false);
+};
+
+  const matchedRecipes = useMemo(() => {
+    // 1. NEJPRVE FILTRUJEME: Ponecháme jen recepty splňující podmínky kategorií
+    return recipes.filter(r => {
+      if (selectedFilterCats.length === 0) return true;
+      
+      return categoryLogic === 'OR' 
+        ? r.categories?.some(cat => selectedFilterCats.includes(cat))
+        : selectedFilterCats.every(cat => r.categories?.includes(cat));
+    })
+    // 2. PRO POVOLENÉ RECEPTY SPOČÍTÁME SHODU SE SUROVINAMI
+    .map(r => {
       const allRequiredIngs = new Map<string, number>();
+
       const collectIngs = (recipe: Recipe) => {
+        // Přidat suroviny z podreceptů (rekurzivně)
         (recipe.subRecipeIds || []).forEach(subId => {
           const sub = recipes.find(x => x.id === subId);
           if (sub) collectIngs(sub);
         });
+
+        // Přidat suroviny z aktuálního receptu
         recipe.ingredients.forEach(ing => {
           const key = ing.name.toLowerCase().trim();
           const amount = parseFloat(ing.amount.replace(',', '.'));
           if (!isNaN(amount)) {
             allRequiredIngs.set(key, (allRequiredIngs.get(key) || 0) + amount);
-          } else if (!allRequiredIngs.has(key)) {
-            allRequiredIngs.set(key, 0);
+          } else {
+            if (!allRequiredIngs.has(key)) allRequiredIngs.set(key, 0);
           }
         });
       };
+
       collectIngs(r);
 
       const requiredNames = Array.from(allRequiredIngs.keys());
@@ -171,15 +213,22 @@ const App: React.FC = () => {
       let matchedCount = 0;
       requiredNames.forEach(name => {
         const myVal = myIngredients[name];
-        if (myVal === undefined) return;
-        if (myVal === "") { matchedCount++; return; }
+        if (myVal === undefined) return; 
+        if (myVal === "") { matchedCount++; return; } 
+
         const myAmount = parseFloat(myVal.replace(',', '.'));
         const reqAmount = allRequiredIngs.get(name) || 0;
-        if (!isNaN(myAmount) && myAmount >= reqAmount) matchedCount++;
+
+        if (!isNaN(myAmount) && myAmount >= reqAmount) {
+          matchedCount++;
+        }
       });
 
-      return { ...r, score: Math.round((matchedCount / requiredNames.length) * 100), matchedCount };
-    }).sort((a, b) => b.score - a.score); 
+      const score = Math.round((matchedCount / requiredNames.length) * 100);
+      return { ...r, score, matchedCount };
+    })
+    // 3. SEŘADÍME PODLE PROCENTUÁLNÍ SHODY
+    .sort((a, b) => b.score - a.score); 
   }, [recipes, myIngredients, selectedFilterCats, categoryLogic]);
 
   const effectiveData = useMemo(() => {
@@ -679,15 +728,56 @@ const App: React.FC = () => {
       </div>
 
       {/* --- MODALS --- */}
-      {showHelpModal && (
-        <div className="tag-edit-overlay" onClick={() => setShowHelpModal(false)}>
-          <div className="tag-edit-modal help-modal" onClick={e => e.stopPropagation()}>
-            <h2 className="help-title">Nápověda</h2>
-            <div className="help-content">{helpTexts[scene] || "Žádná nápověda."}</div>
-            <button className="btn success-btn" onClick={() => setShowHelpModal(false)}>ROZUMÍM</button>
-          </div>
-        </div>
-      )}
+{showHelpModal && (
+  <div className="tag-edit-overlay fade-in" onClick={() => setShowHelpModal(false)}>
+    <div className="tag-edit-modal help-modal" onClick={e => e.stopPropagation()}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+        <h2 style={{ margin: 0, color: 'var(--accent)' }}>Nápověda</h2>
+      </div>
+      
+      <div style={{ whiteSpace: 'pre-line', lineHeight: '1.6', fontSize: '0.95rem', color: '#ccc' }}>
+        {helpTexts[scene] || "Pro tuto sekci zatím není nápověda."}
+      </div>
+
+      <div className="modal-actions-row" style={{ marginTop: '25px', display: 'flex', gap: '10px' }}>
+        <button className="btn success-btn flex-2" onClick={() => setShowHelpModal(false)}>ROZUMÍM</button>
+        <button className="btn secondary-btn flex-1" onClick={() => { setShowHelpModal(false); setShowSettingsModal(true); }}>
+          ⚙️
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+{/* --- MODÁLNÍ OKNO NASTAVENÍ --- */}
+{showSettingsModal && (
+  <div className="tag-edit-overlay fade-in" onClick={() => setShowSettingsModal(false)}>
+    <div className="tag-edit-modal settings-modal" onClick={e => e.stopPropagation()}>
+      <h2 style={{ color: 'var(--accent)', marginBottom: '20px' }}>Nastavení</h2>
+      
+      <div className="settings-content">
+        <label className="field-label">Vzhled aplikace</label>
+        <select 
+          className="custom-input" 
+          value={theme} 
+          onChange={(e) => setTheme(e.target.value)}
+          style={{ marginBottom: '20px' }}
+        >
+          <option value="dark">Tmavý</option>
+          <option value="light">Světlý</option>
+        </select>
+
+<button className="btn accent-btn small-btn" onClick={handleInstallApp}>
+              INSTALOVAT DO MOBILU
+            </button> 
+      </div>
+
+      <div className="modal-actions" style={{ marginTop: '30px' }}>
+        <button className="btn success-btn" onClick={() => setShowSettingsModal(false)}>ZAVŘÍT</button>
+      </div>
+    </div>
+  </div>
+)}
 
       {editingTag && (
         <div className="tag-edit-overlay">

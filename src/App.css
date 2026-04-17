@@ -347,3 +347,304 @@ input:checked + .slider:before { transform: translateX(20px); }
     margin-top: 10px;   /* Pojistka odstupu od obsahu nad tím */
     padding-bottom: 20px; /* Aby to nebylo nalepené na spodní hraně v mobilu */
 }
+
+/* --- DEFINICE MOTIVŮ --- */
+
+/* Světlý motiv */
+.theme-light {
+    --bg-color: #f1f5f9;
+    --card-bg: #ffffff;
+    --text: #0f172a;
+    --border: #e2e8f0;
+    --nav-bg: rgba(255, 255, 255, 0.9);
+}
+
+/* Lesní motiv */
+.theme-forest {
+    --bg-color: #064e3b;
+    --card-bg: #065f46;
+    --accent: #10b981;
+    --accent-hover: #059669;
+    --border: #047857;
+}
+
+/* Motiv Západ slunce */
+.theme-sunset {
+    --bg-color: #451a03;
+    --card-bg: #78350f;
+    --accent: #f59e0b;
+    --accent-hover: #d97706;
+    --border: #92400e;
+}
+
+/* Výchozí tmavý (pokud není aplikována žádná třída nebo je .theme-dark) */
+:root, .theme-dark {
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --accent: #3b82f6;
+    --accent-hover: #2563eb;
+    --danger: #ef4444;
+    --success: #10b981;
+    --text: #f8fafc;
+    --nav-bg: rgba(17, 24, 39, 0.98);
+    --border: #334155;
+}
+
+/* Zajištění, aby barvy vstupů v nastavení byly čitelné i v jiných motivech */
+.theme-light .custom-input, 
+.theme-light select {
+    background: #ffffff;
+    color: #0f172a;
+}
+
+/* --- DEFINICE MOTIVŮ (PROMĚNNÉ) --- */
+
+/* Výchozí stav a Tmavý motiv */
+:root, .theme-dark {
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --accent: #3b82f6;
+    --accent-hover: #2563eb;
+    --danger: #ef4444;
+    --success: #10b981;
+    --text: #f8fafc;
+    --nav-bg: rgba(17, 24, 39, 0.98);
+    --border: #334155;
+    --radius-lg: 14px;
+    --radius-md: 12px;
+}
+
+/* Světlý motiv */
+.theme-light {
+    --bg-color: #f1f5f9;      /* Světle šedé pozadí */
+    --card-bg: #ffffff;      /* Bílé karty */
+    --text: #0f172a;         /* Tmavý text */
+    --border: #cbd5e1;       /* Výraznější šedé okraje */
+    --nav-bg: rgba(241, 245, 249, 0.98);
+    --accent: #2563eb;       /* O něco sytější modrá pro kontrast */
+}
+
+/* Lesní motiv */
+.theme-forest {
+    --bg-color: #064e3b;
+    --card-bg: #065f46;
+    --accent: #10b981;
+    --accent-hover: #059669;
+    --border: #047857;
+    --text: #f0fdf4;
+}
+
+/* Motiv Západ slunce */
+.theme-sunset {
+    --bg-color: #451a03;
+    --card-bg: #78350f;
+    --accent: #f59e0b;
+    --accent-hover: #d97706;
+    --border: #92400e;
+    --text: #fff7ed;
+}
+
+/* --- GLOBÁLNÍ STYLY --- */
+* { box-sizing: border-box; }
+
+body { 
+    background-color: var(--bg-color); 
+    color: var(--text); 
+    margin: 0; 
+    font-family: 'Inter', sans-serif; 
+    overflow-x: hidden; 
+    transition: background-color 0.3s, color 0.3s; /* Plynulé přepnutí */
+}
+
+#app-container { 
+    width: 100%; 
+    max-width: 1000px; 
+    margin: 0 auto; 
+    padding: 15px 15px 120px 15px; 
+}
+
+h2 { 
+    text-align: center; 
+    color: var(--accent); 
+    text-transform: uppercase; 
+    font-weight: 900; 
+    margin-bottom: 20px; 
+}
+
+/* --- FORMULÁŘE A VSTUPY --- */
+.field-label { 
+    display: block; 
+    margin: 15px 0 5px 0; 
+    font-size: 0.7rem; 
+    color: var(--text); /* Přizpůsobí se motivu */
+    opacity: 0.7;
+    font-weight: 900; 
+    text-transform: uppercase; 
+}
+
+.custom-input, select {
+    background: var(--bg-color); /* Dynamické podle motivu */
+    border: 2px solid var(--border);
+    color: var(--text);          /* Dynamické podle motivu */
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    width: 100%;
+    font-size: 16px;
+    transition: all 0.2s;
+}
+
+.custom-input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+/* --- TLAČÍTKA --- */
+.btn { 
+    width: 100%; 
+    height: 56px; 
+    border: none; 
+    border-radius: var(--radius-lg); 
+    font-weight: 700; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    text-transform: uppercase; 
+    transition: 0.2s; 
+}
+
+.btn:active { transform: scale(0.97); }
+.accent-btn { background: var(--accent); color: white; }
+.success-btn { background: var(--success); color: white; }
+.secondary-btn { background: var(--border); color: var(--text); }
+.danger-btn { background: var(--danger); color: white; }
+
+/* --- KARTA RECEPTU --- */
+.recipe-card { 
+    background: var(--card-bg); 
+    border-radius: 20px; 
+    padding: 20px; 
+    border: 1px solid var(--border); 
+    cursor: pointer; 
+    transition: 0.2s; 
+}
+.recipe-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+.recipe-name { color: var(--accent); font-weight: 900; font-size: 1.2rem; display: block; }
+
+/* --- FILTRY A LEDNICE --- */
+.logic-btn { 
+    width: 100%; padding: 10px; border: 1px solid var(--border); 
+    background: var(--card-bg); color: var(--text); opacity: 0.6; 
+    border-radius: 10px; font-size: 0.7rem; font-weight: 900; cursor: pointer; 
+}
+
+.logic-btn.active {
+    background: var(--accent) !important;
+    color: white !important;
+    opacity: 1 !important;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+}
+
+.cat-select-btn { 
+    padding: 8px 16px; border-radius: 12px; background: var(--card-bg); 
+    color: var(--text); border: 1px solid var(--border); font-size: 0.75rem; 
+    font-weight: 700; cursor: pointer; 
+}
+.cat-select-btn.selected { background: var(--accent); color: white; border-color: var(--accent); }
+
+/* --- POSTUP A TEXTAREA --- */
+.step-txt { line-height: 1.5; color: var(--text); }
+
+.textarea-container {
+    background: var(--bg-color);
+    border: 1px solid var(--border);
+}
+
+.textarea-visual {
+    color: var(--text); /* Text v editoru bude čitelný */
+}
+
+.textarea-real {
+    caret-color: var(--accent);
+}
+
+/* --- MODÁLY --- */
+.tag-edit-modal {
+    background: var(--card-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+/* --- NAVIGATION --- */
+.nav-bar { 
+    background: var(--nav-bg); 
+    border-top: 1px solid var(--border); 
+}
+
+.nav-btn { color: var(--text); opacity: 0.5; }
+.nav-btn.active { color: var(--accent); opacity: 1; }
+
+/* --- OSTATNÍ --- */
+.toggle-row-complex { 
+    background: var(--card-bg); 
+    border: 1px solid var(--border); 
+}
+
+/* --- ÚPRAVY PRO SVĚTLÝ MOTIV (.theme-light) --- */
+
+/* 1. Bubliny podreceptů v editoru (výběr) */
+.theme-light .sub-btn {
+    background: #e2e8f0;    /* Světle šedá */
+    color: #475569;         /* Tmavší břidlicová */
+    border-color: #cbd5e1;
+}
+
+.theme-light .sub-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+/* 2. Bubliny přímo v textu postupu (vizuální vrstva editoru) */
+.theme-light .editor-tag {
+    background: #dbeafe;    /* Jemně modrá */
+    color: #1e40af;         /* Tmavě modrá */
+    border: 1px solid #bfdbfe;
+}
+
+.theme-light .editor-tag-recipe {
+    background: #dcfce7;    /* Jemně zelená */
+    color: #166534;         /* Tmavě zelená */
+    border: 1px solid #bbf7d0;
+}
+
+/* 3. Zadávání množství suroviny v lednici */
+.theme-light .small-amount-input {
+    background: #ffffff;    /* Čistě bílá pro kontrast s kartou */
+    color: #0f172a;         /* Tmavý text */
+    border: 1px solid #cbd5e1;
+}
+
+.theme-light .small-amount-input::placeholder {
+    color: #94a3b8;
+}
+
+/* 4. Kontejner podreceptů (pozadí pod bublinami) */
+.theme-light .sub-recipe-selector {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+/* 5. Vizuální kontejner postupu (textarea) */
+.theme-light .textarea-container {
+    background: #ffffff;
+}
+
+.theme-light .textarea-visual {
+    color: #334155; /* Barva běžného textu mezi bublinami */
+}
+
+/* 6. Fix pro přepínače (switch) v light modu */
+.theme-light .slider {
+    background-color: #cbd5e1;
+}
