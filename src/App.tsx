@@ -385,18 +385,25 @@ const App: React.FC = () => {
         const rawContent = part.slice(2, -2).trim();
         const [idPart, customVal, customUnit] = rawContent.split('|').map(s => s?.trim());
 
+        // OPRAVENÁ ČÁST PRO PODRECEPTY
         if (idPart.startsWith("RECIPE:")) {
           const [, recipeId, recipeName] = idPart.split(':');
+          
+          // Výpočet škálování i pro podrecept
+          const scaled = (parseFloat(customVal || "0") / (selectedRecipe?.baseServings || 1)) * viewServings;
+          const finalAmount = Math.round(scaled * 10) / 10;
+
           return (
             <strong key={index} className="recipe-link-text" onClick={() => {
               const target = recipes.find(r => r.id === Number(recipeId));
               if (target) { setSelectedRecipe(target); setViewHistoryIndex(null); setScene('detail'); }
             }}>
-              {customVal} {customUnit} {recipeName}
+              {finalAmount} {customUnit} {recipeName}
             </strong>
           );
         }
 
+        // ČÁST PRO BĚŽNÉ SUROVINY
         const found = effectiveData?.ingredients.find(i => i.name.toLowerCase() === idPart.toLowerCase());
         if (found) {
           const scaled = (parseFloat(customVal || "0") / (selectedRecipe?.baseServings || 1)) * viewServings;
