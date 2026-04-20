@@ -96,20 +96,39 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
           <label className="field-label">Jméno jídla</label>
           <input className="custom-input" value={editName} onChange={e => setEditName(e.target.value)} />
           
-            <label className="field-label">Kategorie</label>
-          {editCategoryList.map((cat, idx) => (
-            <div key={idx} className="ing-edit-row">
-              <input className="custom-input" value={cat} list="modal-cat-list" onChange={e => { const newList = [...editCategoryList]; newList[idx] = e.target.value; setEditCategoryList(newList); }} />
-              {idx !== 0 ? (
-                <button className="remove-row-btn" onClick={() => setEditCategoryList(editCategoryList.filter((_, i) => i !== idx))}>-</button>
-              ) : (
-                <div style={{ width: '40px' }}></div>
-              )}
-            </div>
-          ))}
-          <datalist id="modal-cat-list">{allCategories.map(c => <option key={c} value={c} />)}</datalist>
-          <button className="btn secondary-btn small-btn" style={{ marginBottom: '15px' }} onClick={() => setEditCategoryList([...editCategoryList, ''])}>+ KATEGORIE</button>
-          
+          <label className="field-label">Kategorie</label>
+{editCategoryList.map((cat, idx) => (
+  <div key={idx} className="ing-edit-row">
+    <input 
+      className="custom-input" 
+      value={cat} 
+      list="modal-cat-list" 
+      onChange={e => { 
+        const newList = [...editCategoryList]; 
+        newList[idx] = e.target.value; 
+        setEditCategoryList(newList); 
+      }} 
+    />
+    {idx !== 0 && (
+      <button 
+        className="remove-row-btn" 
+        onClick={() => setEditCategoryList(editCategoryList.filter((_, i) => i !== idx))}
+      >
+        -
+      </button>
+    )}
+  </div>
+))}
+<datalist id="modal-cat-list">
+  {allCategories.map(c => <option key={c} value={c} />)}
+</datalist>
+<button 
+  className="btn secondary-btn small-btn" 
+  style={{ marginBottom: '15px' }} 
+  onClick={() => setEditCategoryList([...editCategoryList, ''])}
+>
+  + KATEGORIE
+</button>
 
           <div className="editor-row">
             <div className="flex-1">

@@ -648,3 +648,36 @@ h2 {
 .theme-light .slider {
     background-color: #cbd5e1;
 }
+
+/* --- DETAIL - OVLÁDÁNÍ PORCÍ --- */
+.servings-control { 
+    background: rgba(0, 0, 0, 0.2); /* Neutrální adaptivní ztmavení */
+    padding: 15px; 
+    border-radius: 16px; 
+    margin-bottom: 20px; 
+    border: 1px solid var(--border); 
+}
+
+/* Úprava pro světlý motiv */
+.theme-light .servings-control {
+    background: #f8fafc; /* Jemné šedé pozadí ladící se zbytkem light modu */
+    border: 1px solid var(--border);
+}
+
+/* --- FILTRY - MŘÍŽKA KATEGORIÍ --- */
+.category-selection-grid { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 8px; 
+    margin-bottom: 20px; 
+    background: rgba(0, 0, 0, 0.2); /* Adaptivní ztmavení pro tmavé režimy */
+    padding: 15px; 
+    border-radius: 16px; 
+    border: 1px solid var(--border);
+}
+
+/* Úprava pro světlý motiv */
+.theme-light .category-selection-grid {
+    background: #f8fafc; /* Sjednoceno s ostatními bloky v light modu */
+    border: 1px solid var(--border);
+}
