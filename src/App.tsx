@@ -6,6 +6,8 @@ import { Recipe, Ingredient, RecipeData } from './types';
 import Fridge from './components/Fridge';
 import RecipeList from './components/RecipeList';
 import RecipeDetail from './components/RecipeDetail';
+import RecipeEditor from './components/RecipeEditor';
+import HelpModal from './components/HelpModal';
 
 setupIonicReact();
 
@@ -24,35 +26,17 @@ const App: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [categorySearchTerm, setCategorySearchTerm] = useState('');
   const [showHelpModal, setShowHelpModal] = useState(false);
-
-  // --- EDITOR STATES ---
-  const [editId, setEditId] = useState<number | null>(null);
-  const [modalStep, setModalStep] = useState(1);
-  const [editName, setEditName] = useState('');
-  const [editCategoryList, setEditCategoryList] = useState<string[]>(['']);
-  const [editPrep, setEditPrep] = useState('');
-  const [editCook, setEditCook] = useState('');
-  const [editServings, setEditServings] = useState<number>(1);
-  const [editIngs, setEditIngs] = useState<Ingredient[]>([{ name: '', amount: '', unit: '' }]);
-  const [editSelectedSubIds, setEditSelectedSubIds] = useState<number[]>([]);
-  const [editSteps, setEditSteps] = useState<string[]>(['']);
-  const [subSearch, setSubSearch] = useState('');
-  const [editingTag, setEditingTag] = useState<{ stepIdx: number, tagRaw: string, name: string, amount: string, unit: string } | null>(null);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [theme, setTheme] = useState(localStorage.getItem('app-theme') || 'dark');
+  const [editId, setEditId] = useState<number | null>(null);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [isInstallable, setIsInstallable] = useState(false);
-
-  
-
-  const commonUnits = ['g', 'kg', 'ml', 'l', 'ks', 'lžíce', 'lžička', 'hrst', 'špetka', 'balení'];
 
   const helpTexts: { [key: string]: string } = {
-    fridge: "LEDNICE\n\n• Zaklikávání kategorií filtruje zobrazované recepty a suroviny.\n• Po kliknutí tlačítka suroviny se budou prioritizovat recepty obsahující touto surovinou(pokud jí máte dostatek).\n• Po zakliknutí se zobrazí možnost zadat přesné množství.\n• Pokud se tam nedá nic, aplikace bude počítat s tím, že máte vždy dostatek suroviny, jinak bude brát v potaz zadané množství.\n• Tlačítka vybrat/zrušit vše změní stav všech surovin.",
+    fridge: "LEDNICE\n\n• Zaklikávání kategorií filtruje zobrazované recepty a suroviny.\n• Po kliknutí tlačítka suroviny se budou prioritizovat recepty obsahující touto surovinou.\n• Tlačítka vybrat/zrušit vše změní stav všech surovin.",
     results: "VÝSLEDKY\n\n• Recepty seřazené podle shody kategorie a ingrediencí.",
     manage: "KUCHAŘKA\n\n• Seznam všech receptů.\n• Pomocí hledání najdete jídlo podle názvu.",
-    detail: "POPIS RECEPTU\n\n• Porce - podle zadaného čísla se škálují ingredience v receptu na potřebné hodnoty.\n• Kliknutím na podrecept v textu na něj přejdete.\n• Barevné tagy ukazují, co máte v lednici (červená = nedostatek / zelená = dostatek).\n•Popřípadě se dá recept smazat/sdílet/upravit",
-    editor: "EDITOR\n\n• KROK 1: Základní info a suroviny - uživatel musí zadat název,základní počet porcí,časy,suroviny(doporučují se suroviny obsahující zadané podslovo) a podrecepty,které se budou poté dát použít ve druhé fázi tvoření receptu.\n\n• KROK 2: Postup. musí se zadat kategorie a kroky postupu\n•Do postupu se píše postup do ,kterého se dají vkládat suroviny a podrecepty pomocí tlačítka vložit(v případě ,že je zadaná surovina,množství a jednotka) \n•po zmáčknutí se do textu vloží blok s ingrediencí a její hodnotou ,pro úpravu se klikne na bublinu => otevře se upravovací okno\n•až bude uživatel s receptem spokojený může ho tlačítkem uložit"
+    detail: "POPIS RECEPTU\n\n• Porce - podle zadaného čísla se škálují ingredience v receptu.\n• Barevné tagy ukazují, co máte v lednici.",
+    editor: "EDITOR\n\n• KROK 1: Základní info a suroviny.\n• KROK 2: Postup. Pomocí tlačítka Vložit přidáváte dynamické vazby na suroviny."
   };
 
   const loadData = async () => {
@@ -73,26 +57,11 @@ const App: React.FC = () => {
     } catch (e) { console.error("Chyba save:", e); }
   };
 
-  const handleInstallApp = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt(); // Vyvolá systémové okno
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setDeferredPrompt(null);
-      setIsInstallable(false);
-    }
-  };
-
   useEffect(() => {
-  const handler = (e: any) => {
-    e.preventDefault();
-    console.log("PWA: Prompt připraven"); // <--- Sleduj konzoli!
-    setDeferredPrompt(e);
-    setIsInstallable(true);
-  };
-  window.addEventListener('beforeinstallprompt', handler);
-  return () => window.removeEventListener('beforeinstallprompt', handler);
-}, []);
+    const handler = (e: any) => { e.preventDefault(); setDeferredPrompt(e); };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
 
   useEffect(() => {
     if ('serviceWorker' in navigator) {
@@ -110,7 +79,6 @@ const App: React.FC = () => {
     localStorage.setItem('app-theme', theme);
   }, [theme]);
 
-  // --- COMPUTED ---
   const allIngredientNames = useMemo(() => {
     let relevantRecipes = recipes;
     if (selectedFilterCats.length > 0) {
@@ -196,54 +164,13 @@ const App: React.FC = () => {
     };
   }, [selectedRecipe, viewHistoryIndex, recipes, viewServings]);
 
-  // --- HANDLERY ---
-  const openEditor = (recipe: Recipe | null = null) => {
-    if (recipe) {
-      setEditId(recipe.id); setEditName(recipe.name); setEditCategoryList(recipe.categories);
-      setEditPrep(recipe.prepTime); setEditCook(recipe.cookTime); setEditServings(recipe.baseServings);
-      setEditIngs(recipe.ingredients); setEditSelectedSubIds(recipe.subRecipeIds); setEditSteps(recipe.steps);
-    } else {
-      setEditId(null); setEditName(''); setEditCategoryList(['']); setEditPrep(''); setEditCook('');
-      setEditServings(1); setEditIngs([{ name: '', amount: '', unit: '' }]); setEditSelectedSubIds([]); setEditSteps(['']);
-    }
-    setModalStep(1); setSubSearch(''); setScene('editor');
-  };
-
-  const handleSave = () => {
-    const ingredientTotals = new Map<string, { amount: number, unit: string }>();
-    editSteps.forEach(step => {
-      const regex = /\{\{(?:RECIPE:\d+:|)(.*?)\|(.*?)\|(.*?)\}\}/g;
-      let match;
-      while ((match = regex.exec(step)) !== null) {
-        const name = match[1].trim();
-        const amount = parseFloat(match[2].replace(',', '.'));
-        const unit = match[3].trim();
-        if (!isNaN(amount)) {
-          const key = name.toLowerCase();
-          const existing = ingredientTotals.get(key);
-          if (existing) existing.amount += amount; else ingredientTotals.set(key, { amount, unit });
-        }
-      }
-    });
-
-    const extractedIngredients: Ingredient[] = [];
-    editIngs.forEach(ing => {
-      const key = ing.name.toLowerCase();
-      const total = ingredientTotals.get(key);
-      if (total) extractedIngredients.push({ name: ing.name, amount: (Math.round(total.amount * 10) / 10).toString(), unit: total.unit });
-      else if (ing.name.trim() !== "") extractedIngredients.push({ name: ing.name, amount: "0", unit: "" });
-    });
-
-    const newData: RecipeData = {
-      name: editName.trim(),
-      categories: editCategoryList.map(c => c.trim().toLowerCase()).filter(c => c !== ""),
-      prepTime: editPrep, cookTime: editCook, baseServings: editServings,
-      ingredients: extractedIngredients, subRecipeIds: editSelectedSubIds,
-      steps: editSteps.filter(s => s.trim() !== ""), updatedAt: Date.now()
-    };
-
+  const handleSaveRecipe = (newData: RecipeData) => {
     let updated = editId 
-      ? recipes.map(r => r.id === editId ? { ...newData, id: editId, history: [{ ...r, versionLabel: (r.history?.length || 0) + 1 }, ...(r.history || [])] } : r)
+      ? recipes.map(r => r.id === editId ? { 
+          ...newData, 
+          id: editId, 
+          history: [{ ...r, versionLabel: (r.history?.length || 0) + 1 }, ...(r.history || [])] 
+        } : r)
       : [...recipes, { ...newData, id: Date.now(), history: [] }];
 
     setRecipes(updated as Recipe[]);
@@ -278,14 +205,6 @@ const App: React.FC = () => {
     });
   };
 
-  const handleTagClick = (stepIdx: number, tagRaw: string) => {
-    const content = tagRaw.slice(2, -2).split('|');
-    setEditingTag({ stepIdx, tagRaw, name: content[0], amount: content[1] || "", unit: content[2] || "" });
-  };
-
-  const isStep1Valid = editName.trim() !== "" && editPrep !== "" && editCook !== "" && editIngs.every(i => i.name.trim() !== "");
-  const isStep2Valid = editCategoryList.every(c => c.trim() !== "") && editSteps.every(s => s.trim() !== "");
-
   return (
     <IonApp>
       <div id="app-container">
@@ -293,193 +212,48 @@ const App: React.FC = () => {
 
         {(scene === 'results' || scene === 'manage') && <RecipeList title={scene === 'results' ? 'Výsledky' : 'Kuchařka'} recipes={scene === 'results' ? matchedRecipes : recipes.filter(r => r.name.toLowerCase().includes(searchTerm.toLowerCase()))} showScore={scene === 'results'} searchTerm={searchTerm} onSearchChange={scene === 'manage' ? setSearchTerm : undefined} onBack={() => setScene('fridge')} onSelectRecipe={(r) => { setPrevScene(scene as 'results' | 'manage'); setSelectedRecipe(r); setViewHistoryIndex(null); setViewServings(r.baseServings || 1); setScene('detail'); }} />}
 
-        {scene === 'detail' && selectedRecipe && effectiveData && <RecipeDetail selectedRecipe={selectedRecipe} effectiveData={effectiveData} viewHistoryIndex={viewHistoryIndex} setViewHistoryIndex={setViewHistoryIndex} viewServings={viewServings} setViewServings={setViewServings} myIngredients={myIngredients} onDelete={id => { if (window.confirm('Smazat?')) { const u = recipes.filter(x => x.id !== id); setRecipes(u); saveData(u); setScene('manage'); } }} onEdit={openEditor} onShare={(e, id) => { e.stopPropagation(); const url = `${window.location.origin}${window.location.pathname}?recipe=${id}`; navigator.clipboard.writeText(url).then(() => alert('Zkopírováno!')); }} onBackToCurrent={() => setViewHistoryIndex(null)} renderStepWithIngredients={renderStepWithIngredients} />}
+        {scene === 'detail' && selectedRecipe && effectiveData && <RecipeDetail selectedRecipe={selectedRecipe} effectiveData={effectiveData} viewHistoryIndex={viewHistoryIndex} setViewHistoryIndex={setViewHistoryIndex} viewServings={viewServings} setViewServings={setViewServings} myIngredients={myIngredients} onDelete={id => { if (window.confirm('Smazat?')) { const u = recipes.filter(x => x.id !== id); setRecipes(u); saveData(u); setScene('manage'); } }} onEdit={(r) => { setEditId(r?.id || null); setScene('editor'); }} onShare={(e, id) => { e.stopPropagation(); const url = `${window.location.origin}${window.location.pathname}?recipe=${id}`; navigator.clipboard.writeText(url).then(() => alert('Zkopírováno!')); }} onBackToCurrent={() => setViewHistoryIndex(null)} renderStepWithIngredients={renderStepWithIngredients} />}
 
         {scene === 'editor' && (
-  <div className="fade-in">
-    {modalStep === 1 ? (
-      <div>
-        <h2>{editId ? 'Upravit recept' : 'Nový recept'}</h2>
-        <label className="field-label">Jméno jídla</label>
-        <input className="custom-input" value={editName} onChange={e => setEditName(e.target.value)} />
-        <div className="editor-row">
-          <div className="flex-1">
-            <label className="field-label">Základní porce</label>
-            <input className="custom-input" type="number" value={editServings} onChange={e => setEditServings(parseInt(e.target.value) || 1)} />
-          </div>
-          <div className="flex-1">
-            <label className="field-label">Příprava (min)</label>
-            <input className="custom-input" value={editPrep} onChange={e => setEditPrep(e.target.value)} type="number" />
-          </div>
-          <div className="flex-1">
-            <label className="field-label">Vaření (min)</label>
-            <input className="custom-input" value={editCook} onChange={e => setEditCook(e.target.value)} type="number" />
-          </div>
-        </div>
-        
-        <label className="field-label">Podrecepty:</label>
-        <input className="custom-input sub-search" placeholder="Hledat podrecept..." value={subSearch} onChange={e => setSubSearch(e.target.value)} />
-        <div className="sub-recipe-selector">
-          {recipes.filter(r => r.id !== editId && r.name.toLowerCase().includes(subSearch.toLowerCase())).map(r => (
-            <button 
-              key={r.id} 
-              className={`sub-btn ${editSelectedSubIds.includes(r.id) ? 'active' : ''}`} 
-              onClick={() => setEditSelectedSubIds(prev => prev.includes(r.id) ? prev.filter(x => x !== r.id) : [...prev, r.id])}
-            >
-              {r.name}
-            </button>
-          ))}
-        </div>
-
-        <label className="field-label">Seznam použitých surovin</label>
-        {editIngs.map((ing, idx) => (
-          <div key={idx} className="ing-edit-row">
-            <input className="custom-input" value={ing.name} list="modal-ing-names" onChange={e => { const n = [...editIngs]; n[idx].name = e.target.value; setEditIngs(n); }} />
-            <button className="remove-row-btn" onClick={() => setEditIngs(editIngs.filter((_, i) => i !== idx))}>-</button>
-          </div>
-        ))}
-        <datalist id="modal-ing-names">{allIngredientNames.map(i => <option key={i} value={i} />)}</datalist>
-        
-        <div className="editor-step-actions">
-          <button className="btn secondary-btn small-btn" onClick={() => setEditIngs([...editIngs, {name:'', amount:'', unit:''}])}>+ DALŠÍ SUROVINA</button>
-          <button className={`btn accent-btn next-step-btn ${!isStep1Valid ? 'disabled' : ''}`} onClick={() => isStep1Valid && setModalStep(2)}>DALŠÍ KROK →</button>
-        </div>
-      </div>
-    ) : (
-      <div>
-        <h2>Kategorie a Postup</h2>
-        <label className="field-label">Kategorie</label>
-        {editCategoryList.map((cat, idx) => (
-          <div key={idx} className="ing-edit-row">
-            <input className="custom-input" value={cat} list="modal-cat-list" onChange={e => { const newList = [...editCategoryList]; newList[idx] = e.target.value; setEditCategoryList(newList); }} />
-            {/* Tlačítko se vykreslí POUZE pokud index není 0 */}
-            {idx !== 0 ? (
-              <button className="remove-row-btn" onClick={() => setEditCategoryList(editCategoryList.filter((_, i) => i !== idx))}>-</button>
-            ) : (
-              <div style={{ width: '40px' }}></div> /* Placeholder pro zachování layoutu u prvního řádku */
-            )}
-          </div>
-        ))}
-        <datalist id="modal-cat-list">{allCategories.map(c => <option key={c} value={c} />)}</datalist>
-        <button className="btn secondary-btn small-btn" onClick={() => setEditCategoryList([...editCategoryList, ''])}>+ KATEGORIE</button>
-        
-        <label className="field-label editor-steps-label">Kroky postupu</label>
-        {editSteps.map((s, idx) => (
-          <div key={idx} className="editor-step-card">
-            <div className="step-header">
-              <div className="step-num-small">{idx + 1}</div>
-              <div className="textarea-container">
-                <textarea 
-                  className="textarea-common textarea-real" 
-                  value={s} 
-                  onChange={e => { const n = [...editSteps]; n[idx] = e.target.value; setEditSteps(n); }} 
-                  onScroll={e => { (e.target as any).nextElementSibling.scrollTop = (e.target as any).scrollTop; }} 
-                />
-                <div className="textarea-common textarea-visual">
-                  {s.split(/(\{\{.*?\}\})/g).map((part, i) => part.startsWith('{{') ? (
-                    <span key={i} className={`editor-tag ${part.includes('RECIPE:') ? 'editor-tag-recipe' : ''}`} onMouseDown={(e) => { e.preventDefault(); handleTagClick(idx, part); }}>
-                      {part.slice(2,-2).split('|')[1]} {part.slice(2,-2).split('|')[2]} {part.includes('RECIPE:') ? part.slice(2,-2).split('|')[0].split(':')[2] : part.slice(2,-2).split('|')[0]}
-                    </span>
-                  ) : part)}
-                </div>
-              </div>
-              {/* Tlačítko smazat krok se u prvního kroku (idx 0) nevykreslí */}
-              {idx !== 0 && (
-                <button className="remove-row-btn" onClick={() => setEditSteps(editSteps.filter((_, i) => i !== idx))}>-</button>
-              )}
-            </div>
-            <div className="step-insert-panel">
-              <select id={`ing-name-select-${idx}`} className="custom-input flex-2">
-                <optgroup label="SUROVINY">{editIngs.filter(i => i.name.trim() !== "").map((ing, iIdx) => <option key={iIdx} value={ing.name}>{ing.name}</option>)}</optgroup>
-                <optgroup label="PODRECEPTY">{recipes.filter(r => editSelectedSubIds.includes(r.id)).map(r => <option key={r.id} value={`RECIPE:${r.id}:${r.name}`}>{r.name}</option>)}</optgroup>
-              </select>
-              <input id={`ing-val-input-${idx}`} type="number" className="custom-input flex-1" placeholder="Mn." />
-              <input id={`ing-unit-select-${idx}`} className="custom-input flex-1" placeholder="Jedn." list={`units-${idx}`} />
-              <datalist id={`units-${idx}`}>{commonUnits.map(u => <option key={u} value={u} />)}</datalist>
-              <button className="btn insert-btn" onClick={() => {
-                const sel = document.getElementById(`ing-name-select-${idx}`) as any;
-                const val = document.getElementById(`ing-val-input-${idx}`) as any;
-                const unit = document.getElementById(`ing-unit-select-${idx}`) as any;
-                if (!sel.value || !val.value) return alert("Vyberte položku a zadejte množství.");
-                const n = [...editSteps]; n[idx] = n[idx] + (n[idx].length > 0 && !n[idx].endsWith(' ') ? ' ' : '') + `{{${sel.value}|${val.value}|${unit.value}}}`;
-                setEditSteps(n); val.value = "";
-              }}>VLOŽIT</button>
-            </div>
-          </div>
-        ))}
-        <button className="btn secondary-btn small-btn add-step-btn" onClick={() => setEditSteps([...editSteps, ''])}>+ PŘIDAT KROK</button>
-        
-        <div className="editor-footer-actions">
-          <button className="btn secondary-btn flex-1" onClick={() => setModalStep(1)}>ZPĚT</button>
-          <button className={`btn success-btn flex-2 ${!isStep2Valid ? 'disabled' : ''}`} onClick={() => isStep2Valid && handleSave()}>ULOŽIT RECEPT</button>
-        </div>
-      </div>
-    )}
-  </div>
-)}
-      </div>
-
-      {showHelpModal && (
-        <div className="tag-edit-overlay fade-in" onClick={() => setShowHelpModal(false)}>
-          <div className="tag-edit-modal help-modal" onClick={e => e.stopPropagation()}>
-            <h2 style={{ color: 'var(--accent)' }}>Nápověda</h2>
-            <div style={{ whiteSpace: 'pre-line', lineHeight: '1.6', fontSize: '0.95rem', color: '#ccc' }}>{helpTexts[scene] || "..."}</div>
-            <div className="modal-actions-row" style={{ marginTop: '25px', display: 'flex', gap: '10px' }}>
-              <button className="btn success-btn flex-2" onClick={() => setShowHelpModal(false)}>ROZUMÍM</button>
-              <button className="btn secondary-btn flex-1" onClick={() => { setShowHelpModal(false); setShowSettingsModal(true); }}>⚙️</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showSettingsModal && (
-  <div className="tag-edit-overlay fade-in" onClick={() => setShowSettingsModal(false)}>
-    <div className="tag-edit-modal settings-modal" onClick={e => e.stopPropagation()}>
-      <h2 style={{ color: 'var(--accent)', marginBottom: '20px' }}>Nastavení</h2>
-      
-      <div className="settings-content">
-        <label className="field-label">Vzhled aplikace</label>
-        <select 
-          className="custom-input" 
-          value={theme} 
-          onChange={(e) => setTheme(e.target.value)}
-          style={{ marginBottom: '20px' }}
-        >
-          <option value="dark">Tmavý</option>
-          <option value="light">Světlý</option>
-        </select>
-
-        {deferredPrompt && (
-          <button className="btn accent-btn small-btn" onClick={() => { deferredPrompt.prompt(); setShowSettingsModal(false); }}>
-            INSTALOVAT DO MOBILU
-          </button>
+          <RecipeEditor 
+            editId={editId} 
+            recipes={recipes} 
+            allIngredientNames={allIngredientNames} 
+            allCategories={allCategories} 
+            onSave={handleSaveRecipe} 
+            onCancel={() => setScene('manage')}
+            viewServings={viewServings}
+          />
         )}
       </div>
 
-      <div className="modal-actions" style={{ marginTop: '30px' }}>
-        <button className="btn success-btn" onClick={() => setShowSettingsModal(false)}>ZAVŘÍT</button>
-      </div>
-    </div>
-  </div>
-)}
+      {showHelpModal && (
+        <HelpModal 
+          scene={scene} 
+          helpTexts={helpTexts} 
+          onClose={() => setShowHelpModal(false)} 
+          onOpenSettings={() => setShowSettingsModal(true)} 
+        />
+      )}
 
-      {editingTag && (
-        <div className="tag-edit-overlay">
-          <div className="tag-edit-modal">
-            <h3>Upravit položku</h3>
-            <label className="field-label">Položka</label>
-            <select className="custom-input" value={editingTag.name} onChange={e => setEditingTag({...editingTag, name: e.target.value})}>
-              <optgroup label="SUROVINY">{editIngs.map((ing, iIdx) => <option key={iIdx} value={ing.name}>{ing.name}</option>)}</optgroup>
-              <optgroup label="PODRECEPTY">{recipes.filter(r => editSelectedSubIds.includes(r.id)).map(r => <option key={r.id} value={`RECIPE:${r.id}:${r.name}`}>{r.name}</option>)}</optgroup>
-            </select>
-            <div className="editor-row">
-              <div className="flex-1"><label className="field-label">Množství</label><input className="custom-input" type="number" value={editingTag.amount} onChange={e => setEditingTag({...editingTag, amount: e.target.value})} /></div>
-              <div className="flex-1"><label className="field-label">Jednotka</label><input className="custom-input" value={editingTag.unit} onChange={e => setEditingTag({...editingTag, unit: e.target.value})} /></div>
+      {showSettingsModal && (
+        <div className="tag-edit-overlay fade-in" onClick={() => setShowSettingsModal(false)}>
+          <div className="tag-edit-modal settings-modal" onClick={e => e.stopPropagation()}>
+            <h2 style={{ color: 'var(--accent)', marginBottom: '20px' }}>Nastavení</h2>
+            <div className="settings-content">
+              <label className="field-label">Vzhled aplikace</label>
+              <select className="custom-input" value={theme} onChange={(e) => setTheme(e.target.value)} style={{ marginBottom: '20px' }}>
+                <option value="dark">Tmavý</option>
+                <option value="light">Světlý</option>
+              </select>
+              {deferredPrompt && (
+                <button className="btn accent-btn small-btn" onClick={() => { deferredPrompt.prompt(); setShowSettingsModal(false); }}>
+                  INSTALOVAT DO MOBILU
+                </button>
+              )}
             </div>
-            <div className="modal-actions-list">
-              <button className="btn success-btn" onClick={() => { const n = [...editSteps]; n[editingTag.stepIdx] = n[editingTag.stepIdx].replace(editingTag.tagRaw, `{{${editingTag.name}|${editingTag.amount}|${editingTag.unit}}}`); setEditSteps(n); setEditingTag(null); }}>ULOŽIT</button>
-              <button className="btn danger-btn" onClick={() => { const n = [...editSteps]; n[editingTag.stepIdx] = n[editingTag.stepIdx].replace(editingTag.tagRaw, ""); setEditSteps(n); setEditingTag(null); }}>SMAZAT</button>
-              <button className="btn secondary-btn" onClick={() => setEditingTag(null)}>ZRUŠIT</button>
+            <div className="modal-actions" style={{ marginTop: '30px' }}>
+              <button className="btn success-btn" onClick={() => setShowSettingsModal(false)}>ZAVŘÍT</button>
             </div>
           </div>
         </div>
@@ -488,7 +262,7 @@ const App: React.FC = () => {
       <nav className="nav-bar">
         <button className={`nav-btn ${scene === 'fridge' || (scene === 'detail' && prevScene === 'results') ? 'active' : ''}`} onClick={() => setScene('fridge')}>LEDNICE</button>
         <button className={`nav-btn ${scene === 'manage' || (scene === 'editor' && editId !== null) || (scene === 'detail' && prevScene === 'manage') ? 'active' : ''}`} onClick={() => setScene('manage')}>RECEPTY</button>
-        <button className={`nav-btn ${scene === 'editor' && editId === null ? 'active' : ''}`} onClick={() => openEditor()}>PŘIDAT</button>
+        <button className={`nav-btn ${scene === 'editor' && editId === null ? 'active' : ''}`} onClick={() => { setEditId(null); setScene('editor'); }}>PŘIDAT</button>
         <button className="nav-btn help-nav-btn" onClick={() => setShowHelpModal(true)}>HELP</button>
       </nav>
     </IonApp>
