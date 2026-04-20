@@ -48,11 +48,11 @@ const App: React.FC = () => {
   const commonUnits = ['g', 'kg', 'ml', 'l', 'ks', 'lžíce', 'lžička', 'hrst', 'špetka', 'balení'];
 
   const helpTexts: { [key: string]: string } = {
-    fridge: "LEDNICE\n\n• Zaklikávání kategorií filtruje zobrazované recepty a suroviny.\n• Po kliknutí tlačítka suroviny se budou zobrazovat více recepty s touto surovinou.\n• Po zakliknutí se zobrazí možnost zadat přesné množství.\n• Pokud se tam nedá nic, aplikace bude počítat s tím, že máte vždy dostatek suroviny, jinak bude brát v potaz zadané množství.\n• Tlačítka vybrat/zrušit vše změní stav všech surovin.",
-    results: "VÝSLEDKY\n\n• Recepty seřazené podle shody.",
+    fridge: "LEDNICE\n\n• Zaklikávání kategorií filtruje zobrazované recepty a suroviny.\n• Po kliknutí tlačítka suroviny se budou prioritizovat recepty obsahující touto surovinou(pokud jí máte dostatek).\n• Po zakliknutí se zobrazí možnost zadat přesné množství.\n• Pokud se tam nedá nic, aplikace bude počítat s tím, že máte vždy dostatek suroviny, jinak bude brát v potaz zadané množství.\n• Tlačítka vybrat/zrušit vše změní stav všech surovin.",
+    results: "VÝSLEDKY\n\n• Recepty seřazené podle shody kategorie a ingrediencí.",
     manage: "KUCHAŘKA\n\n• Seznam všech receptů.\n• Pomocí hledání najdete jídlo podle názvu.",
-    detail: "POPIS RECEPTU\n\n• Porce - podle zadaného čísla se škálují ingredience v receptu.\n• Kliknutím na podrecept v textu na něj přejdete.\n• Barevné tagy ukazují, co máte v lednici.",
-    editor: "EDITOR\n\n• KROK 1: Základní info a suroviny - všechny zadané suroviny se poté dají přidat v receptu.\n• KROK 2: Postup. Tlačítkem VLOŽIT vytvoříte v kroku receptu odkaz na ingredienci s její váhou a jednotkou, která se bude moct měnit podle počtu porcí."
+    detail: "POPIS RECEPTU\n\n• Porce - podle zadaného čísla se škálují ingredience v receptu na potřebné hodnoty.\n• Kliknutím na podrecept v textu na něj přejdete.\n• Barevné tagy ukazují, co máte v lednici (červená = nedostatek / zelená = dostatek).\n•Popřípadě se dá recept smazat/sdílet/upravit",
+    editor: "EDITOR\n\n• KROK 1: Základní info a suroviny - uživatel musí zadat název,základní počet porcí,časy,suroviny(doporučují se suroviny obsahující zadané podslovo) a podrecepty,které se budou poté dát použít ve druhé fázi tvoření receptu.\n• KROK 2: Postup. musí se zadat kategorie a kroky postupu\n•Do postupu se píše postup do ,kterého se dají vkládat suroviny a podrecepty pomocí tlačítka vložit(v případě ,že je zadaná surovina,množství a jednotka) \n•po zmáčknutí se do textu vloží blok s ingrediencí a její hodnotou ,pro úpravu se klikne na bublinu => otevře se upravovací okno\n•až bude uživatel s receptem spokojený může ho tlačítkem uložit"
   };
 
   const loadData = async () => {
