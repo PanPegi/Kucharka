@@ -1,13 +1,10 @@
-const CACHE_NAME = 'kucharka-v1';
+const CACHE_NAME = 'kucharka-v2';
 
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './favicon.png'
-  // SEM DOPLŇ NÁZVY ZE SLOŽKY assets, např.:
-  // './assets/index-D123.js',
-  // './assets/index-D123.css'
 ];
 
 self.addEventListener('install', (event) => {
@@ -27,18 +24,33 @@ self.addEventListener('activate', (event) => {
       );
     })
   );
+  // Vynutí, aby nový SW ovládal stránku ihned, bez nutnosti restartu
+  self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
-  // PHP požadavky (ukládání/načítání dat) necachejeme, ty potřebují síť
+  // PHP požadavky (ukládání/načítání dat) necachejeme
   if (event.request.url.includes('.php')) {
     return;
   }
 
+  // STRATEGIE: NETWORK FIRST
+  // Nejdřív zkusíme síť, pokud selže (offline), jdeme do cache
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      // Pokud máme v cache, vrátíme to, jinak jdeme na síť
-      return cachedResponse || fetch(event.request);
-    })
+    fetch(event.request)
+      .then((response) => {
+        // Pokud je odpověď v pořádku, uložíme ji do cache pro příště
+        if (response.status === 200) {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
+        }
+        return response;
+      })
+      .catch(() => {
+        // Síť selhala (jsme offline), vrátíme soubor z cache
+        return caches.match(event.request);
+      })
   );
 });

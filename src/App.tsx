@@ -237,17 +237,23 @@ const App: React.FC = () => {
     const subRecipes = (base.subRecipeIds || []).map(id => recipes.find(r => r.id === id)).filter((r): r is Recipe => !!r);
     const ingredientMap = new Map<string, number>();
     
-    const processIngs = (ings: Ingredient[], bServings: number) => {
+    // Pomocná funkce pro agregaci a škálování surovin
+    const processIngs = (ings: Ingredient[], sourceBaseServings: number) => {
       ings.forEach(ing => {
         const key = `${ing.name.toLowerCase().trim()}|${ing.unit.toLowerCase().trim()}`;
         const amount = parseFloat(ing.amount);
         if (!isNaN(amount)) {
-          const scaled = (amount / bServings) * viewServings;
+          // KLÍČOVÁ ZMĚNA: Škálujeme podle (množství / základ_zdroje) * aktuálně_zobrazené_porce
+          const scaled = (amount / sourceBaseServings) * viewServings;
           ingredientMap.set(key, (ingredientMap.get(key) || 0) + scaled);
         }
       });
     };
+
+    // 1. Zpracujeme suroviny z podreceptů (každý má svůj vlastní baseServings)
     subRecipes.forEach(sub => processIngs(sub.ingredients, sub.baseServings));
+    
+    // 2. Zpracujeme suroviny z hlavního receptu
     processIngs(base.ingredients, base.baseServings);
     
     const mergedIngredients: Ingredient[] = Array.from(ingredientMap.entries()).map(([key, amount]) => {
@@ -259,6 +265,7 @@ const App: React.FC = () => {
       ...subRecipes.map(sub => ({ title: `PŘÍPRAVA: ${sub.name.toUpperCase()}`, content: sub.steps })),
       { title: `DOKONČENÍ: ${base.name.toUpperCase()}`, content: base.steps }
     ];
+
     return { ...base, ingredients: mergedIngredients, sections: mergedSections };
   }, [selectedRecipe, viewHistoryIndex, recipes, viewServings]);
 
@@ -385,21 +392,35 @@ const App: React.FC = () => {
         const rawContent = part.slice(2, -2).trim();
         const [idPart, customVal, customUnit] = rawContent.split('|').map(s => s?.trim());
 
+        // --- ŠKÁLOVÁNÍ PODRECEPTŮ ---
         if (idPart.startsWith("RECIPE:")) {
           const [, recipeId, recipeName] = idPart.split(':');
+          const target = recipes.find(r => r.id === Number(recipeId));
+          
+          // Výpočet škálování: (původní_množství / základní_porce_podreceptu) * aktuální_porce
+          const baseS = target?.baseServings || 1;
+          const scaled = (parseFloat(customVal || "0") / baseS) * viewServings;
+          
           return (
             <strong key={index} className="recipe-link-text" onClick={() => {
-              const target = recipes.find(r => r.id === Number(recipeId));
-              if (target) { setSelectedRecipe(target); setViewHistoryIndex(null); setScene('detail'); }
+              if (target) { 
+                setSelectedRecipe(target); 
+                setViewHistoryIndex(null); 
+                setViewServings(target.baseServings || 1); // Při prokliku nastavíme základní porce podreceptu
+                setScene('detail'); 
+              }
             }}>
-              {customVal} {customUnit} {recipeName}
+              {Math.round(scaled * 10) / 10} {customUnit} {recipeName}
             </strong>
           );
         }
 
+        // --- ŠKÁLOVÁNÍ INGREDIENCÍ ---
         const found = effectiveData?.ingredients.find(i => i.name.toLowerCase() === idPart.toLowerCase());
         if (found) {
-          const scaled = (parseFloat(customVal || "0") / (selectedRecipe?.baseServings || 1)) * viewServings;
+          // Zde používáme baseServings hlavního (vybraného) receptu
+          const baseS = selectedRecipe?.baseServings || 1;
+          const scaled = (parseFloat(customVal || "0") / baseS) * viewServings;
           return (
             <strong key={index} className="ingredient-highlight">
               {Math.round(scaled * 10) / 10} {customUnit || found.unit} {found.name}
