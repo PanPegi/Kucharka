@@ -649,132 +649,401 @@ h2 {
     background-color: #cbd5e1;
 }
 
-/* --- DETAIL - OVLÁDÁNÍ PORCÍ --- */
-.servings-control { 
-    background: rgba(0, 0, 0, 0.2); /* Neutrální adaptivní ztmavení */
-    padding: 15px; 
-    border-radius: 16px; 
-    margin-bottom: 20px; 
+/* --- DEFINICE MOTIVŮ (PROMĚNNÉ) --- */
+
+/* Výchozí a Tmavý motiv */
+:root, .theme-dark {
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --accent: #3b82f6;
+    --accent-hover: #2563eb;
+    --danger: #ef4444;
+    --success: #10b981;
+    --text: #f8fafc;
+    --nav-bg: rgba(17, 24, 39, 0.98);
+    --border: #334155;
+    --radius-lg: 14px;
+    --radius-md: 12px;
+}
+
+/* Světlý motiv */
+.theme-light {
+    --bg-color: #f1f5f9;
+    --card-bg: #ffffff;
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --text: #0f172a;
+    --nav-bg: rgba(241, 245, 249, 0.98);
+    --border: #cbd5e1;
+}
+
+/* Lesní motiv */
+.theme-forest {
+    --bg-color: #064e3b;
+    --card-bg: #065f46;
+    --accent: #10b981;
+    --accent-hover: #059669;
+    --border: #047857;
+    --text: #f0fdf4;
+}
+
+/* Motiv Západ slunce */
+.theme-sunset {
+    --bg-color: #451a03;
+    --card-bg: #78350f;
+    --accent: #f59e0b;
+    --accent-hover: #d97706;
+    --border: #92400e;
+    --text: #fff7ed;
+}
+
+/* --- ADAPTIVNÍ ÚPRAVY PRVKŮ --- */
+
+body { 
+    background-color: var(--bg-color); 
+    color: var(--text); 
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Vstupy a formuláře */
+.custom-input, select, .small-amount-input {
+    background: var(--bg-color);
+    color: var(--text);
+    border: 2px solid var(--border);
+}
+
+.theme-light .custom-input, 
+.theme-light select, 
+.theme-light .small-amount-input {
+    background: #ffffff;
+}
+
+/* Kontejnery s průhledností */
+.servings-control, .category-selection-grid { 
+    background: rgba(0, 0, 0, 0.2); 
     border: 1px solid var(--border); 
 }
 
-/* Úprava pro světlý motiv */
-.theme-light .servings-control {
-    background: #f8fafc; /* Jemné šedé pozadí ladící se zbytkem light modu */
-    border: 1px solid var(--border);
+.theme-light .servings-control, 
+.theme-light .category-selection-grid,
+.theme-light .sub-recipe-selector {
+    background: #f8fafc;
 }
 
-/* --- FILTRY - MŘÍŽKA KATEGORIÍ --- */
-.category-selection-grid { 
-    display: flex; 
-    flex-wrap: wrap; 
-    gap: 8px; 
-    margin-bottom: 20px; 
-    background: rgba(0, 0, 0, 0.2); /* Adaptivní ztmavení pro tmavé režimy */
+/* Tlačítka a navigace */
+.secondary-btn { background: var(--border); color: var(--text); }
+
+.nav-bar { background: var(--nav-bg); border-top: 1px solid var(--border); }
+.nav-btn { color: var(--text); opacity: 0.5; }
+.nav-btn.active { color: var(--accent); opacity: 1; }
+
+/* Editor a bubliny (Tagy) */
+.textarea-container { background: var(--bg-color); border: 1px solid var(--border); }
+.theme-light .textarea-container { background: #ffffff; }
+.textarea-visual { color: var(--text); }
+
+.theme-light .sub-btn { background: #e2e8f0; color: #475569; }
+.theme-light .editor-tag { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+.theme-light .editor-tag-recipe { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+
+/* Přepínač (Switch) */
+.theme-light .slider { background-color: #cbd5e1; }
+
+/* --- KONTEJNERY S RÁMEČKEM (KATEGORIE, PORCE, PODRECEPTY) --- */
+
+.servings-control, 
+.category-selection-grid, 
+.sub-recipe-selector { 
+    background: rgba(0, 0, 0, 0.2); 
     padding: 15px; 
     border-radius: 16px; 
-    border: 1px solid var(--border);
-}
-
-/* Úprava pro světlý motiv */
-.theme-light .category-selection-grid {
-    background: #f8fafc; /* Sjednoceno s ostatními bloky v light modu */
-    border: 1px solid var(--border);
-}
-.recipe-card { 
-    background: var(--card-bg); 
-    border-radius: 20px; 
-    padding: 20px; 
     border: 1px solid var(--border); 
-    cursor: pointer; 
-    transition: 0.2s; 
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
-.recipe-card:hover { 
-    transform: translateY(-3px); 
-    border-color: var(--accent); 
+/* Světlý motiv - sjednocení pozadí a rámečku */
+.theme-light .servings-control, 
+.theme-light .category-selection-grid,
+.theme-light .sub-recipe-selector {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
-.recipe-name { 
-    color: var(--accent); 
-    font-weight: 900; 
-    font-size: 1.2rem; 
-    display: block; 
-    margin-bottom: 8px; /* Mezera pod názvem */
+/* Lesní motiv - specifické ladění */
+.theme-forest .servings-control, 
+.theme-forest .category-selection-grid {
+    background: rgba(0, 0, 0, 0.15);
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
-.time-info {
-    margin-bottom: 8px; /* Mezera pod časem */
+/* Západ slunce - specifické ladění */
+.theme-sunset .servings-control, 
+.theme-sunset .category-selection-grid {
+    background: rgba(0, 0, 0, 0.25);
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Sekce pro mezery mezi kategoriemi */
-.category-rows {
-    display: flex;      /* Seřadí kategorie do řady */
-    flex-wrap: wrap;    /* Pokud se nevejdou, skočí na další řádek */
-    gap: 8px;           /* PŘESNÁ MEZERA MEZI KATEGORIEMI */
-    margin-top: 12px;   /* Odsazení celé skupiny kategorií od textu nad nimi */
+/* --- MEZERY MEZI KATEGORIEMI A TAGY --- */
+
+/* Sjednocený kontejner pro tagy (použitý v kartách i detailu) */
+.tag-container, 
+.category-rows, 
+.sub-recipe-selector, 
+.category-selection-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;           /* Mezera mezi kategoriemi horizontálně i vertikálně */
+    margin-top: 10px;    /* Odsazení od textu nad nimi */
 }
 
-.tag.cat-tag {
-    /* Ponechávám tvoje barvy, přidávám jen vnitřní odsazení tagu */
-    padding: 4px 10px;
+/* Úprava vnitřního odsazení tagů pro lepší čitelnost */
+.tag, 
+.cat-tag, 
+.cat-select-btn, 
+.sub-btn {
+    padding: 6px 12px;
     border-radius: 12px;
-} 
-
-/* --- ANIMACE PRO KLIKNUTÍ (FEEDBACK) --- */
-
-@keyframes button-pop {
-    0% { transform: scale(1); }
-    40% { transform: scale(0.92); }
-    100% { transform: scale(1); }
+    white-space: nowrap; /* Zabrání zalomení textu uvnitř kategorie */
 }
 
-/* Aplikace animace na všechna tlačítka při aktivaci (kliknutí) */
-.btn:active, 
-.nav-btn:active, 
-.logic-btn:active, 
-.counter-btn:active, 
-.cat-select-btn:active, 
-.sub-btn:active, 
-.remove-row-btn:active,
-.insert-btn:active {
-    animation: button-pop 0.15s ease-out;
-    /* Odstraníme původní transform: scale, aby se to netlouklo s animací */
-    transform: none !important; 
+/* Specifické odsazení pro kategorie v kartě receptu */
+.recipe-card .category-rows {
+    margin-top: 12px;
+    gap: 8px;
 }
 
-/* --- VYLEPŠENÍ HOVER STAVŮ (PŘED KLIKNUTÍM) --- */
-
-.btn:hover {
-    filter: brightness(1.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.accent-btn:hover { background: var(--accent-hover); }
-
-/* Jemné podsvícení pro navigační tlačítka */
-.nav-btn:hover {
-    color: var(--accent);
-    opacity: 0.8;
-}
-
-/* --- SPECIFICKÉ ÚPRAVY STÁVAJÍCÍCH TŘÍD --- */
-
-.counter-btn {
-    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.counter-btn:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.1);
-}
-
-.logic-btn {
+/* --- KARTA SUROVINY V LEDNICI --- */
+.ing-card {
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
     transition: all 0.2s ease;
 }
 
-.logic-btn:hover:not(.active) {
-    opacity: 0.9;
+.ing-card:hover {
     border-color: var(--accent);
-    background: rgba(59, 130, 246, 0.05);
+    transform: translateY(-2px);
+}
+
+.ing-card.selected {
+    border: 2px solid var(--success);
+    background-color: rgba(16, 185, 129, 0.1); /* Jemný Success nádech */
+}
+
+.ing-card .ing-name {
+    color: var(--text);
+    transition: font-weight 0.2s;
+}
+
+.ing-card.selected .ing-name {
+    font-weight: 900;
+    color: var(--success);
+}
+
+/* Úprava pro světlý motiv */
+.theme-light .ing-card.selected {
+    background-color: #f0fdf4; /* Velmi jemná zelená pro Light Mode */
+    border-color: var(--success);
+}/* --- KARTA SUROVINY V LEDNICI --- */
+.ing-card {
+    cursor: pointer;
+    padding: 12px;
+    border-radius: 14px; /* Sjednoceno s tvým radius-lg */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    
+    /* Adaptivní barvy podle zvoleného motivu */
+    background-color: var(--card-bg); 
+    border: 1px solid var(--border);
+    color: var(--text);
+    
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 5px var(--shadow); /* Použije tvou proměnnou stínu */
+}
+
+/* Hover stav pro nezakliknutou kartu */
+.ing-card:hover:not(.selected) {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    background-color: var(--bg-color); /* Jemná změna pozadí při přejetí */
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+/* Aktivní stav (zakliknutá karta) */
+.ing-card.selected {
+    border: 2px solid var(--success);
+    background-color: rgba(16, 185, 129, 0.08); /* Velmi jemný zelený nádech */
+}
+
+/* Text uvnitř karty */
+.ing-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.ing-card.selected .ing-name {
+    font-weight: 900;
+    color: var(--success);
+    opacity: 1;
+}
+
+/* Úprava pro světlý motiv (Light Theme) */
+.theme-light .ing-card:not(.selected) {
+    background-color: #ffffff;
+    border-color: #e2e8f0;
+}
+
+.theme-light .ing-card:hover:not(.selected) {
+    background-color: #f8fafc;
+    border-color: var(--accent);
+}
+
+/* --- KARTA SUROVINY V LEDNICI --- */
+.ing-card {
+    cursor: pointer;
+    padding: 12px;
+    border-radius: 14px; /* Sjednoceno s tvým radius-lg */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    
+    /* Adaptivní barvy podle zvoleného motivu */
+    background-color: var(--card-bg); 
+    border: 1px solid var(--border);
+    color: var(--text);
+    
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 5px var(--shadow); /* Použije tvou proměnnou stínu */
+}
+
+/* Hover stav pro nezakliknutou kartu */
+.ing-card:hover:not(.selected) {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    background-color: var(--bg-color); /* Jemná změna pozadí při přejetí */
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+/* Aktivní stav (zakliknutá karta) */
+.ing-card.selected {
+    border: 2px solid var(--success);
+    background-color: rgba(16, 185, 129, 0.08); /* Velmi jemný zelený nádech */
+}
+
+/* Text uvnitř karty */
+.ing-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.ing-card.selected .ing-name {
+    font-weight: 900;
+    color: var(--success);
+    opacity: 1;
+}
+
+/* Úprava pro světlý motiv (Light Theme) */
+.theme-light .ing-card:not(.selected) {
+    background-color: #ffffff;
+    border-color: #e2e8f0;
+}
+
+.theme-light .ing-card:hover:not(.selected) {
+    background-color: #f8fafc;
+    border-color: var(--accent);
+}
+
+/* --- KARTA SUROVINY V LEDNICI - PŮVODNÍ DARK VERZE --- */
+.ing-card {
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    
+    /* Používá tvé základní tmavé barvy */
+    background-color: var(--card-bg); /* #1e293b */
+    border: 1px solid var(--border);    /* #334155 */
+    transition: all 0.2s ease;
+}
+
+.ing-card:hover {
+    border-color: var(--accent); /* #3b82f6 */
+    transform: translateY(-2px);
+}
+
+.ing-card.selected {
+    /* Při výběru se změní na zelenou success barvu */
+    border: 2px solid var(--success); /* #10b981 */
+    background-color: rgba(16, 185, 129, 0.1); 
+}
+
+.ing-card .ing-name {
+    color: var(--text); /* #f8fafc */
+}
+
+.ing-card.selected .ing-name {
+    font-weight: 900;
+    color: var(--success);
+}
+
+/* --- KARTA SUROVINY V LEDNICI - DARK MODE OPTIMALIZACE --- */
+.ing-card {
+    cursor: pointer;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    
+    /* Základní stav: Použije tvou tmavou barvu karet */
+    background-color: var(--card-bg); 
+    border: 1px solid var(--border);
+    color: var(--text);
+    transition: all 0.2s ease;
+}
+
+/* Stav, kdy NENÍ zakliknutá (v Dark Modu) */
+.ing-card:not(.selected) {
+    /* Můžeš zkusit i o něco tmavší než pozadí karty, aby to vypadalo "vnořeně" */
+    background-color: rgba(30, 41, 59, 0.5); 
+}
+
+/* Hover pro nezakliknutou kartu v Dark Modu */
+.ing-card:hover:not(.selected) {
+    background-color: var(--card-bg);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+
+/* Zakliknutá karta v Dark Modu - OPRAVA POZADÍ */
+.ing-card.selected {
+    border: 2px solid var(--success);
+    /* Tmavě zelený nádech, který v Dark Modu neřeže do očí */
+    background-color: rgba(16, 185, 129, 0.15); 
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.1); /* Jemná zelená záře */
+}
+
+/* Úprava pro světlý motiv - aby zůstala bílá */
+.theme-light .ing-card:not(.selected) {
+    background-color: #ffffff;
+    border-color: #cbd5e1;
+}
+
+.theme-light .ing-card.selected {
+    background-color: #f0fdf4; /* Světle zelená pro light mode */
 }

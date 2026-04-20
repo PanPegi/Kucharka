@@ -9,8 +9,8 @@ interface FridgeProps {
   categorySearchTerm: string;
   setCategorySearchTerm: (val: string) => void;
   allIngredientNames: string[];
-  myIngredients: {[key: string]: string};
-  setMyIngredients: React.Dispatch<React.SetStateAction<{[key: string]: string}>>;
+  myIngredients: { [key: string]: string };
+  setMyIngredients: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>;
   onFindRecipes: () => void;
 }
 
@@ -32,9 +32,16 @@ const Fridge: React.FC<FridgeProps> = ({
   };
 
   const updateAmount = (ing: string, val: string) => {
+    const cleanVal = val.replace(/\D/g, ''); // Regulární výraz povolí jen číslice 0-9
     const next = { ...myIngredients };
-    next[ing.toLowerCase()] = val;
+    next[ing.toLowerCase()] = cleanVal;
     setMyIngredients(next);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (["e", "E", "+", "-", ",", "."].includes(e.key)) {
+      e.preventDefault();
+    }
   };
 
   return (
@@ -42,14 +49,14 @@ const Fridge: React.FC<FridgeProps> = ({
       <h2>Lednice</h2>
       <div className="category-logic-bar">
         <div className="logic-toggle-group">
-          <button 
-            className={`logic-btn ${categoryLogic === 'OR' ? 'active' : ''}`} 
+          <button
+            className={`logic-btn ${categoryLogic === 'OR' ? 'active' : ''}`}
             onClick={() => setCategoryLogic('OR')}
           >
             JÍDLA OBSAHUJÍCÍ ALESPOŇ JEDNU Z TĚCHTO KATEGORIÍ
           </button>
-          <button 
-            className={`logic-btn ${categoryLogic === 'AND' ? 'active' : ''}`} 
+          <button
+            className={`logic-btn ${categoryLogic === 'AND' ? 'active' : ''}`}
             onClick={() => setCategoryLogic('AND')}
           >
             JÍDLA OBSAHUJÍCÍ VŠECHNY TYTO KATEGORIE
@@ -58,7 +65,7 @@ const Fridge: React.FC<FridgeProps> = ({
 
         <div className="fridge-action-bar">
           <button className="btn secondary-btn small-btn" onClick={() => {
-            const next: {[key: string]: string} = {};
+            const next: { [key: string]: string } = {};
             allIngredientNames.forEach(ing => next[ing.toLowerCase()] = "");
             setMyIngredients(next);
           }}>VYBRAT VŠE</button>
@@ -66,20 +73,20 @@ const Fridge: React.FC<FridgeProps> = ({
         </div>
 
         <div className="search-wrapper">
-          <input 
-            className="custom-input" 
-            placeholder="Hledat kategorii" 
-            value={categorySearchTerm} 
-            onChange={(e) => setCategorySearchTerm(e.target.value)} 
+          <input
+            className="custom-input"
+            placeholder="Hledat kategorii"
+            value={categorySearchTerm}
+            onChange={(e) => setCategorySearchTerm(e.target.value)}
           />
         </div>
       </div>
 
       <div className="category-selection-grid">
         {allCategories.filter(c => c.toLowerCase().includes(categorySearchTerm.toLowerCase())).map(cat => (
-          <button 
-            key={cat} 
-            className={`cat-select-btn ${selectedFilterCats.includes(cat) ? 'selected' : ''}`} 
+          <button
+            key={cat}
+            className={`cat-select-btn ${selectedFilterCats.includes(cat) ? 'selected' : ''}`}
             onClick={() => setSelectedFilterCats(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat])}
           >
             {cat}
@@ -92,36 +99,26 @@ const Fridge: React.FC<FridgeProps> = ({
           {allIngredientNames.map(ing => {
             const isSelected = myIngredients[ing.toLowerCase()] !== undefined;
             return (
-              <div 
-                key={ing} 
+              <div
+                key={ing}
                 className={`ing-card ${isSelected ? 'selected' : ''}`}
                 onClick={() => toggleIngredient(ing)}
-                style={{
-                  cursor: 'pointer',
-                  border: isSelected ? '2px solid #4CAF50' : '1px solid #ddd',
-                  padding: '10px',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '10px',
-                  backgroundColor: isSelected ? '#f0f9f0' : '#fff',
-                  transition: 'all 0.2s ease'
-                }}
               >
-                <div className="ing-main" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span className="ing-name" style={{ fontWeight: isSelected ? 'bold' : 'normal' }}>{ing}</span>
-                  {/* {isSelected && <span className="check-icon">✓</span>} */}
+                <div className="ing-main">
+                  <span className="ing-name">{ing}</span>
                 </div>
-                
+
                 {isSelected && (
-                  <input 
-                    className="small-amount-input" 
-                    type="number" 
-                    placeholder="Množství" 
-                    value={myIngredients[ing.toLowerCase()]} 
-                    onClick={(e) => e.stopPropagation()} // Zabrání odškrtnutí při kliku do pole
+                  <input
+                    className="small-amount-input"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    placeholder="Množství"
+                    value={myIngredients[ing.toLowerCase()]}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={handleKeyDown}
                     onChange={(e) => updateAmount(ing, e.target.value)}
-                    style={{ width: '100%' }}
                   />
                 )}
               </div>
