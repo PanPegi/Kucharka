@@ -681,3 +681,100 @@ h2 {
     background: #f8fafc; /* Sjednoceno s ostatními bloky v light modu */
     border: 1px solid var(--border);
 }
+.recipe-card { 
+    background: var(--card-bg); 
+    border-radius: 20px; 
+    padding: 20px; 
+    border: 1px solid var(--border); 
+    cursor: pointer; 
+    transition: 0.2s; 
+}
+
+.recipe-card:hover { 
+    transform: translateY(-3px); 
+    border-color: var(--accent); 
+}
+
+.recipe-name { 
+    color: var(--accent); 
+    font-weight: 900; 
+    font-size: 1.2rem; 
+    display: block; 
+    margin-bottom: 8px; /* Mezera pod názvem */
+}
+
+.time-info {
+    margin-bottom: 8px; /* Mezera pod časem */
+}
+
+/* Sekce pro mezery mezi kategoriemi */
+.category-rows {
+    display: flex;      /* Seřadí kategorie do řady */
+    flex-wrap: wrap;    /* Pokud se nevejdou, skočí na další řádek */
+    gap: 8px;           /* PŘESNÁ MEZERA MEZI KATEGORIEMI */
+    margin-top: 12px;   /* Odsazení celé skupiny kategorií od textu nad nimi */
+}
+
+.tag.cat-tag {
+    /* Ponechávám tvoje barvy, přidávám jen vnitřní odsazení tagu */
+    padding: 4px 10px;
+    border-radius: 12px;
+} 
+
+/* --- ANIMACE PRO KLIKNUTÍ (FEEDBACK) --- */
+
+@keyframes button-pop {
+    0% { transform: scale(1); }
+    40% { transform: scale(0.92); }
+    100% { transform: scale(1); }
+}
+
+/* Aplikace animace na všechna tlačítka při aktivaci (kliknutí) */
+.btn:active, 
+.nav-btn:active, 
+.logic-btn:active, 
+.counter-btn:active, 
+.cat-select-btn:active, 
+.sub-btn:active, 
+.remove-row-btn:active,
+.insert-btn:active {
+    animation: button-pop 0.15s ease-out;
+    /* Odstraníme původní transform: scale, aby se to netlouklo s animací */
+    transform: none !important; 
+}
+
+/* --- VYLEPŠENÍ HOVER STAVŮ (PŘED KLIKNUTÍM) --- */
+
+.btn:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.accent-btn:hover { background: var(--accent-hover); }
+
+/* Jemné podsvícení pro navigační tlačítka */
+.nav-btn:hover {
+    color: var(--accent);
+    opacity: 0.8;
+}
+
+/* --- SPECIFICKÉ ÚPRAVY STÁVAJÍCÍCH TŘÍD --- */
+
+.counter-btn {
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.counter-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.logic-btn {
+    transition: all 0.2s ease;
+}
+
+.logic-btn:hover:not(.active) {
+    opacity: 0.9;
+    border-color: var(--accent);
+    background: rgba(59, 130, 246, 0.05);
+}

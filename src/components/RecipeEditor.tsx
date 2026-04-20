@@ -42,45 +42,65 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
   const isStep2Valid = editSteps.every(s => s.trim() !== "");
 
   const handleLocalSave = () => {
-    const ingredientTotals = new Map<string, { amount: number, unit: string }>();
-    editSteps.forEach(step => {
-      const regex = /\{\{(?:RECIPE:\d+:|)(.*?)\|(.*?)\|(.*?)\}\}/g;
-      let match;
-      while ((match = regex.exec(step)) !== null) {
-        const name = match[1].trim();
-        const amount = parseFloat(match[2].replace(',', '.'));
-        const unit = match[3].trim();
-        if (!isNaN(amount)) {
-          const key = name.toLowerCase();
-          const existing = ingredientTotals.get(key);
-          if (existing) existing.amount += amount; else ingredientTotals.set(key, { amount, unit });
+  const ingredientTotals = new Map<string, { amount: number, unit: string }>();
+  const usedSubRecipeIds = new Set<number>();
+
+  // 1. Projdeme kroky a zjistíme, co je v textu skutečně použito pomocí tagů {{...}}
+  editSteps.forEach(step => {
+    // Regex zachytí: {{Jméno|Mn|Jedn}} NEBO {{RECIPE:ID:Jméno|Mn|Jedn}}
+    const regex = /\{\{(?:RECIPE:(\d+):|)(.*?)\|(.*?)\|(.*?)\}\}/g;
+    let match;
+    while ((match = regex.exec(step)) !== null) {
+      const subRecipeIdStr = match[1];
+      const name = match[2].trim();
+      const amount = parseFloat(match[3].replace(',', '.'));
+      const unit = match[4].trim();
+
+      if (subRecipeIdStr) {
+        // Pokud tag obsahuje ID podreceptu, přidáme ho do sady použitých
+        usedSubRecipeIds.add(parseInt(subRecipeIdStr));
+      } else if (!isNaN(amount)) {
+        // Pokud je to běžná surovina, sečteme množství pro finální uložení
+        const key = name.toLowerCase();
+        const existing = ingredientTotals.get(key);
+        if (existing) {
+          existing.amount += amount;
+        } else {
+          ingredientTotals.set(key, { amount, unit });
         }
       }
-    });
+    }
+  });
 
-    const extractedIngredients: Ingredient[] = [];
-    editIngs.forEach(ing => {
-      const key = ing.name.toLowerCase();
-      const total = ingredientTotals.get(key);
-      if (total) {
-        extractedIngredients.push({ name: ing.name, amount: (Math.round(total.amount * 10) / 10).toString(), unit: total.unit });
-      } else if (ing.name.trim() !== "") {
-        extractedIngredients.push({ name: ing.name, amount: "0", unit: "" });
-      }
-    });
+  // 2. Do receptu uložíme jen ty suroviny, které byly detekovány v Mapě (jsou v postupu)
+  const extractedIngredients: Ingredient[] = [];
+  editIngs.forEach(ing => {
+    const key = ing.name.toLowerCase();
+    if (ingredientTotals.has(key)) {
+      const total = ingredientTotals.get(key)!;
+      extractedIngredients.push({ 
+        name: ing.name, 
+        amount: (Math.round(total.amount * 10) / 10).toString(), 
+        unit: total.unit 
+      });
+    }
+  });
 
-    onSave({
-      name: editName.trim(),
-      categories: editCategoryList.map(c => c.trim().toLowerCase()).filter(c => c !== ""),
-      prepTime: editPrep,
-      cookTime: editCook,
-      baseServings: editServings,
-      ingredients: extractedIngredients,
-      subRecipeIds: editSelectedSubIds,
-      steps: editSteps.filter(s => s.trim() !== ""),
-      updatedAt: Date.now()
-    });
-  };
+  // 3. Do receptu uložíme jen ta ID podreceptů, která byla nalezena v Setu
+  const finalSubRecipeIds = editSelectedSubIds.filter(id => usedSubRecipeIds.has(id));
+
+  onSave({
+    name: editName.trim(),
+    categories: editCategoryList.map(c => c.trim().toLowerCase()).filter(c => c !== ""),
+    prepTime: editPrep,
+    cookTime: editCook,
+    baseServings: editServings,
+    ingredients: extractedIngredients,
+    subRecipeIds: finalSubRecipeIds, // Pouze skutečně použité podrecepty
+    steps: editSteps.filter(s => s.trim() !== ""),
+    updatedAt: Date.now()
+  });
+};
 
   const handleTagClick = (stepIdx: number, tagRaw: string) => {
     const content = tagRaw.slice(2, -2).split('|');

@@ -11,7 +11,7 @@ interface RecipeDetailProps {
   myIngredients: {[key: string]: string};
   onDelete: (id: number) => void;
   onEdit: (recipe: Recipe) => void;
-  onShare: (e: React.MouseEvent, id: number) => void;
+  onShare: (e: React.MouseEvent, id: number, versionIndex: number | null) => void;
   onBackToCurrent: () => void;
   renderStepWithIngredients: (text: string) => React.ReactNode;
 }
@@ -26,7 +26,11 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({
       {selectedRecipe.history && selectedRecipe.history.length > 0 && (
         <div className="version-bar">
           <label className="field-label">Zvolit verzi:</label>
-          <select className="custom-input" value={viewHistoryIndex === null ? "current" : viewHistoryIndex} onChange={(e) => setViewHistoryIndex(e.target.value === "current" ? null : parseInt(e.target.value))}>
+          <select 
+            className="custom-input" 
+            value={viewHistoryIndex === null ? "current" : viewHistoryIndex} 
+            onChange={(e) => setViewHistoryIndex(e.target.value === "current" ? null : parseInt(e.target.value))}
+          >
             <option value="current">{selectedRecipe.history.length + 1} (Aktuální)</option>
             {selectedRecipe.history.map((h, idx) => (
               <option key={idx} value={idx}>Verze {h.versionLabel || (selectedRecipe.history.length - idx)}</option>
@@ -85,15 +89,23 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({
       </div>
 
       <div className="card-actions-row">
+        {/* Tlačítka specifická pro aktuální pohled vs. archiv */}
         {viewHistoryIndex === null ? (
           <>
             <button className="btn danger-btn" onClick={() => onDelete(selectedRecipe.id)}>Smazat</button>
             <button className="btn accent-btn" onClick={() => onEdit(selectedRecipe)}>Upravit</button>
-            <button className="btn share-btn" onClick={(e) => onShare(e, selectedRecipe.id)}>Sdílet</button>
           </>
         ) : (
           <button className="btn secondary-btn" onClick={onBackToCurrent}>Zpět na aktuální</button>
         )}
+
+        {/* Tlačítko Sdílet je teď dostupné VŽDY, nezávisle na tom, zda je to archiv nebo ne */}
+        <button 
+          className="btn share-btn" 
+          onClick={(e) => onShare(e, selectedRecipe.id, viewHistoryIndex)}
+        >
+          Sdílet
+        </button>
       </div>
     </div>
   );

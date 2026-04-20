@@ -79,6 +79,25 @@ const App: React.FC = () => {
     localStorage.setItem('app-theme', theme);
   }, [theme]);
 
+useEffect(() => {
+  if (recipes.length === 0) return; 
+
+  const params = new URLSearchParams(window.location.search);
+  const recipeId = params.get('recipe');
+  const versionIndex = params.get('v');
+
+  if (recipeId) {
+    const target = recipes.find(r => r.id === Number(recipeId));
+    if (target) {
+      setSelectedRecipe(target);
+      setViewHistoryIndex(versionIndex !== null ? Number(versionIndex) : null);
+      setViewServings(target.baseServings || 1);
+      setScene('detail');
+      setPrevScene('manage');
+    }
+  }
+}, [recipes]);
+
   const allIngredientNames = useMemo(() => {
     let relevantRecipes = recipes;
     if (selectedFilterCats.length > 0) {

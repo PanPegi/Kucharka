@@ -19,15 +19,39 @@ const Fridge: React.FC<FridgeProps> = ({
   setCategoryLogic, categorySearchTerm, setCategorySearchTerm, allIngredientNames,
   myIngredients, setMyIngredients, onFindRecipes
 }) => {
+
+  const toggleIngredient = (ing: string) => {
+    const key = ing.toLowerCase();
+    const next = { ...myIngredients };
+    if (next[key] !== undefined) {
+      delete next[key];
+    } else {
+      next[key] = "";
+    }
+    setMyIngredients(next);
+  };
+
+  const updateAmount = (ing: string, val: string) => {
+    const next = { ...myIngredients };
+    next[ing.toLowerCase()] = val;
+    setMyIngredients(next);
+  };
+
   return (
     <div className="fade-in">
       <h2>Lednice</h2>
       <div className="category-logic-bar">
         <div className="logic-toggle-group">
-          <button className={`logic-btn ${categoryLogic === 'OR' ? 'active' : ''}`} onClick={() => setCategoryLogic('OR')}>
+          <button 
+            className={`logic-btn ${categoryLogic === 'OR' ? 'active' : ''}`} 
+            onClick={() => setCategoryLogic('OR')}
+          >
             JÍDLA OBSAHUJÍCÍ ALESPOŇ JEDNU Z TĚCHTO KATEGORIÍ
           </button>
-          <button className={`logic-btn ${categoryLogic === 'AND' ? 'active' : ''}`} onClick={() => setCategoryLogic('AND')}>
+          <button 
+            className={`logic-btn ${categoryLogic === 'AND' ? 'active' : ''}`} 
+            onClick={() => setCategoryLogic('AND')}
+          >
             JÍDLA OBSAHUJÍCÍ VŠECHNY TYTO KATEGORIE
           </button>
         </div>
@@ -42,13 +66,22 @@ const Fridge: React.FC<FridgeProps> = ({
         </div>
 
         <div className="search-wrapper">
-          <input className="custom-input" placeholder="Hledat kategorii" value={categorySearchTerm} onChange={(e) => setCategorySearchTerm(e.target.value)} />
+          <input 
+            className="custom-input" 
+            placeholder="Hledat kategorii" 
+            value={categorySearchTerm} 
+            onChange={(e) => setCategorySearchTerm(e.target.value)} 
+          />
         </div>
       </div>
 
       <div className="category-selection-grid">
-        {allCategories.filter(c => c.includes(categorySearchTerm.toLowerCase())).map(cat => (
-          <button key={cat} className={`cat-select-btn ${selectedFilterCats.includes(cat) ? 'selected' : ''}`} onClick={() => setSelectedFilterCats(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat])}>
+        {allCategories.filter(c => c.toLowerCase().includes(categorySearchTerm.toLowerCase())).map(cat => (
+          <button 
+            key={cat} 
+            className={`cat-select-btn ${selectedFilterCats.includes(cat) ? 'selected' : ''}`} 
+            onClick={() => setSelectedFilterCats(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat])}
+          >
             {cat}
           </button>
         ))}
@@ -56,29 +89,47 @@ const Fridge: React.FC<FridgeProps> = ({
 
       <div className="ingredients-section">
         <div className="responsive-grid">
-          {allIngredientNames.map(ing => (
-            <div key={ing} className="toggle-row-complex">
-              <div className="ing-main">
-                <span className="ing-name">{ing}</span>
-                <label className="switch">
-                  <input type="checkbox" checked={myIngredients[ing.toLowerCase()] !== undefined} onChange={() => {
-                    const next = { ...myIngredients };
-                    if (next[ing.toLowerCase()] !== undefined) delete next[ing.toLowerCase()]; else next[ing.toLowerCase()] = "";
-                    setMyIngredients(next);
-                  }} />
-                  <span className="slider"></span>
-                </label>
+          {allIngredientNames.map(ing => {
+            const isSelected = myIngredients[ing.toLowerCase()] !== undefined;
+            return (
+              <div 
+                key={ing} 
+                className={`ing-card ${isSelected ? 'selected' : ''}`}
+                onClick={() => toggleIngredient(ing)}
+                style={{
+                  cursor: 'pointer',
+                  border: isSelected ? '2px solid #4CAF50' : '1px solid #ddd',
+                  padding: '10px',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                  backgroundColor: isSelected ? '#f0f9f0' : '#fff',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <div className="ing-main" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span className="ing-name" style={{ fontWeight: isSelected ? 'bold' : 'normal' }}>{ing}</span>
+                  {/* {isSelected && <span className="check-icon">✓</span>} */}
+                </div>
+                
+                {isSelected && (
+                  <input 
+                    className="small-amount-input" 
+                    type="number" 
+                    placeholder="Množství" 
+                    value={myIngredients[ing.toLowerCase()]} 
+                    onClick={(e) => e.stopPropagation()} // Zabrání odškrtnutí při kliku do pole
+                    onChange={(e) => updateAmount(ing, e.target.value)}
+                    style={{ width: '100%' }}
+                  />
+                )}
               </div>
-              {myIngredients[ing.toLowerCase()] !== undefined && (
-                <input className="small-amount-input" type="number" placeholder="Množství" value={myIngredients[ing.toLowerCase()]} onChange={(e) => {
-                  const next = { ...myIngredients }; next[ing.toLowerCase()] = e.target.value; setMyIngredients(next);
-                }} />
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
-      <br></br>
+      <br />
       <button className="btn success-btn main-action-btn" onClick={onFindRecipes}>NAJÍT RECEPTY</button>
     </div>
   );
