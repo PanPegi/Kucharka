@@ -1,0 +1,40 @@
+[33mc9ccdb0[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m HEAD@{0}: reset: moving to HEAD
+[33mc9ccdb0[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m HEAD@{1}: reset: moving to HEAD~4
+[33maf9fe51[m HEAD@{2}: reset: moving to HEAD~2
+[33m9aba27f[m HEAD@{3}: reset: moving to HEAD~3
+[33m069fb42[m HEAD@{4}: reset: moving to HEAD~2
+[33m58826e4[m HEAD@{5}: reset: moving to HEAD~1
+[33m633ec48[m HEAD@{6}: reset: moving to HEAD
+[33m633ec48[m HEAD@{7}: commit: podrecept je vzdy porce
+[33m58826e4[m HEAD@{8}: reset: moving to HEAD
+[33m58826e4[m HEAD@{9}: commit: lepsi vizua;
+[33m85e71f3[m HEAD@{10}: commit: pridani nekolika fci + animace
+[33m069fb42[m HEAD@{11}: commit: upraveny vzhled
+[33m7c5c887[m HEAD@{12}: commit: zmena kategorie
+[33m6b65de0[m HEAD@{13}: commit: zmena kategorie
+[33m9aba27f[m HEAD@{14}: commit: musi byt zadana aspon jedna kategorie a jeden krok
+[33mfd3c9bc[m HEAD@{15}: commit: lepsi napovedy
+[33maf9fe51[m HEAD@{16}: commit: da se stahnout do mobilu
+[33m2cc45c9[m HEAD@{17}: commit: rozdeleni na vice souboru
+[33m7e4704c[m HEAD@{18}: commit: funkcni skalovani
+[33m20f5476[m HEAD@{19}: commit: zas to funguje
+[33mc9ccdb0[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m HEAD@{20}: commit: podrecepty se skaluji
+[33mcaeaf02[m HEAD@{21}: commit: theme selector funguje a ma theme light/dark
+[33ma4f4b79[m HEAD@{22}: commit: hezky vzhled
+[33m97569b9[m HEAD@{23}: commit: finale
+[33m7296eab[m HEAD@{24}: commit: lepsi predelavani suroviny
+[33m16ede6a[m HEAD@{25}: commit: napovedy
+[33m5c87bbf[m HEAD@{26}: commit: zobrazovani ingredienci citelne
+[33m7de1b9d[m HEAD@{27}: commit: rozdeleni buttonu
+[33m7df49fe[m HEAD@{28}: commit: promenne v receptu
+[33m37a7119[m HEAD@{29}: commit: moznost sdilet recept
+[33m239f6d8[m HEAD@{30}: commit: vsechno hezky vypada suroviny se pridavaji podle vybranych kategorii
+[33mdc74f1e[m HEAD@{31}: commit: finale 2
+[33mb6005ab[m HEAD@{32}: commit: finale 1
+[33mf72866b[m HEAD@{33}: commit: pridano moc veci
+[33m77d223f[m HEAD@{34}: commit: v 1.5 hezky to vypada
+[33mcfa1d28[m HEAD@{35}: commit: v 1.4 recepty maji podrecepty a suroviny maji svoje nastavitelne jednotky
+[33m8296782[m HEAD@{36}: commit: v 1.3 suroviny maji naseptavac
+[33mfd5717e[m HEAD@{37}: commit: v 1.2 pridavani vice kategorii
+[33m0b62fb0[m HEAD@{38}: commit: v 1.1 opraveni velikosti okna
+[33mf6123c9[m HEAD@{39}: commit (initial): v 1.0

@@ -184,17 +184,23 @@ useEffect(() => {
   }, [selectedRecipe, viewHistoryIndex, recipes, viewServings]);
 
   const handleSaveRecipe = (newData: RecipeData) => {
+    const newId = editId || Date.now();
     let updated = editId 
       ? recipes.map(r => r.id === editId ? { 
           ...newData, 
           id: editId, 
           history: [{ ...r, versionLabel: (r.history?.length || 0) + 1 }, ...(r.history || [])] 
         } : r)
-      : [...recipes, { ...newData, id: Date.now(), history: [] }];
+      : [...recipes, { ...newData, id: newId, history: [] }];
 
+    const savedRecipe = updated.find(r => r.id === newId) as Recipe;
     setRecipes(updated as Recipe[]);
     saveData(updated as Recipe[]);
-    setScene('manage');
+    setSelectedRecipe(savedRecipe);
+    setViewHistoryIndex(null);
+    setViewServings(savedRecipe.baseServings || 1);
+    setPrevScene('manage');
+    setScene('detail');
   };
 
   const renderStepWithIngredients = (stepText: string) => {
@@ -204,15 +210,14 @@ useEffect(() => {
         const rawContent = part.slice(2, -2).trim();
         const [idPart, customVal, customUnit] = rawContent.split('|').map(s => s?.trim());
         if (idPart.startsWith("RECIPE:")) {
-          const [, recipeId, recipeName] = idPart.split(':');
-          const target = recipes.find(r => r.id === Number(recipeId));
-          const scaled = (parseFloat(customVal || "0") / (target?.baseServings || 1)) * viewServings;
-          return (
-            <strong key={index} className="recipe-link-text" onClick={() => {
-              if (target) { setSelectedRecipe(target); setViewHistoryIndex(null); setViewServings(target.baseServings || 1); setScene('detail'); }
-            }}>{Math.round(scaled * 10) / 10} {customUnit} {recipeName}</strong>
-          );
-        }
+  const [, recipeId, recipeName] = idPart.split(':');
+  const target = recipes.find(r => r.id === Number(recipeId));
+  return (
+    <strong key={index} className="recipe-link-text" onClick={() => {
+      if (target) { setSelectedRecipe(target); setViewHistoryIndex(null); setViewServings(target.baseServings || 1); setScene('detail'); }
+    }}>{recipeName}</strong>
+  );
+}
         const found = effectiveData?.ingredients.find(i => i.name.toLowerCase() === idPart.toLowerCase());
         if (found) {
           const scaled = (parseFloat(customVal || "0") / (selectedRecipe?.baseServings || 1)) * viewServings;
