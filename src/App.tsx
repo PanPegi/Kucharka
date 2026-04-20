@@ -43,6 +43,8 @@ const App: React.FC = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstallable, setIsInstallable] = useState(false);
 
+  
+
   const commonUnits = ['g', 'kg', 'ml', 'l', 'ks', 'lžíce', 'lžička', 'hrst', 'špetka', 'balení'];
 
   const helpTexts: { [key: string]: string } = {
@@ -71,11 +73,26 @@ const App: React.FC = () => {
     } catch (e) { console.error("Chyba save:", e); }
   };
 
+  const handleInstallApp = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt(); // Vyvolá systémové okno
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+      setIsInstallable(false);
+    }
+  };
+
   useEffect(() => {
-    const handler = (e: any) => { e.preventDefault(); setDeferredPrompt(e); setIsInstallable(true); };
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
-  }, []);
+  const handler = (e: any) => {
+    e.preventDefault();
+    console.log("PWA: Prompt připraven"); // <--- Sleduj konzoli!
+    setDeferredPrompt(e);
+    setIsInstallable(true);
+  };
+  window.addEventListener('beforeinstallprompt', handler);
+  return () => window.removeEventListener('beforeinstallprompt', handler);
+}, []);
 
   useEffect(() => {
     if ('serviceWorker' in navigator) {

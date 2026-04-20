@@ -1,19 +1,29 @@
 {
   "short_name": "Kuchařka",
-  "name": "Moje Chytrá Kuchařka",
-  "description": "Aplikace pro správu receptů a lednice.",
+  "name": "Blbá Kuchařka",
   "icons": [
     {
       "src": "favicon.png",
+      "sizes": "512x512",
       "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "favicon.ico",
       "sizes": "any",
-      "purpose": "any maskable"
+      "type": "image/x-icon"
     }
   ],
-  "start_url": "./index.html",
-  "background_color": "#0f172a",
-  "display": "standalone",
+  "start_url": "./",
   "scope": "./",
-  "theme_color": "#0f172a",
-  "orientation": "portrait-primary"
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#000000",
+  "orientation": "portrait"
 }

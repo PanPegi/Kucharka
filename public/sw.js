@@ -1,56 +1,47 @@
-const CACHE_NAME = 'kucharka-v2';
+const CACHE_NAME = 'kucharka-v1';
 
-const ASSETS = [
+// Seznam souborů pro offline provoz
+const urlsToCache = [
   './',
   './index.html',
   './manifest.json',
-  './favicon.png'
+  './favicon.png',
+  './favicon.ico'
 ];
 
+// Instalace Service Workeru a uložení souborů do cache
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
-    })
+    caches.open(CACHE_NAME)
+      .then((cache) => {
+        console.log('SW: Cache otevřena');
+        return cache.addAll(urlsToCache);
+      })
   );
-  self.skipWaiting();
 });
 
+// Aktivace a promazání staré cache
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
+    caches.keys().then((cacheNames) => {
       return Promise.all(
-        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            console.log('SW: Mažu starou cache', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
       );
     })
   );
-  // Vynutí, aby nový SW ovládal stránku ihned, bez nutnosti restartu
-  self.clients.claim();
 });
 
+// Strategie: Síť jako první, při neúspěchu cache (Network-first)
+// To je pro kuchařku nejlepší, aby se hned ukázaly nové recepty, když je internet
 self.addEventListener('fetch', (event) => {
-  // PHP požadavky (ukládání/načítání dat) necachejeme
-  if (event.request.url.includes('.php')) {
-    return;
-  }
-
-  // STRATEGIE: NETWORK FIRST
-  // Nejdřív zkusíme síť, pokud selže (offline), jdeme do cache
   event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        // Pokud je odpověď v pořádku, uložíme ji do cache pro příště
-        if (response.status === 200) {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
-          });
-        }
-        return response;
-      })
-      .catch(() => {
-        // Síť selhala (jsme offline), vrátíme soubor z cache
-        return caches.match(event.request);
-      })
+    fetch(event.request).catch(() => {
+      return caches.match(event.request);
+    })
   );
 });
