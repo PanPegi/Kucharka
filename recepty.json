@@ -71,8 +71,7 @@
         ],
         "updatedAt": 1776374018221,
         "id": 1776368700447,
-        "history": [
-        ]
+        "history": []
     },
     {
         "name": "Palačinky",
@@ -85,45 +84,319 @@
         "ingredients": [
             {
                 "name": "Hladká mouka",
-                "amount": "150",
+                "amount": "300",
                 "unit": "g"
             },
             {
-                "name": "Cukr",
+                "name": "cukr",
                 "amount": "18",
                 "unit": "g"
             },
             {
-                "name": "Vejce",
+                "name": "sůl",
+                "amount": "1",
+                "unit": "špetka"
+            },
+            {
+                "name": "vejce",
                 "amount": "2",
                 "unit": "ks"
             },
             {
-                "name": "Mléko",
+                "name": "mléko",
                 "amount": "240",
                 "unit": "g"
             },
             {
-                "name": "Rostlinný olej",
+                "name": "rostlinný olej",
                 "amount": "15",
                 "unit": "g"
-            },
-            {
-                "name": "Sůl ",
-                "amount": "0",
-                "unit": ""
             }
         ],
         "subRecipeIds": [],
         "steps": [
-            "Smíchám v jedné misce {{Hladká mouka|150|g}} {{Cukr|18|g}} {{Sůl |1|špetka}}",
+            "Smíchám v jedné misce {{Hladká mouka|150|g}} {{Cukr|18|g}} {{Sůl |1|špetka}} {{hladká mouka|150|g}}",
             "Do druhé misky dám {{Vejce|2|ks}} {{Mléko|240|g}} {{Rostlinný olej|15|g}}",
             "Do druhé mísy postupně sypu obsah první misky(může se to udělat najednou ale to se budou tvořit hrudky) a vždy po přidání ingrediencí důkladně promíchám",
             "Těsto nechám chvíli odpočinout a následně smažím na středním ohni na pánvi do zlatova"
         ],
-        "updatedAt": 1776606642944,
+        "updatedAt": 1776716454771,
         "id": 1776421259586,
-        "history": [   
+        "history": [
+            {
+                "name": "Palačinky",
+                "categories": [
+                    "sladké"
+                ],
+                "prepTime": "20",
+                "cookTime": "15",
+                "baseServings": 4,
+                "ingredients": [],
+                "subRecipeIds": [],
+                "steps": [
+                    "Smíchám v jedné misce {{Hladká mouka|150|g}} {{Cukr|18|g}} {{Sůl |1|špetka}} {{hladká mouka|150|g}}",
+                    "Do druhé misky dám {{Vejce|2|ks}} {{Mléko|240|g}} {{Rostlinný olej|15|g}}",
+                    "Do druhé mísy postupně sypu obsah první misky(může se to udělat najednou ale to se budou tvořit hrudky) a vždy po přidání ingrediencí důkladně promíchám",
+                    "Těsto nechám chvíli odpočinout a následně smažím na středním ohni na pánvi do zlatova"
+                ],
+                "updatedAt": 1776716253408,
+                "id": 1776421259586,
+                "history": [
+                    {
+                        "name": "Palačinky",
+                        "categories": [
+                            "sladké"
+                        ],
+                        "prepTime": "20",
+                        "cookTime": "15",
+                        "baseServings": 4,
+                        "ingredients": [],
+                        "subRecipeIds": [],
+                        "steps": [
+                            "Smíchám v jedné misce {{Hladká mouka|150|g}} {{Cukr|18|g}} {{Sůl |1|špetka}}",
+                            "Do druhé misky dám {{Vejce|2|ks}} {{Mléko|240|g}} {{Rostlinný olej|15|g}}",
+                            "Do druhé mísy postupně sypu obsah první misky(může se to udělat najednou ale to se budou tvořit hrudky) a vždy po přidání ingrediencí důkladně promíchám",
+                            "Těsto nechám chvíli odpočinout a následně smažím na středním ohni na pánvi do zlatova"
+                        ],
+                        "updatedAt": 1776713097171,
+                        "id": 1776421259586,
+                        "history": [
+                            {
+                                "name": "Palačinky",
+                                "categories": [
+                                    "sladké"
+                                ],
+                                "prepTime": "20",
+                                "cookTime": "15",
+                                "baseServings": 4,
+                                "ingredients": [
+                                    {
+                                        "name": "Hladká mouka",
+                                        "amount": "150",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "Cukr",
+                                        "amount": "18",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "Vejce",
+                                        "amount": "2",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Mléko",
+                                        "amount": "240",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "Rostlinný olej",
+                                        "amount": "15",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "Sůl ",
+                                        "amount": "0",
+                                        "unit": ""
+                                    }
+                                ],
+                                "subRecipeIds": [],
+                                "steps": [
+                                    "Smíchám v jedné misce {{Hladká mouka|150|g}} {{Cukr|18|g}} {{Sůl |1|špetka}}",
+                                    "Do druhé misky dám {{Vejce|2|ks}} {{Mléko|240|g}} {{Rostlinný olej|15|g}}",
+                                    "Do druhé mísy postupně sypu obsah první misky(může se to udělat najednou ale to se budou tvořit hrudky) a vždy po přidání ingrediencí důkladně promíchám",
+                                    "Těsto nechám chvíli odpočinout a následně smažím na středním ohni na pánvi do zlatova"
+                                ],
+                                "updatedAt": 1776606642944,
+                                "id": 1776421259586,
+                                "history": [],
+                                "versionLabel": 1
+                            }
+                        ],
+                        "versionLabel": 2
+                    },
+                    {
+                        "name": "Palačinky",
+                        "categories": [
+                            "sladké"
+                        ],
+                        "prepTime": "20",
+                        "cookTime": "15",
+                        "baseServings": 4,
+                        "ingredients": [
+                            {
+                                "name": "Hladká mouka",
+                                "amount": "150",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "Cukr",
+                                "amount": "18",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "Vejce",
+                                "amount": "2",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Mléko",
+                                "amount": "240",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "Rostlinný olej",
+                                "amount": "15",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "Sůl ",
+                                "amount": "0",
+                                "unit": ""
+                            }
+                        ],
+                        "subRecipeIds": [],
+                        "steps": [
+                            "Smíchám v jedné misce {{Hladká mouka|150|g}} {{Cukr|18|g}} {{Sůl |1|špetka}}",
+                            "Do druhé misky dám {{Vejce|2|ks}} {{Mléko|240|g}} {{Rostlinný olej|15|g}}",
+                            "Do druhé mísy postupně sypu obsah první misky(může se to udělat najednou ale to se budou tvořit hrudky) a vždy po přidání ingrediencí důkladně promíchám",
+                            "Těsto nechám chvíli odpočinout a následně smažím na středním ohni na pánvi do zlatova"
+                        ],
+                        "updatedAt": 1776606642944,
+                        "id": 1776421259586,
+                        "history": [],
+                        "versionLabel": 1
+                    }
+                ],
+                "versionLabel": 3
+            },
+            {
+                "name": "Palačinky",
+                "categories": [
+                    "sladké"
+                ],
+                "prepTime": "20",
+                "cookTime": "15",
+                "baseServings": 4,
+                "ingredients": [],
+                "subRecipeIds": [],
+                "steps": [
+                    "Smíchám v jedné misce {{Hladká mouka|150|g}} {{Cukr|18|g}} {{Sůl |1|špetka}}",
+                    "Do druhé misky dám {{Vejce|2|ks}} {{Mléko|240|g}} {{Rostlinný olej|15|g}}",
+                    "Do druhé mísy postupně sypu obsah první misky(může se to udělat najednou ale to se budou tvořit hrudky) a vždy po přidání ingrediencí důkladně promíchám",
+                    "Těsto nechám chvíli odpočinout a následně smažím na středním ohni na pánvi do zlatova"
+                ],
+                "updatedAt": 1776713097171,
+                "id": 1776421259586,
+                "history": [
+                    {
+                        "name": "Palačinky",
+                        "categories": [
+                            "sladké"
+                        ],
+                        "prepTime": "20",
+                        "cookTime": "15",
+                        "baseServings": 4,
+                        "ingredients": [
+                            {
+                                "name": "Hladká mouka",
+                                "amount": "150",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "Cukr",
+                                "amount": "18",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "Vejce",
+                                "amount": "2",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Mléko",
+                                "amount": "240",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "Rostlinný olej",
+                                "amount": "15",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "Sůl ",
+                                "amount": "0",
+                                "unit": ""
+                            }
+                        ],
+                        "subRecipeIds": [],
+                        "steps": [
+                            "Smíchám v jedné misce {{Hladká mouka|150|g}} {{Cukr|18|g}} {{Sůl |1|špetka}}",
+                            "Do druhé misky dám {{Vejce|2|ks}} {{Mléko|240|g}} {{Rostlinný olej|15|g}}",
+                            "Do druhé mísy postupně sypu obsah první misky(může se to udělat najednou ale to se budou tvořit hrudky) a vždy po přidání ingrediencí důkladně promíchám",
+                            "Těsto nechám chvíli odpočinout a následně smažím na středním ohni na pánvi do zlatova"
+                        ],
+                        "updatedAt": 1776606642944,
+                        "id": 1776421259586,
+                        "history": [],
+                        "versionLabel": 1
+                    }
+                ],
+                "versionLabel": 2
+            },
+            {
+                "name": "Palačinky",
+                "categories": [
+                    "sladké"
+                ],
+                "prepTime": "20",
+                "cookTime": "15",
+                "baseServings": 4,
+                "ingredients": [
+                    {
+                        "name": "Hladká mouka",
+                        "amount": "150",
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Cukr",
+                        "amount": "18",
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Vejce",
+                        "amount": "2",
+                        "unit": "ks"
+                    },
+                    {
+                        "name": "Mléko",
+                        "amount": "240",
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Rostlinný olej",
+                        "amount": "15",
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Sůl ",
+                        "amount": "0",
+                        "unit": ""
+                    }
+                ],
+                "subRecipeIds": [],
+                "steps": [
+                    "Smíchám v jedné misce {{Hladká mouka|150|g}} {{Cukr|18|g}} {{Sůl |1|špetka}}",
+                    "Do druhé misky dám {{Vejce|2|ks}} {{Mléko|240|g}} {{Rostlinný olej|15|g}}",
+                    "Do druhé mísy postupně sypu obsah první misky(může se to udělat najednou ale to se budou tvořit hrudky) a vždy po přidání ingrediencí důkladně promíchám",
+                    "Těsto nechám chvíli odpočinout a následně smažím na středním ohni na pánvi do zlatova"
+                ],
+                "updatedAt": 1776606642944,
+                "id": 1776421259586,
+                "history": [],
+                "versionLabel": 1
+            }
         ]
     },
     {
@@ -134,7 +407,7 @@
         ],
         "prepTime": "30",
         "cookTime": "30",
-        "baseServings": 1,
+        "baseServings": 4,
         "ingredients": [
             {
                 "name": "Mleté maso",
@@ -162,9 +435,300 @@
             "Důkladně v míse promíchám {{Mleté maso|1|kg}} {{Sůl|1.5|lžíce}} {{Vejce|1|kus}} {{Strouhanka|1|hrnek}} a z hmoty vytvaruju koule.",
             "Následně roztopím na pánvi sádlo\/olej a přidávám koule.\nTy následně otáčím aby se dělali rovnoměrně a měli barvu."
         ],
-        "updatedAt": 1776444486698,
+        "updatedAt": 1776754254436,
         "id": 1776444486698,
-        "history": []
+        "history": [
+            {
+                "name": "Masové koule",
+                "categories": [
+                    "oběd",
+                    "maso"
+                ],
+                "prepTime": "30",
+                "cookTime": "30",
+                "baseServings": 15,
+                "ingredients": [
+                    {
+                        "name": "Mleté maso",
+                        "amount": "1",
+                        "unit": "kg"
+                    },
+                    {
+                        "name": "Sůl",
+                        "amount": "1.5",
+                        "unit": "lžíce"
+                    },
+                    {
+                        "name": "Strouhanka",
+                        "amount": "1",
+                        "unit": "hrnek"
+                    },
+                    {
+                        "name": "Vejce",
+                        "amount": "1",
+                        "unit": "kus"
+                    }
+                ],
+                "subRecipeIds": [],
+                "steps": [
+                    "Důkladně v míse promíchám {{Mleté maso|1|kg}} {{Sůl|1.5|lžíce}} {{Vejce|1|kus}} {{Strouhanka|1|hrnek}} a z hmoty vytvaruju koule.",
+                    "Následně roztopím na pánvi sádlo\/olej a přidávám koule.\nTy následně otáčím aby se dělali rovnoměrně a měli barvu."
+                ],
+                "updatedAt": 1776754239061,
+                "id": 1776444486698,
+                "history": [
+                    {
+                        "name": "Masové koule",
+                        "categories": [
+                            "oběd",
+                            "maso"
+                        ],
+                        "prepTime": "30",
+                        "cookTime": "30",
+                        "baseServings": 4,
+                        "ingredients": [
+                            {
+                                "name": "Mleté maso",
+                                "amount": "1",
+                                "unit": "kg"
+                            },
+                            {
+                                "name": "Sůl",
+                                "amount": "1.5",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Strouhanka",
+                                "amount": "1",
+                                "unit": "hrnek"
+                            },
+                            {
+                                "name": "Vejce",
+                                "amount": "1",
+                                "unit": "kus"
+                            }
+                        ],
+                        "subRecipeIds": [],
+                        "steps": [
+                            "Důkladně v míse promíchám {{Mleté maso|1|kg}} {{Sůl|1.5|lžíce}} {{Vejce|1|kus}} {{Strouhanka|1|hrnek}} a z hmoty vytvaruju koule.",
+                            "Následně roztopím na pánvi sádlo\/olej a přidávám koule.\nTy následně otáčím aby se dělali rovnoměrně a měli barvu."
+                        ],
+                        "updatedAt": 1776754193628,
+                        "id": 1776444486698,
+                        "history": [
+                            {
+                                "name": "Masové koule",
+                                "categories": [
+                                    "oběd",
+                                    "maso"
+                                ],
+                                "prepTime": "30",
+                                "cookTime": "30",
+                                "baseServings": 1,
+                                "ingredients": [
+                                    {
+                                        "name": "Mleté maso",
+                                        "amount": "1",
+                                        "unit": "kg"
+                                    },
+                                    {
+                                        "name": "Sůl",
+                                        "amount": "1.5",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "Strouhanka",
+                                        "amount": "1",
+                                        "unit": "hrnek"
+                                    },
+                                    {
+                                        "name": "Vejce",
+                                        "amount": "1",
+                                        "unit": "kus"
+                                    }
+                                ],
+                                "subRecipeIds": [],
+                                "steps": [
+                                    "Důkladně v míse promíchám {{Mleté maso|1|kg}} {{Sůl|1.5|lžíce}} {{Vejce|1|kus}} {{Strouhanka|1|hrnek}} a z hmoty vytvaruju koule.",
+                                    "Následně roztopím na pánvi sádlo\/olej a přidávám koule.\nTy následně otáčím aby se dělali rovnoměrně a měli barvu."
+                                ],
+                                "updatedAt": 1776444486698,
+                                "id": 1776444486698,
+                                "history": [],
+                                "versionLabel": 1
+                            }
+                        ],
+                        "versionLabel": 2
+                    },
+                    {
+                        "name": "Masové koule",
+                        "categories": [
+                            "oběd",
+                            "maso"
+                        ],
+                        "prepTime": "30",
+                        "cookTime": "30",
+                        "baseServings": 1,
+                        "ingredients": [
+                            {
+                                "name": "Mleté maso",
+                                "amount": "1",
+                                "unit": "kg"
+                            },
+                            {
+                                "name": "Sůl",
+                                "amount": "1.5",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Strouhanka",
+                                "amount": "1",
+                                "unit": "hrnek"
+                            },
+                            {
+                                "name": "Vejce",
+                                "amount": "1",
+                                "unit": "kus"
+                            }
+                        ],
+                        "subRecipeIds": [],
+                        "steps": [
+                            "Důkladně v míse promíchám {{Mleté maso|1|kg}} {{Sůl|1.5|lžíce}} {{Vejce|1|kus}} {{Strouhanka|1|hrnek}} a z hmoty vytvaruju koule.",
+                            "Následně roztopím na pánvi sádlo\/olej a přidávám koule.\nTy následně otáčím aby se dělali rovnoměrně a měli barvu."
+                        ],
+                        "updatedAt": 1776444486698,
+                        "id": 1776444486698,
+                        "history": [],
+                        "versionLabel": 1
+                    }
+                ],
+                "versionLabel": 3
+            },
+            {
+                "name": "Masové koule",
+                "categories": [
+                    "oběd",
+                    "maso"
+                ],
+                "prepTime": "30",
+                "cookTime": "30",
+                "baseServings": 4,
+                "ingredients": [
+                    {
+                        "name": "Mleté maso",
+                        "amount": "1",
+                        "unit": "kg"
+                    },
+                    {
+                        "name": "Sůl",
+                        "amount": "1.5",
+                        "unit": "lžíce"
+                    },
+                    {
+                        "name": "Strouhanka",
+                        "amount": "1",
+                        "unit": "hrnek"
+                    },
+                    {
+                        "name": "Vejce",
+                        "amount": "1",
+                        "unit": "kus"
+                    }
+                ],
+                "subRecipeIds": [],
+                "steps": [
+                    "Důkladně v míse promíchám {{Mleté maso|1|kg}} {{Sůl|1.5|lžíce}} {{Vejce|1|kus}} {{Strouhanka|1|hrnek}} a z hmoty vytvaruju koule.",
+                    "Následně roztopím na pánvi sádlo\/olej a přidávám koule.\nTy následně otáčím aby se dělali rovnoměrně a měli barvu."
+                ],
+                "updatedAt": 1776754193628,
+                "id": 1776444486698,
+                "history": [
+                    {
+                        "name": "Masové koule",
+                        "categories": [
+                            "oběd",
+                            "maso"
+                        ],
+                        "prepTime": "30",
+                        "cookTime": "30",
+                        "baseServings": 1,
+                        "ingredients": [
+                            {
+                                "name": "Mleté maso",
+                                "amount": "1",
+                                "unit": "kg"
+                            },
+                            {
+                                "name": "Sůl",
+                                "amount": "1.5",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Strouhanka",
+                                "amount": "1",
+                                "unit": "hrnek"
+                            },
+                            {
+                                "name": "Vejce",
+                                "amount": "1",
+                                "unit": "kus"
+                            }
+                        ],
+                        "subRecipeIds": [],
+                        "steps": [
+                            "Důkladně v míse promíchám {{Mleté maso|1|kg}} {{Sůl|1.5|lžíce}} {{Vejce|1|kus}} {{Strouhanka|1|hrnek}} a z hmoty vytvaruju koule.",
+                            "Následně roztopím na pánvi sádlo\/olej a přidávám koule.\nTy následně otáčím aby se dělali rovnoměrně a měli barvu."
+                        ],
+                        "updatedAt": 1776444486698,
+                        "id": 1776444486698,
+                        "history": [],
+                        "versionLabel": 1
+                    }
+                ],
+                "versionLabel": 2
+            },
+            {
+                "name": "Masové koule",
+                "categories": [
+                    "oběd",
+                    "maso"
+                ],
+                "prepTime": "30",
+                "cookTime": "30",
+                "baseServings": 1,
+                "ingredients": [
+                    {
+                        "name": "Mleté maso",
+                        "amount": "1",
+                        "unit": "kg"
+                    },
+                    {
+                        "name": "Sůl",
+                        "amount": "1.5",
+                        "unit": "lžíce"
+                    },
+                    {
+                        "name": "Strouhanka",
+                        "amount": "1",
+                        "unit": "hrnek"
+                    },
+                    {
+                        "name": "Vejce",
+                        "amount": "1",
+                        "unit": "kus"
+                    }
+                ],
+                "subRecipeIds": [],
+                "steps": [
+                    "Důkladně v míse promíchám {{Mleté maso|1|kg}} {{Sůl|1.5|lžíce}} {{Vejce|1|kus}} {{Strouhanka|1|hrnek}} a z hmoty vytvaruju koule.",
+                    "Následně roztopím na pánvi sádlo\/olej a přidávám koule.\nTy následně otáčím aby se dělali rovnoměrně a měli barvu."
+                ],
+                "updatedAt": 1776444486698,
+                "id": 1776444486698,
+                "history": [],
+                "versionLabel": 1
+            }
+        ]
     },
     {
         "name": "Masové koule s vinou omáčkou",
@@ -228,9 +792,24 @@
                 "unit": "g"
             },
             {
-                "name": "Petržel",
-                "amount": "0",
-                "unit": ""
+                "name": "mleté maso",
+                "amount": "1",
+                "unit": "kg"
+            },
+            {
+                "name": "sůl",
+                "amount": "1.5",
+                "unit": "lžíce"
+            },
+            {
+                "name": "strouhanka",
+                "amount": "1",
+                "unit": "hrnek"
+            },
+            {
+                "name": "vejce",
+                "amount": "1",
+                "unit": "kus"
             }
         ],
         "subRecipeIds": [
@@ -240,8 +819,2678 @@
             "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
             "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
         ],
-        "updatedAt": 1776606652922,
+        "updatedAt": 1776756767640,
         "id": 1776445441687,
-        "history": []
+        "history": [
+            {
+                "name": "Masové koule s vinou omáčkou",
+                "categories": [
+                    "maso",
+                    "oběd",
+                    "slané"
+                ],
+                "prepTime": "30",
+                "cookTime": "80",
+                "baseServings": 4,
+                "ingredients": [
+                    {
+                        "name": "Cibule (žlutá)",
+                        "amount": "1",
+                        "unit": "ks"
+                    },
+                    {
+                        "name": "Mrkev",
+                        "amount": "2",
+                        "unit": "ks"
+                    },
+                    {
+                        "name": "Timián",
+                        "amount": "1",
+                        "unit": "lžíce"
+                    },
+                    {
+                        "name": "Řapíkový celer",
+                        "amount": "2",
+                        "unit": "ks"
+                    },
+                    {
+                        "name": "Červené víno",
+                        "amount": "400",
+                        "unit": "ml"
+                    },
+                    {
+                        "name": "Máslo",
+                        "amount": "30",
+                        "unit": "g"
+                    },
+                    {
+                        "name": "hladká mouka",
+                        "amount": "2",
+                        "unit": "lžíce"
+                    },
+                    {
+                        "name": "Žampión",
+                        "amount": "10",
+                        "unit": "ks"
+                    },
+                    {
+                        "name": "Vývar",
+                        "amount": "350",
+                        "unit": "ml"
+                    },
+                    {
+                        "name": "Slanina",
+                        "amount": "300",
+                        "unit": "g"
+                    }
+                ],
+                "subRecipeIds": [
+                    1776444486698
+                ],
+                "steps": [
+                    "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                    "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                ],
+                "updatedAt": 1776756082083,
+                "id": 1776445441687,
+                "history": [
+                    {
+                        "name": "Masové koule s vinou omáčkou",
+                        "categories": [
+                            "maso",
+                            "oběd",
+                            "slané"
+                        ],
+                        "prepTime": "30",
+                        "cookTime": "80",
+                        "baseServings": 4,
+                        "ingredients": [
+                            {
+                                "name": "Cibule (žlutá)",
+                                "amount": "1",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Mrkev",
+                                "amount": "2",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Timián",
+                                "amount": "1",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Řapíkový celer",
+                                "amount": "2",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Červené víno",
+                                "amount": "400",
+                                "unit": "ml"
+                            },
+                            {
+                                "name": "Máslo",
+                                "amount": "30",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "hladká mouka",
+                                "amount": "2",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Žampión",
+                                "amount": "10",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Vývar",
+                                "amount": "350",
+                                "unit": "ml"
+                            },
+                            {
+                                "name": "Slanina",
+                                "amount": "300",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "mleté maso",
+                                "amount": "1",
+                                "unit": "kg"
+                            },
+                            {
+                                "name": "sůl",
+                                "amount": "1.5",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "strouhanka",
+                                "amount": "1",
+                                "unit": "hrnek"
+                            },
+                            {
+                                "name": "vejce",
+                                "amount": "1",
+                                "unit": "kus"
+                            }
+                        ],
+                        "subRecipeIds": [
+                            1776444486698
+                        ],
+                        "steps": [
+                            "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                            "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                        ],
+                        "updatedAt": 1776755455462,
+                        "id": 1776445441687,
+                        "history": [
+                            {
+                                "name": "Masové koule s vinou omáčkou",
+                                "categories": [
+                                    "maso",
+                                    "oběd",
+                                    "slané"
+                                ],
+                                "prepTime": "30",
+                                "cookTime": "80",
+                                "baseServings": 4,
+                                "ingredients": [
+                                    {
+                                        "name": "Cibule (žlutá)",
+                                        "amount": "1",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Mrkev",
+                                        "amount": "2",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Timián",
+                                        "amount": "1",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "Řapíkový celer",
+                                        "amount": "2",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Červené víno",
+                                        "amount": "400",
+                                        "unit": "ml"
+                                    },
+                                    {
+                                        "name": "Máslo",
+                                        "amount": "30",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "hladká mouka",
+                                        "amount": "2",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "Žampión",
+                                        "amount": "10",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Vývar",
+                                        "amount": "350",
+                                        "unit": "ml"
+                                    },
+                                    {
+                                        "name": "Slanina",
+                                        "amount": "300",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "mleté maso",
+                                        "amount": "1",
+                                        "unit": "kg"
+                                    },
+                                    {
+                                        "name": "sůl",
+                                        "amount": "1.5",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "strouhanka",
+                                        "amount": "1",
+                                        "unit": "hrnek"
+                                    },
+                                    {
+                                        "name": "vejce",
+                                        "amount": "1",
+                                        "unit": "kus"
+                                    }
+                                ],
+                                "subRecipeIds": [
+                                    1776444486698
+                                ],
+                                "steps": [
+                                    "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                                    "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                                ],
+                                "updatedAt": 1776754262207,
+                                "id": 1776445441687,
+                                "history": [
+                                    {
+                                        "name": "Masové koule s vinou omáčkou",
+                                        "categories": [
+                                            "maso",
+                                            "oběd",
+                                            "slané"
+                                        ],
+                                        "prepTime": "30",
+                                        "cookTime": "80",
+                                        "baseServings": 4,
+                                        "ingredients": [
+                                            {
+                                                "name": "Cibule (žlutá)",
+                                                "amount": "1",
+                                                "unit": "ks"
+                                            },
+                                            {
+                                                "name": "Mrkev",
+                                                "amount": "2",
+                                                "unit": "ks"
+                                            },
+                                            {
+                                                "name": "Timián",
+                                                "amount": "1",
+                                                "unit": "lžíce"
+                                            },
+                                            {
+                                                "name": "Řapíkový celer",
+                                                "amount": "2",
+                                                "unit": "ks"
+                                            },
+                                            {
+                                                "name": "Červené víno",
+                                                "amount": "400",
+                                                "unit": "ml"
+                                            },
+                                            {
+                                                "name": "Máslo",
+                                                "amount": "30",
+                                                "unit": "g"
+                                            },
+                                            {
+                                                "name": "hladká mouka",
+                                                "amount": "2",
+                                                "unit": "lžíce"
+                                            },
+                                            {
+                                                "name": "Žampión",
+                                                "amount": "10",
+                                                "unit": "ks"
+                                            },
+                                            {
+                                                "name": "Vývar",
+                                                "amount": "350",
+                                                "unit": "ml"
+                                            },
+                                            {
+                                                "name": "Slanina",
+                                                "amount": "300",
+                                                "unit": "g"
+                                            },
+                                            {
+                                                "name": "mleté maso",
+                                                "amount": "4",
+                                                "unit": "kg"
+                                            },
+                                            {
+                                                "name": "sůl",
+                                                "amount": "6",
+                                                "unit": "lžíce"
+                                            },
+                                            {
+                                                "name": "strouhanka",
+                                                "amount": "4",
+                                                "unit": "hrnek"
+                                            },
+                                            {
+                                                "name": "vejce",
+                                                "amount": "4",
+                                                "unit": "kus"
+                                            }
+                                        ],
+                                        "subRecipeIds": [
+                                            1776444486698
+                                        ],
+                                        "steps": [
+                                            "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                                            "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                                        ],
+                                        "updatedAt": 1776753261253,
+                                        "id": 1776445441687,
+                                        "history": [
+                                            {
+                                                "name": "Masové koule s vinou omáčkou",
+                                                "categories": [
+                                                    "maso",
+                                                    "oběd",
+                                                    "slané"
+                                                ],
+                                                "prepTime": "30",
+                                                "cookTime": "80",
+                                                "baseServings": 4,
+                                                "ingredients": [
+                                                    {
+                                                        "name": "Cibule (žlutá)",
+                                                        "amount": "1",
+                                                        "unit": "ks"
+                                                    },
+                                                    {
+                                                        "name": "Mrkev",
+                                                        "amount": "2",
+                                                        "unit": "ks"
+                                                    },
+                                                    {
+                                                        "name": "Timián",
+                                                        "amount": "1",
+                                                        "unit": "lžíce"
+                                                    },
+                                                    {
+                                                        "name": "Řapíkový celer",
+                                                        "amount": "2",
+                                                        "unit": "ks"
+                                                    },
+                                                    {
+                                                        "name": "Červené víno",
+                                                        "amount": "400",
+                                                        "unit": "ml"
+                                                    },
+                                                    {
+                                                        "name": "Máslo",
+                                                        "amount": "30",
+                                                        "unit": "g"
+                                                    },
+                                                    {
+                                                        "name": "hladká mouka",
+                                                        "amount": "2",
+                                                        "unit": "lžíce"
+                                                    },
+                                                    {
+                                                        "name": "Žampión",
+                                                        "amount": "10",
+                                                        "unit": "ks"
+                                                    },
+                                                    {
+                                                        "name": "Vývar",
+                                                        "amount": "350",
+                                                        "unit": "ml"
+                                                    },
+                                                    {
+                                                        "name": "Slanina",
+                                                        "amount": "300",
+                                                        "unit": "g"
+                                                    },
+                                                    {
+                                                        "name": "Petržel",
+                                                        "amount": "0",
+                                                        "unit": ""
+                                                    }
+                                                ],
+                                                "subRecipeIds": [
+                                                    1776444486698
+                                                ],
+                                                "steps": [
+                                                    "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                                                    "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                                                ],
+                                                "updatedAt": 1776606652922,
+                                                "id": 1776445441687,
+                                                "history": [],
+                                                "versionLabel": 1
+                                            }
+                                        ],
+                                        "versionLabel": 2
+                                    },
+                                    {
+                                        "name": "Masové koule s vinou omáčkou",
+                                        "categories": [
+                                            "maso",
+                                            "oběd",
+                                            "slané"
+                                        ],
+                                        "prepTime": "30",
+                                        "cookTime": "80",
+                                        "baseServings": 4,
+                                        "ingredients": [
+                                            {
+                                                "name": "Cibule (žlutá)",
+                                                "amount": "1",
+                                                "unit": "ks"
+                                            },
+                                            {
+                                                "name": "Mrkev",
+                                                "amount": "2",
+                                                "unit": "ks"
+                                            },
+                                            {
+                                                "name": "Timián",
+                                                "amount": "1",
+                                                "unit": "lžíce"
+                                            },
+                                            {
+                                                "name": "Řapíkový celer",
+                                                "amount": "2",
+                                                "unit": "ks"
+                                            },
+                                            {
+                                                "name": "Červené víno",
+                                                "amount": "400",
+                                                "unit": "ml"
+                                            },
+                                            {
+                                                "name": "Máslo",
+                                                "amount": "30",
+                                                "unit": "g"
+                                            },
+                                            {
+                                                "name": "hladká mouka",
+                                                "amount": "2",
+                                                "unit": "lžíce"
+                                            },
+                                            {
+                                                "name": "Žampión",
+                                                "amount": "10",
+                                                "unit": "ks"
+                                            },
+                                            {
+                                                "name": "Vývar",
+                                                "amount": "350",
+                                                "unit": "ml"
+                                            },
+                                            {
+                                                "name": "Slanina",
+                                                "amount": "300",
+                                                "unit": "g"
+                                            },
+                                            {
+                                                "name": "Petržel",
+                                                "amount": "0",
+                                                "unit": ""
+                                            }
+                                        ],
+                                        "subRecipeIds": [
+                                            1776444486698
+                                        ],
+                                        "steps": [
+                                            "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                                            "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                                        ],
+                                        "updatedAt": 1776606652922,
+                                        "id": 1776445441687,
+                                        "history": [],
+                                        "versionLabel": 1
+                                    }
+                                ],
+                                "versionLabel": 3
+                            },
+                            {
+                                "name": "Masové koule s vinou omáčkou",
+                                "categories": [
+                                    "maso",
+                                    "oběd",
+                                    "slané"
+                                ],
+                                "prepTime": "30",
+                                "cookTime": "80",
+                                "baseServings": 4,
+                                "ingredients": [
+                                    {
+                                        "name": "Cibule (žlutá)",
+                                        "amount": "1",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Mrkev",
+                                        "amount": "2",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Timián",
+                                        "amount": "1",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "Řapíkový celer",
+                                        "amount": "2",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Červené víno",
+                                        "amount": "400",
+                                        "unit": "ml"
+                                    },
+                                    {
+                                        "name": "Máslo",
+                                        "amount": "30",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "hladká mouka",
+                                        "amount": "2",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "Žampión",
+                                        "amount": "10",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Vývar",
+                                        "amount": "350",
+                                        "unit": "ml"
+                                    },
+                                    {
+                                        "name": "Slanina",
+                                        "amount": "300",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "mleté maso",
+                                        "amount": "4",
+                                        "unit": "kg"
+                                    },
+                                    {
+                                        "name": "sůl",
+                                        "amount": "6",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "strouhanka",
+                                        "amount": "4",
+                                        "unit": "hrnek"
+                                    },
+                                    {
+                                        "name": "vejce",
+                                        "amount": "4",
+                                        "unit": "kus"
+                                    }
+                                ],
+                                "subRecipeIds": [
+                                    1776444486698
+                                ],
+                                "steps": [
+                                    "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                                    "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                                ],
+                                "updatedAt": 1776753261253,
+                                "id": 1776445441687,
+                                "history": [
+                                    {
+                                        "name": "Masové koule s vinou omáčkou",
+                                        "categories": [
+                                            "maso",
+                                            "oběd",
+                                            "slané"
+                                        ],
+                                        "prepTime": "30",
+                                        "cookTime": "80",
+                                        "baseServings": 4,
+                                        "ingredients": [
+                                            {
+                                                "name": "Cibule (žlutá)",
+                                                "amount": "1",
+                                                "unit": "ks"
+                                            },
+                                            {
+                                                "name": "Mrkev",
+                                                "amount": "2",
+                                                "unit": "ks"
+                                            },
+                                            {
+                                                "name": "Timián",
+                                                "amount": "1",
+                                                "unit": "lžíce"
+                                            },
+                                            {
+                                                "name": "Řapíkový celer",
+                                                "amount": "2",
+                                                "unit": "ks"
+                                            },
+                                            {
+                                                "name": "Červené víno",
+                                                "amount": "400",
+                                                "unit": "ml"
+                                            },
+                                            {
+                                                "name": "Máslo",
+                                                "amount": "30",
+                                                "unit": "g"
+                                            },
+                                            {
+                                                "name": "hladká mouka",
+                                                "amount": "2",
+                                                "unit": "lžíce"
+                                            },
+                                            {
+                                                "name": "Žampión",
+                                                "amount": "10",
+                                                "unit": "ks"
+                                            },
+                                            {
+                                                "name": "Vývar",
+                                                "amount": "350",
+                                                "unit": "ml"
+                                            },
+                                            {
+                                                "name": "Slanina",
+                                                "amount": "300",
+                                                "unit": "g"
+                                            },
+                                            {
+                                                "name": "Petržel",
+                                                "amount": "0",
+                                                "unit": ""
+                                            }
+                                        ],
+                                        "subRecipeIds": [
+                                            1776444486698
+                                        ],
+                                        "steps": [
+                                            "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                                            "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                                        ],
+                                        "updatedAt": 1776606652922,
+                                        "id": 1776445441687,
+                                        "history": [],
+                                        "versionLabel": 1
+                                    }
+                                ],
+                                "versionLabel": 2
+                            },
+                            {
+                                "name": "Masové koule s vinou omáčkou",
+                                "categories": [
+                                    "maso",
+                                    "oběd",
+                                    "slané"
+                                ],
+                                "prepTime": "30",
+                                "cookTime": "80",
+                                "baseServings": 4,
+                                "ingredients": [
+                                    {
+                                        "name": "Cibule (žlutá)",
+                                        "amount": "1",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Mrkev",
+                                        "amount": "2",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Timián",
+                                        "amount": "1",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "Řapíkový celer",
+                                        "amount": "2",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Červené víno",
+                                        "amount": "400",
+                                        "unit": "ml"
+                                    },
+                                    {
+                                        "name": "Máslo",
+                                        "amount": "30",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "hladká mouka",
+                                        "amount": "2",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "Žampión",
+                                        "amount": "10",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Vývar",
+                                        "amount": "350",
+                                        "unit": "ml"
+                                    },
+                                    {
+                                        "name": "Slanina",
+                                        "amount": "300",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "Petržel",
+                                        "amount": "0",
+                                        "unit": ""
+                                    }
+                                ],
+                                "subRecipeIds": [
+                                    1776444486698
+                                ],
+                                "steps": [
+                                    "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                                    "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                                ],
+                                "updatedAt": 1776606652922,
+                                "id": 1776445441687,
+                                "history": [],
+                                "versionLabel": 1
+                            }
+                        ],
+                        "versionLabel": 4
+                    },
+                    {
+                        "name": "Masové koule s vinou omáčkou",
+                        "categories": [
+                            "maso",
+                            "oběd",
+                            "slané"
+                        ],
+                        "prepTime": "30",
+                        "cookTime": "80",
+                        "baseServings": 4,
+                        "ingredients": [
+                            {
+                                "name": "Cibule (žlutá)",
+                                "amount": "1",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Mrkev",
+                                "amount": "2",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Timián",
+                                "amount": "1",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Řapíkový celer",
+                                "amount": "2",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Červené víno",
+                                "amount": "400",
+                                "unit": "ml"
+                            },
+                            {
+                                "name": "Máslo",
+                                "amount": "30",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "hladká mouka",
+                                "amount": "2",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Žampión",
+                                "amount": "10",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Vývar",
+                                "amount": "350",
+                                "unit": "ml"
+                            },
+                            {
+                                "name": "Slanina",
+                                "amount": "300",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "mleté maso",
+                                "amount": "1",
+                                "unit": "kg"
+                            },
+                            {
+                                "name": "sůl",
+                                "amount": "1.5",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "strouhanka",
+                                "amount": "1",
+                                "unit": "hrnek"
+                            },
+                            {
+                                "name": "vejce",
+                                "amount": "1",
+                                "unit": "kus"
+                            }
+                        ],
+                        "subRecipeIds": [
+                            1776444486698
+                        ],
+                        "steps": [
+                            "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                            "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                        ],
+                        "updatedAt": 1776754262207,
+                        "id": 1776445441687,
+                        "history": [
+                            {
+                                "name": "Masové koule s vinou omáčkou",
+                                "categories": [
+                                    "maso",
+                                    "oběd",
+                                    "slané"
+                                ],
+                                "prepTime": "30",
+                                "cookTime": "80",
+                                "baseServings": 4,
+                                "ingredients": [
+                                    {
+                                        "name": "Cibule (žlutá)",
+                                        "amount": "1",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Mrkev",
+                                        "amount": "2",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Timián",
+                                        "amount": "1",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "Řapíkový celer",
+                                        "amount": "2",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Červené víno",
+                                        "amount": "400",
+                                        "unit": "ml"
+                                    },
+                                    {
+                                        "name": "Máslo",
+                                        "amount": "30",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "hladká mouka",
+                                        "amount": "2",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "Žampión",
+                                        "amount": "10",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Vývar",
+                                        "amount": "350",
+                                        "unit": "ml"
+                                    },
+                                    {
+                                        "name": "Slanina",
+                                        "amount": "300",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "mleté maso",
+                                        "amount": "4",
+                                        "unit": "kg"
+                                    },
+                                    {
+                                        "name": "sůl",
+                                        "amount": "6",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "strouhanka",
+                                        "amount": "4",
+                                        "unit": "hrnek"
+                                    },
+                                    {
+                                        "name": "vejce",
+                                        "amount": "4",
+                                        "unit": "kus"
+                                    }
+                                ],
+                                "subRecipeIds": [
+                                    1776444486698
+                                ],
+                                "steps": [
+                                    "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                                    "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                                ],
+                                "updatedAt": 1776753261253,
+                                "id": 1776445441687,
+                                "history": [
+                                    {
+                                        "name": "Masové koule s vinou omáčkou",
+                                        "categories": [
+                                            "maso",
+                                            "oběd",
+                                            "slané"
+                                        ],
+                                        "prepTime": "30",
+                                        "cookTime": "80",
+                                        "baseServings": 4,
+                                        "ingredients": [
+                                            {
+                                                "name": "Cibule (žlutá)",
+                                                "amount": "1",
+                                                "unit": "ks"
+                                            },
+                                            {
+                                                "name": "Mrkev",
+                                                "amount": "2",
+                                                "unit": "ks"
+                                            },
+                                            {
+                                                "name": "Timián",
+                                                "amount": "1",
+                                                "unit": "lžíce"
+                                            },
+                                            {
+                                                "name": "Řapíkový celer",
+                                                "amount": "2",
+                                                "unit": "ks"
+                                            },
+                                            {
+                                                "name": "Červené víno",
+                                                "amount": "400",
+                                                "unit": "ml"
+                                            },
+                                            {
+                                                "name": "Máslo",
+                                                "amount": "30",
+                                                "unit": "g"
+                                            },
+                                            {
+                                                "name": "hladká mouka",
+                                                "amount": "2",
+                                                "unit": "lžíce"
+                                            },
+                                            {
+                                                "name": "Žampión",
+                                                "amount": "10",
+                                                "unit": "ks"
+                                            },
+                                            {
+                                                "name": "Vývar",
+                                                "amount": "350",
+                                                "unit": "ml"
+                                            },
+                                            {
+                                                "name": "Slanina",
+                                                "amount": "300",
+                                                "unit": "g"
+                                            },
+                                            {
+                                                "name": "Petržel",
+                                                "amount": "0",
+                                                "unit": ""
+                                            }
+                                        ],
+                                        "subRecipeIds": [
+                                            1776444486698
+                                        ],
+                                        "steps": [
+                                            "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                                            "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                                        ],
+                                        "updatedAt": 1776606652922,
+                                        "id": 1776445441687,
+                                        "history": [],
+                                        "versionLabel": 1
+                                    }
+                                ],
+                                "versionLabel": 2
+                            },
+                            {
+                                "name": "Masové koule s vinou omáčkou",
+                                "categories": [
+                                    "maso",
+                                    "oběd",
+                                    "slané"
+                                ],
+                                "prepTime": "30",
+                                "cookTime": "80",
+                                "baseServings": 4,
+                                "ingredients": [
+                                    {
+                                        "name": "Cibule (žlutá)",
+                                        "amount": "1",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Mrkev",
+                                        "amount": "2",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Timián",
+                                        "amount": "1",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "Řapíkový celer",
+                                        "amount": "2",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Červené víno",
+                                        "amount": "400",
+                                        "unit": "ml"
+                                    },
+                                    {
+                                        "name": "Máslo",
+                                        "amount": "30",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "hladká mouka",
+                                        "amount": "2",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "Žampión",
+                                        "amount": "10",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Vývar",
+                                        "amount": "350",
+                                        "unit": "ml"
+                                    },
+                                    {
+                                        "name": "Slanina",
+                                        "amount": "300",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "Petržel",
+                                        "amount": "0",
+                                        "unit": ""
+                                    }
+                                ],
+                                "subRecipeIds": [
+                                    1776444486698
+                                ],
+                                "steps": [
+                                    "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                                    "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                                ],
+                                "updatedAt": 1776606652922,
+                                "id": 1776445441687,
+                                "history": [],
+                                "versionLabel": 1
+                            }
+                        ],
+                        "versionLabel": 3
+                    },
+                    {
+                        "name": "Masové koule s vinou omáčkou",
+                        "categories": [
+                            "maso",
+                            "oběd",
+                            "slané"
+                        ],
+                        "prepTime": "30",
+                        "cookTime": "80",
+                        "baseServings": 4,
+                        "ingredients": [
+                            {
+                                "name": "Cibule (žlutá)",
+                                "amount": "1",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Mrkev",
+                                "amount": "2",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Timián",
+                                "amount": "1",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Řapíkový celer",
+                                "amount": "2",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Červené víno",
+                                "amount": "400",
+                                "unit": "ml"
+                            },
+                            {
+                                "name": "Máslo",
+                                "amount": "30",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "hladká mouka",
+                                "amount": "2",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Žampión",
+                                "amount": "10",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Vývar",
+                                "amount": "350",
+                                "unit": "ml"
+                            },
+                            {
+                                "name": "Slanina",
+                                "amount": "300",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "mleté maso",
+                                "amount": "4",
+                                "unit": "kg"
+                            },
+                            {
+                                "name": "sůl",
+                                "amount": "6",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "strouhanka",
+                                "amount": "4",
+                                "unit": "hrnek"
+                            },
+                            {
+                                "name": "vejce",
+                                "amount": "4",
+                                "unit": "kus"
+                            }
+                        ],
+                        "subRecipeIds": [
+                            1776444486698
+                        ],
+                        "steps": [
+                            "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                            "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                        ],
+                        "updatedAt": 1776753261253,
+                        "id": 1776445441687,
+                        "history": [
+                            {
+                                "name": "Masové koule s vinou omáčkou",
+                                "categories": [
+                                    "maso",
+                                    "oběd",
+                                    "slané"
+                                ],
+                                "prepTime": "30",
+                                "cookTime": "80",
+                                "baseServings": 4,
+                                "ingredients": [
+                                    {
+                                        "name": "Cibule (žlutá)",
+                                        "amount": "1",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Mrkev",
+                                        "amount": "2",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Timián",
+                                        "amount": "1",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "Řapíkový celer",
+                                        "amount": "2",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Červené víno",
+                                        "amount": "400",
+                                        "unit": "ml"
+                                    },
+                                    {
+                                        "name": "Máslo",
+                                        "amount": "30",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "hladká mouka",
+                                        "amount": "2",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "Žampión",
+                                        "amount": "10",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Vývar",
+                                        "amount": "350",
+                                        "unit": "ml"
+                                    },
+                                    {
+                                        "name": "Slanina",
+                                        "amount": "300",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "Petržel",
+                                        "amount": "0",
+                                        "unit": ""
+                                    }
+                                ],
+                                "subRecipeIds": [
+                                    1776444486698
+                                ],
+                                "steps": [
+                                    "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                                    "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                                ],
+                                "updatedAt": 1776606652922,
+                                "id": 1776445441687,
+                                "history": [],
+                                "versionLabel": 1
+                            }
+                        ],
+                        "versionLabel": 2
+                    },
+                    {
+                        "name": "Masové koule s vinou omáčkou",
+                        "categories": [
+                            "maso",
+                            "oběd",
+                            "slané"
+                        ],
+                        "prepTime": "30",
+                        "cookTime": "80",
+                        "baseServings": 4,
+                        "ingredients": [
+                            {
+                                "name": "Cibule (žlutá)",
+                                "amount": "1",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Mrkev",
+                                "amount": "2",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Timián",
+                                "amount": "1",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Řapíkový celer",
+                                "amount": "2",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Červené víno",
+                                "amount": "400",
+                                "unit": "ml"
+                            },
+                            {
+                                "name": "Máslo",
+                                "amount": "30",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "hladká mouka",
+                                "amount": "2",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Žampión",
+                                "amount": "10",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Vývar",
+                                "amount": "350",
+                                "unit": "ml"
+                            },
+                            {
+                                "name": "Slanina",
+                                "amount": "300",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "Petržel",
+                                "amount": "0",
+                                "unit": ""
+                            }
+                        ],
+                        "subRecipeIds": [
+                            1776444486698
+                        ],
+                        "steps": [
+                            "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                            "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                        ],
+                        "updatedAt": 1776606652922,
+                        "id": 1776445441687,
+                        "history": [],
+                        "versionLabel": 1
+                    }
+                ],
+                "versionLabel": 5
+            },
+            {
+                "name": "Masové koule s vinou omáčkou",
+                "categories": [
+                    "maso",
+                    "oběd",
+                    "slané"
+                ],
+                "prepTime": "30",
+                "cookTime": "80",
+                "baseServings": 4,
+                "ingredients": [
+                    {
+                        "name": "Cibule (žlutá)",
+                        "amount": "1",
+                        "unit": "ks"
+                    },
+                    {
+                        "name": "Mrkev",
+                        "amount": "2",
+                        "unit": "ks"
+                    },
+                    {
+                        "name": "Timián",
+                        "amount": "1",
+                        "unit": "lžíce"
+                    },
+                    {
+                        "name": "Řapíkový celer",
+                        "amount": "2",
+                        "unit": "ks"
+                    },
+                    {
+                        "name": "Červené víno",
+                        "amount": "400",
+                        "unit": "ml"
+                    },
+                    {
+                        "name": "Máslo",
+                        "amount": "30",
+                        "unit": "g"
+                    },
+                    {
+                        "name": "hladká mouka",
+                        "amount": "2",
+                        "unit": "lžíce"
+                    },
+                    {
+                        "name": "Žampión",
+                        "amount": "10",
+                        "unit": "ks"
+                    },
+                    {
+                        "name": "Vývar",
+                        "amount": "350",
+                        "unit": "ml"
+                    },
+                    {
+                        "name": "Slanina",
+                        "amount": "300",
+                        "unit": "g"
+                    },
+                    {
+                        "name": "mleté maso",
+                        "amount": "1",
+                        "unit": "kg"
+                    },
+                    {
+                        "name": "sůl",
+                        "amount": "1.5",
+                        "unit": "lžíce"
+                    },
+                    {
+                        "name": "strouhanka",
+                        "amount": "1",
+                        "unit": "hrnek"
+                    },
+                    {
+                        "name": "vejce",
+                        "amount": "1",
+                        "unit": "kus"
+                    }
+                ],
+                "subRecipeIds": [
+                    1776444486698
+                ],
+                "steps": [
+                    "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                    "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                ],
+                "updatedAt": 1776755455462,
+                "id": 1776445441687,
+                "history": [
+                    {
+                        "name": "Masové koule s vinou omáčkou",
+                        "categories": [
+                            "maso",
+                            "oběd",
+                            "slané"
+                        ],
+                        "prepTime": "30",
+                        "cookTime": "80",
+                        "baseServings": 4,
+                        "ingredients": [
+                            {
+                                "name": "Cibule (žlutá)",
+                                "amount": "1",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Mrkev",
+                                "amount": "2",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Timián",
+                                "amount": "1",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Řapíkový celer",
+                                "amount": "2",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Červené víno",
+                                "amount": "400",
+                                "unit": "ml"
+                            },
+                            {
+                                "name": "Máslo",
+                                "amount": "30",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "hladká mouka",
+                                "amount": "2",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Žampión",
+                                "amount": "10",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Vývar",
+                                "amount": "350",
+                                "unit": "ml"
+                            },
+                            {
+                                "name": "Slanina",
+                                "amount": "300",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "mleté maso",
+                                "amount": "1",
+                                "unit": "kg"
+                            },
+                            {
+                                "name": "sůl",
+                                "amount": "1.5",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "strouhanka",
+                                "amount": "1",
+                                "unit": "hrnek"
+                            },
+                            {
+                                "name": "vejce",
+                                "amount": "1",
+                                "unit": "kus"
+                            }
+                        ],
+                        "subRecipeIds": [
+                            1776444486698
+                        ],
+                        "steps": [
+                            "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                            "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                        ],
+                        "updatedAt": 1776754262207,
+                        "id": 1776445441687,
+                        "history": [
+                            {
+                                "name": "Masové koule s vinou omáčkou",
+                                "categories": [
+                                    "maso",
+                                    "oběd",
+                                    "slané"
+                                ],
+                                "prepTime": "30",
+                                "cookTime": "80",
+                                "baseServings": 4,
+                                "ingredients": [
+                                    {
+                                        "name": "Cibule (žlutá)",
+                                        "amount": "1",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Mrkev",
+                                        "amount": "2",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Timián",
+                                        "amount": "1",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "Řapíkový celer",
+                                        "amount": "2",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Červené víno",
+                                        "amount": "400",
+                                        "unit": "ml"
+                                    },
+                                    {
+                                        "name": "Máslo",
+                                        "amount": "30",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "hladká mouka",
+                                        "amount": "2",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "Žampión",
+                                        "amount": "10",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Vývar",
+                                        "amount": "350",
+                                        "unit": "ml"
+                                    },
+                                    {
+                                        "name": "Slanina",
+                                        "amount": "300",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "mleté maso",
+                                        "amount": "4",
+                                        "unit": "kg"
+                                    },
+                                    {
+                                        "name": "sůl",
+                                        "amount": "6",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "strouhanka",
+                                        "amount": "4",
+                                        "unit": "hrnek"
+                                    },
+                                    {
+                                        "name": "vejce",
+                                        "amount": "4",
+                                        "unit": "kus"
+                                    }
+                                ],
+                                "subRecipeIds": [
+                                    1776444486698
+                                ],
+                                "steps": [
+                                    "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                                    "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                                ],
+                                "updatedAt": 1776753261253,
+                                "id": 1776445441687,
+                                "history": [
+                                    {
+                                        "name": "Masové koule s vinou omáčkou",
+                                        "categories": [
+                                            "maso",
+                                            "oběd",
+                                            "slané"
+                                        ],
+                                        "prepTime": "30",
+                                        "cookTime": "80",
+                                        "baseServings": 4,
+                                        "ingredients": [
+                                            {
+                                                "name": "Cibule (žlutá)",
+                                                "amount": "1",
+                                                "unit": "ks"
+                                            },
+                                            {
+                                                "name": "Mrkev",
+                                                "amount": "2",
+                                                "unit": "ks"
+                                            },
+                                            {
+                                                "name": "Timián",
+                                                "amount": "1",
+                                                "unit": "lžíce"
+                                            },
+                                            {
+                                                "name": "Řapíkový celer",
+                                                "amount": "2",
+                                                "unit": "ks"
+                                            },
+                                            {
+                                                "name": "Červené víno",
+                                                "amount": "400",
+                                                "unit": "ml"
+                                            },
+                                            {
+                                                "name": "Máslo",
+                                                "amount": "30",
+                                                "unit": "g"
+                                            },
+                                            {
+                                                "name": "hladká mouka",
+                                                "amount": "2",
+                                                "unit": "lžíce"
+                                            },
+                                            {
+                                                "name": "Žampión",
+                                                "amount": "10",
+                                                "unit": "ks"
+                                            },
+                                            {
+                                                "name": "Vývar",
+                                                "amount": "350",
+                                                "unit": "ml"
+                                            },
+                                            {
+                                                "name": "Slanina",
+                                                "amount": "300",
+                                                "unit": "g"
+                                            },
+                                            {
+                                                "name": "Petržel",
+                                                "amount": "0",
+                                                "unit": ""
+                                            }
+                                        ],
+                                        "subRecipeIds": [
+                                            1776444486698
+                                        ],
+                                        "steps": [
+                                            "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                                            "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                                        ],
+                                        "updatedAt": 1776606652922,
+                                        "id": 1776445441687,
+                                        "history": [],
+                                        "versionLabel": 1
+                                    }
+                                ],
+                                "versionLabel": 2
+                            },
+                            {
+                                "name": "Masové koule s vinou omáčkou",
+                                "categories": [
+                                    "maso",
+                                    "oběd",
+                                    "slané"
+                                ],
+                                "prepTime": "30",
+                                "cookTime": "80",
+                                "baseServings": 4,
+                                "ingredients": [
+                                    {
+                                        "name": "Cibule (žlutá)",
+                                        "amount": "1",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Mrkev",
+                                        "amount": "2",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Timián",
+                                        "amount": "1",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "Řapíkový celer",
+                                        "amount": "2",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Červené víno",
+                                        "amount": "400",
+                                        "unit": "ml"
+                                    },
+                                    {
+                                        "name": "Máslo",
+                                        "amount": "30",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "hladká mouka",
+                                        "amount": "2",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "Žampión",
+                                        "amount": "10",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Vývar",
+                                        "amount": "350",
+                                        "unit": "ml"
+                                    },
+                                    {
+                                        "name": "Slanina",
+                                        "amount": "300",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "Petržel",
+                                        "amount": "0",
+                                        "unit": ""
+                                    }
+                                ],
+                                "subRecipeIds": [
+                                    1776444486698
+                                ],
+                                "steps": [
+                                    "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                                    "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                                ],
+                                "updatedAt": 1776606652922,
+                                "id": 1776445441687,
+                                "history": [],
+                                "versionLabel": 1
+                            }
+                        ],
+                        "versionLabel": 3
+                    },
+                    {
+                        "name": "Masové koule s vinou omáčkou",
+                        "categories": [
+                            "maso",
+                            "oběd",
+                            "slané"
+                        ],
+                        "prepTime": "30",
+                        "cookTime": "80",
+                        "baseServings": 4,
+                        "ingredients": [
+                            {
+                                "name": "Cibule (žlutá)",
+                                "amount": "1",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Mrkev",
+                                "amount": "2",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Timián",
+                                "amount": "1",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Řapíkový celer",
+                                "amount": "2",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Červené víno",
+                                "amount": "400",
+                                "unit": "ml"
+                            },
+                            {
+                                "name": "Máslo",
+                                "amount": "30",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "hladká mouka",
+                                "amount": "2",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Žampión",
+                                "amount": "10",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Vývar",
+                                "amount": "350",
+                                "unit": "ml"
+                            },
+                            {
+                                "name": "Slanina",
+                                "amount": "300",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "mleté maso",
+                                "amount": "4",
+                                "unit": "kg"
+                            },
+                            {
+                                "name": "sůl",
+                                "amount": "6",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "strouhanka",
+                                "amount": "4",
+                                "unit": "hrnek"
+                            },
+                            {
+                                "name": "vejce",
+                                "amount": "4",
+                                "unit": "kus"
+                            }
+                        ],
+                        "subRecipeIds": [
+                            1776444486698
+                        ],
+                        "steps": [
+                            "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                            "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                        ],
+                        "updatedAt": 1776753261253,
+                        "id": 1776445441687,
+                        "history": [
+                            {
+                                "name": "Masové koule s vinou omáčkou",
+                                "categories": [
+                                    "maso",
+                                    "oběd",
+                                    "slané"
+                                ],
+                                "prepTime": "30",
+                                "cookTime": "80",
+                                "baseServings": 4,
+                                "ingredients": [
+                                    {
+                                        "name": "Cibule (žlutá)",
+                                        "amount": "1",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Mrkev",
+                                        "amount": "2",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Timián",
+                                        "amount": "1",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "Řapíkový celer",
+                                        "amount": "2",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Červené víno",
+                                        "amount": "400",
+                                        "unit": "ml"
+                                    },
+                                    {
+                                        "name": "Máslo",
+                                        "amount": "30",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "hladká mouka",
+                                        "amount": "2",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "Žampión",
+                                        "amount": "10",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Vývar",
+                                        "amount": "350",
+                                        "unit": "ml"
+                                    },
+                                    {
+                                        "name": "Slanina",
+                                        "amount": "300",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "Petržel",
+                                        "amount": "0",
+                                        "unit": ""
+                                    }
+                                ],
+                                "subRecipeIds": [
+                                    1776444486698
+                                ],
+                                "steps": [
+                                    "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                                    "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                                ],
+                                "updatedAt": 1776606652922,
+                                "id": 1776445441687,
+                                "history": [],
+                                "versionLabel": 1
+                            }
+                        ],
+                        "versionLabel": 2
+                    },
+                    {
+                        "name": "Masové koule s vinou omáčkou",
+                        "categories": [
+                            "maso",
+                            "oběd",
+                            "slané"
+                        ],
+                        "prepTime": "30",
+                        "cookTime": "80",
+                        "baseServings": 4,
+                        "ingredients": [
+                            {
+                                "name": "Cibule (žlutá)",
+                                "amount": "1",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Mrkev",
+                                "amount": "2",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Timián",
+                                "amount": "1",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Řapíkový celer",
+                                "amount": "2",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Červené víno",
+                                "amount": "400",
+                                "unit": "ml"
+                            },
+                            {
+                                "name": "Máslo",
+                                "amount": "30",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "hladká mouka",
+                                "amount": "2",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Žampión",
+                                "amount": "10",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Vývar",
+                                "amount": "350",
+                                "unit": "ml"
+                            },
+                            {
+                                "name": "Slanina",
+                                "amount": "300",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "Petržel",
+                                "amount": "0",
+                                "unit": ""
+                            }
+                        ],
+                        "subRecipeIds": [
+                            1776444486698
+                        ],
+                        "steps": [
+                            "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                            "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                        ],
+                        "updatedAt": 1776606652922,
+                        "id": 1776445441687,
+                        "history": [],
+                        "versionLabel": 1
+                    }
+                ],
+                "versionLabel": 4
+            },
+            {
+                "name": "Masové koule s vinou omáčkou",
+                "categories": [
+                    "maso",
+                    "oběd",
+                    "slané"
+                ],
+                "prepTime": "30",
+                "cookTime": "80",
+                "baseServings": 4,
+                "ingredients": [
+                    {
+                        "name": "Cibule (žlutá)",
+                        "amount": "1",
+                        "unit": "ks"
+                    },
+                    {
+                        "name": "Mrkev",
+                        "amount": "2",
+                        "unit": "ks"
+                    },
+                    {
+                        "name": "Timián",
+                        "amount": "1",
+                        "unit": "lžíce"
+                    },
+                    {
+                        "name": "Řapíkový celer",
+                        "amount": "2",
+                        "unit": "ks"
+                    },
+                    {
+                        "name": "Červené víno",
+                        "amount": "400",
+                        "unit": "ml"
+                    },
+                    {
+                        "name": "Máslo",
+                        "amount": "30",
+                        "unit": "g"
+                    },
+                    {
+                        "name": "hladká mouka",
+                        "amount": "2",
+                        "unit": "lžíce"
+                    },
+                    {
+                        "name": "Žampión",
+                        "amount": "10",
+                        "unit": "ks"
+                    },
+                    {
+                        "name": "Vývar",
+                        "amount": "350",
+                        "unit": "ml"
+                    },
+                    {
+                        "name": "Slanina",
+                        "amount": "300",
+                        "unit": "g"
+                    },
+                    {
+                        "name": "mleté maso",
+                        "amount": "1",
+                        "unit": "kg"
+                    },
+                    {
+                        "name": "sůl",
+                        "amount": "1.5",
+                        "unit": "lžíce"
+                    },
+                    {
+                        "name": "strouhanka",
+                        "amount": "1",
+                        "unit": "hrnek"
+                    },
+                    {
+                        "name": "vejce",
+                        "amount": "1",
+                        "unit": "kus"
+                    }
+                ],
+                "subRecipeIds": [
+                    1776444486698
+                ],
+                "steps": [
+                    "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                    "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                ],
+                "updatedAt": 1776754262207,
+                "id": 1776445441687,
+                "history": [
+                    {
+                        "name": "Masové koule s vinou omáčkou",
+                        "categories": [
+                            "maso",
+                            "oběd",
+                            "slané"
+                        ],
+                        "prepTime": "30",
+                        "cookTime": "80",
+                        "baseServings": 4,
+                        "ingredients": [
+                            {
+                                "name": "Cibule (žlutá)",
+                                "amount": "1",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Mrkev",
+                                "amount": "2",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Timián",
+                                "amount": "1",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Řapíkový celer",
+                                "amount": "2",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Červené víno",
+                                "amount": "400",
+                                "unit": "ml"
+                            },
+                            {
+                                "name": "Máslo",
+                                "amount": "30",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "hladká mouka",
+                                "amount": "2",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Žampión",
+                                "amount": "10",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Vývar",
+                                "amount": "350",
+                                "unit": "ml"
+                            },
+                            {
+                                "name": "Slanina",
+                                "amount": "300",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "mleté maso",
+                                "amount": "4",
+                                "unit": "kg"
+                            },
+                            {
+                                "name": "sůl",
+                                "amount": "6",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "strouhanka",
+                                "amount": "4",
+                                "unit": "hrnek"
+                            },
+                            {
+                                "name": "vejce",
+                                "amount": "4",
+                                "unit": "kus"
+                            }
+                        ],
+                        "subRecipeIds": [
+                            1776444486698
+                        ],
+                        "steps": [
+                            "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                            "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                        ],
+                        "updatedAt": 1776753261253,
+                        "id": 1776445441687,
+                        "history": [
+                            {
+                                "name": "Masové koule s vinou omáčkou",
+                                "categories": [
+                                    "maso",
+                                    "oběd",
+                                    "slané"
+                                ],
+                                "prepTime": "30",
+                                "cookTime": "80",
+                                "baseServings": 4,
+                                "ingredients": [
+                                    {
+                                        "name": "Cibule (žlutá)",
+                                        "amount": "1",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Mrkev",
+                                        "amount": "2",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Timián",
+                                        "amount": "1",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "Řapíkový celer",
+                                        "amount": "2",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Červené víno",
+                                        "amount": "400",
+                                        "unit": "ml"
+                                    },
+                                    {
+                                        "name": "Máslo",
+                                        "amount": "30",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "hladká mouka",
+                                        "amount": "2",
+                                        "unit": "lžíce"
+                                    },
+                                    {
+                                        "name": "Žampión",
+                                        "amount": "10",
+                                        "unit": "ks"
+                                    },
+                                    {
+                                        "name": "Vývar",
+                                        "amount": "350",
+                                        "unit": "ml"
+                                    },
+                                    {
+                                        "name": "Slanina",
+                                        "amount": "300",
+                                        "unit": "g"
+                                    },
+                                    {
+                                        "name": "Petržel",
+                                        "amount": "0",
+                                        "unit": ""
+                                    }
+                                ],
+                                "subRecipeIds": [
+                                    1776444486698
+                                ],
+                                "steps": [
+                                    "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                                    "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                                ],
+                                "updatedAt": 1776606652922,
+                                "id": 1776445441687,
+                                "history": [],
+                                "versionLabel": 1
+                            }
+                        ],
+                        "versionLabel": 2
+                    },
+                    {
+                        "name": "Masové koule s vinou omáčkou",
+                        "categories": [
+                            "maso",
+                            "oběd",
+                            "slané"
+                        ],
+                        "prepTime": "30",
+                        "cookTime": "80",
+                        "baseServings": 4,
+                        "ingredients": [
+                            {
+                                "name": "Cibule (žlutá)",
+                                "amount": "1",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Mrkev",
+                                "amount": "2",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Timián",
+                                "amount": "1",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Řapíkový celer",
+                                "amount": "2",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Červené víno",
+                                "amount": "400",
+                                "unit": "ml"
+                            },
+                            {
+                                "name": "Máslo",
+                                "amount": "30",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "hladká mouka",
+                                "amount": "2",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Žampión",
+                                "amount": "10",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Vývar",
+                                "amount": "350",
+                                "unit": "ml"
+                            },
+                            {
+                                "name": "Slanina",
+                                "amount": "300",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "Petržel",
+                                "amount": "0",
+                                "unit": ""
+                            }
+                        ],
+                        "subRecipeIds": [
+                            1776444486698
+                        ],
+                        "steps": [
+                            "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                            "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                        ],
+                        "updatedAt": 1776606652922,
+                        "id": 1776445441687,
+                        "history": [],
+                        "versionLabel": 1
+                    }
+                ],
+                "versionLabel": 3
+            },
+            {
+                "name": "Masové koule s vinou omáčkou",
+                "categories": [
+                    "maso",
+                    "oběd",
+                    "slané"
+                ],
+                "prepTime": "30",
+                "cookTime": "80",
+                "baseServings": 4,
+                "ingredients": [
+                    {
+                        "name": "Cibule (žlutá)",
+                        "amount": "1",
+                        "unit": "ks"
+                    },
+                    {
+                        "name": "Mrkev",
+                        "amount": "2",
+                        "unit": "ks"
+                    },
+                    {
+                        "name": "Timián",
+                        "amount": "1",
+                        "unit": "lžíce"
+                    },
+                    {
+                        "name": "Řapíkový celer",
+                        "amount": "2",
+                        "unit": "ks"
+                    },
+                    {
+                        "name": "Červené víno",
+                        "amount": "400",
+                        "unit": "ml"
+                    },
+                    {
+                        "name": "Máslo",
+                        "amount": "30",
+                        "unit": "g"
+                    },
+                    {
+                        "name": "hladká mouka",
+                        "amount": "2",
+                        "unit": "lžíce"
+                    },
+                    {
+                        "name": "Žampión",
+                        "amount": "10",
+                        "unit": "ks"
+                    },
+                    {
+                        "name": "Vývar",
+                        "amount": "350",
+                        "unit": "ml"
+                    },
+                    {
+                        "name": "Slanina",
+                        "amount": "300",
+                        "unit": "g"
+                    },
+                    {
+                        "name": "mleté maso",
+                        "amount": "4",
+                        "unit": "kg"
+                    },
+                    {
+                        "name": "sůl",
+                        "amount": "6",
+                        "unit": "lžíce"
+                    },
+                    {
+                        "name": "strouhanka",
+                        "amount": "4",
+                        "unit": "hrnek"
+                    },
+                    {
+                        "name": "vejce",
+                        "amount": "4",
+                        "unit": "kus"
+                    }
+                ],
+                "subRecipeIds": [
+                    1776444486698
+                ],
+                "steps": [
+                    "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                    "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                ],
+                "updatedAt": 1776753261253,
+                "id": 1776445441687,
+                "history": [
+                    {
+                        "name": "Masové koule s vinou omáčkou",
+                        "categories": [
+                            "maso",
+                            "oběd",
+                            "slané"
+                        ],
+                        "prepTime": "30",
+                        "cookTime": "80",
+                        "baseServings": 4,
+                        "ingredients": [
+                            {
+                                "name": "Cibule (žlutá)",
+                                "amount": "1",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Mrkev",
+                                "amount": "2",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Timián",
+                                "amount": "1",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Řapíkový celer",
+                                "amount": "2",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Červené víno",
+                                "amount": "400",
+                                "unit": "ml"
+                            },
+                            {
+                                "name": "Máslo",
+                                "amount": "30",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "hladká mouka",
+                                "amount": "2",
+                                "unit": "lžíce"
+                            },
+                            {
+                                "name": "Žampión",
+                                "amount": "10",
+                                "unit": "ks"
+                            },
+                            {
+                                "name": "Vývar",
+                                "amount": "350",
+                                "unit": "ml"
+                            },
+                            {
+                                "name": "Slanina",
+                                "amount": "300",
+                                "unit": "g"
+                            },
+                            {
+                                "name": "Petržel",
+                                "amount": "0",
+                                "unit": ""
+                            }
+                        ],
+                        "subRecipeIds": [
+                            1776444486698
+                        ],
+                        "steps": [
+                            "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                            "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                        ],
+                        "updatedAt": 1776606652922,
+                        "id": 1776445441687,
+                        "history": [],
+                        "versionLabel": 1
+                    }
+                ],
+                "versionLabel": 2
+            },
+            {
+                "name": "Masové koule s vinou omáčkou",
+                "categories": [
+                    "maso",
+                    "oběd",
+                    "slané"
+                ],
+                "prepTime": "30",
+                "cookTime": "80",
+                "baseServings": 4,
+                "ingredients": [
+                    {
+                        "name": "Cibule (žlutá)",
+                        "amount": "1",
+                        "unit": "ks"
+                    },
+                    {
+                        "name": "Mrkev",
+                        "amount": "2",
+                        "unit": "ks"
+                    },
+                    {
+                        "name": "Timián",
+                        "amount": "1",
+                        "unit": "lžíce"
+                    },
+                    {
+                        "name": "Řapíkový celer",
+                        "amount": "2",
+                        "unit": "ks"
+                    },
+                    {
+                        "name": "Červené víno",
+                        "amount": "400",
+                        "unit": "ml"
+                    },
+                    {
+                        "name": "Máslo",
+                        "amount": "30",
+                        "unit": "g"
+                    },
+                    {
+                        "name": "hladká mouka",
+                        "amount": "2",
+                        "unit": "lžíce"
+                    },
+                    {
+                        "name": "Žampión",
+                        "amount": "10",
+                        "unit": "ks"
+                    },
+                    {
+                        "name": "Vývar",
+                        "amount": "350",
+                        "unit": "ml"
+                    },
+                    {
+                        "name": "Slanina",
+                        "amount": "300",
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Petržel",
+                        "amount": "0",
+                        "unit": ""
+                    }
+                ],
+                "subRecipeIds": [
+                    1776444486698
+                ],
+                "steps": [
+                    "Nakrájím si {{Slanina|300|g}} a  {{Cibule (žlutá)|1|ks}} na kostičky.Ty vysmažím na pánvi do zlatova a na vysmaženém oleji dělám {{RECIPE:1776444486698:Masové koule|4|porce}} dokud nedostanou barvu,poté je odkládám na bok.",
+                    "Na pánev přidám {{Máslo|30|g}} ,na které hodím zeleninu nakrájenou na podobně velké kusy - {{Mrkev|2|ks}} {{Řapíkový celer|2|ks}} {{Žampión|10|ks}} až zelenina změkne nasypu na ni {{hladká mouka|2|lžíce}} a promýchám přiliju {{Vývar|350|ml}} až se vše provaří přidám   {{Červené víno|400|ml}} {{Timián|1|lžíce}} .Až se vše znovu provaří přidám slaninu,cibuli a masové koule,které budu vždy po několika minutách obracet dokud se neudělají cca 30 minut(čím více tím lépe)"
+                ],
+                "updatedAt": 1776606652922,
+                "id": 1776445441687,
+                "history": [],
+                "versionLabel": 1
+            }
+        ]
     }
 ]

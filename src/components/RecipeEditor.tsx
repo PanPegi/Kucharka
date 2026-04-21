@@ -123,74 +123,48 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
   const isStep2Valid = editSteps.every(s => s.trim() !== "");
 
   const handleLocalSave = () => {
-    const ingredientTotals = new Map<string, { amount: number, unit: string }>();
+  const ingredientTotals = new Map<string, { amount: number, unit: string }>();
 
-    editSteps.forEach(step => {
-      const regex = /\{\{(?!RECIPE:)(.*?)\|(.*?)\|(.*?)\}\}/g;
-      let match;
-      while ((match = regex.exec(step)) !== null) {
-        const name = match[1].trim();
-        const amount = parseFloat(match[2].replace(',', '.'));
-        const unit = match[3].trim();
-        if (name && !isNaN(amount)) {
-          const key = name.toLowerCase();
-          const existing = ingredientTotals.get(key);
-          if (existing) existing.amount += amount;
-          else ingredientTotals.set(key, { amount, unit });
-        }
+  editSteps.forEach(step => {
+    const regex = /\{\{(?!RECIPE:)(.*?)\|(.*?)\|(.*?)\}\}/g;
+    let match;
+    while ((match = regex.exec(step)) !== null) {
+      const name = match[1].trim();
+      const amount = parseFloat(match[2].replace(',', '.'));
+      const unit = match[3].trim();
+      if (name && !isNaN(amount)) {
+        const key = name.toLowerCase();
+        const existing = ingredientTotals.get(key);
+        if (existing) existing.amount += amount;
+        else ingredientTotals.set(key, { amount, unit });
       }
-    });
+    }
+  });
 
-    editSteps.forEach(step => {
-      const regex = /\{\{RECIPE:(\d+):([^|]*)\|(.*?)\|porce\}\}/g;
-      let match;
-      while ((match = regex.exec(step)) !== null) {
-        const recipeId = parseInt(match[1]);
-        const amount = parseFloat(match[3].replace(',', '.'));
-        const subRecipe = recipes.find(r => r.id === recipeId);
-        if (subRecipe && !isNaN(amount)) {
-          const ratio = amount / subRecipe.baseServings;
-          subRecipe.ingredients.forEach(ing => {
-            const ingAmount = parseFloat(ing.amount.replace(',', '.'));
-            if (!isNaN(ingAmount)) {
-              const key = ing.name.toLowerCase();
-              const existing = ingredientTotals.get(key);
-              if (existing) existing.amount += ingAmount * ratio;
-              else ingredientTotals.set(key, { amount: ingAmount * ratio, unit: ing.unit });
-            }
-          });
-        }
-      }
-    });
-
-    const extractedIngredients: Ingredient[] = [];
-    editIngs.forEach(ing => {
+  const extractedIngredients: Ingredient[] = editIngs
+    .filter(ing => ing.name.trim() !== '')
+    .map(ing => {
       const key = ing.name.toLowerCase();
       const total = ingredientTotals.get(key);
-      if (total) {
-        extractedIngredients.push({ name: ing.name, amount: (Math.round(total.amount * 10) / 10).toString(), unit: total.unit });
-      }
+      return {
+        name: ing.name,
+        amount: total ? (Math.round(total.amount * 10) / 10).toString() : '0',
+        unit: total ? total.unit : ing.unit
+      };
     });
 
-    ingredientTotals.forEach((val, key) => {
-      const alreadyIn = extractedIngredients.some(i => i.name.toLowerCase() === key);
-      if (!alreadyIn) {
-        extractedIngredients.push({ name: key, amount: (Math.round(val.amount * 10) / 10).toString(), unit: val.unit });
-      }
-    });
-
-    onSave({
-      name: editName.trim(),
-      categories: editCategoryList.map(c => c.trim().toLowerCase()).filter(c => c !== ""),
-      prepTime: editPrep,
-      cookTime: editCook,
-      baseServings: editServings,
-      ingredients: extractedIngredients,
-      subRecipeIds: editSelectedSubIds,
-      steps: editSteps.filter(s => s.trim() !== ""),
-      updatedAt: Date.now()
-    });
-  };
+  onSave({
+    name: editName.trim(),
+    categories: editCategoryList.map(c => c.trim().toLowerCase()).filter(c => c !== ""),
+    prepTime: editPrep,
+    cookTime: editCook,
+    baseServings: editServings,
+    ingredients: extractedIngredients,
+    subRecipeIds: editSelectedSubIds,
+    steps: editSteps.filter(s => s.trim() !== ""),
+    updatedAt: Date.now()
+  });
+};
 
   const handleTagClick = (stepIdx: number, tagRaw: string) => {
     const content = tagRaw.slice(2, -2).split('|');
