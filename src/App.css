@@ -1047,3 +1047,35 @@ body {
 .theme-light .ing-card.selected {
     background-color: #f0fdf4; /* Světle zelená pro light mode */
 }
+
+.textarea-real {
+    z-index: 2;
+    background: transparent !important;
+    color: transparent !important;
+    caret-color: white;
+    resize: vertical;
+    border: none;
+    outline: none;
+}
+
+.textarea-visual {
+    z-index: 1;
+    pointer-events: none;
+    background: transparent;
+    color: #fff;
+    scrollbar-width: none; 
+}
+
+.theme-light .textarea-real {
+    caret-color: var(--accent);
+}
+
+.textarea-real {
+    z-index: 2;
+    background: transparent !important;
+    color: transparent !important;
+    caret-color: transparent; /* Skryj nativní kurzor */
+    resize: vertical;
+    border: none;
+    outline: none;
+}

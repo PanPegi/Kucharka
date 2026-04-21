@@ -52,7 +52,7 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
   const handleLocalSave = () => {
     const ingredientTotals = new Map<string, { amount: number, unit: string }>();
     editSteps.forEach(step => {
-      const regex = /\{\{RECIPE:(\d+):([^|]*)\|(.*?)\|porce\}\}/g;
+      const regex = /\{\{(?:RECIPE:\d+:|)(.*?)\|(.*?)\|(.*?)\}\}/g;
       let match;
       while ((match = regex.exec(step)) !== null) {
         const name = match[1].trim();
@@ -180,10 +180,50 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
                     value={s}
                     onChange={e => { const n = [...editSteps]; n[idx] = e.target.value; setEditSteps(n); }}
                     onScroll={e => { (e.target as any).nextElementSibling.scrollTop = (e.target as any).scrollTop; }}
+                    onKeyDown={e => {
+                      const textarea = e.currentTarget;
+                      const pos = textarea.selectionStart;
+                      const val = textarea.value;
+                      const tagRegex = /\{\{.*?\}\}/g;
+                      let match;
+                      while ((match = tagRegex.exec(val)) !== null) {
+                        const start = match.index;
+                        const end = match.index + match[0].length;
+                        const justAfter = e.key === 'Backspace' && pos === end;
+                        const justBefore = e.key === 'Delete' && pos === start;
+                        if (justAfter || justBefore) {
+                          e.preventDefault();
+                          handleTagClick(idx, match[0]);
+                          return;
+                        }
+                      }
+                    }}
+                    onMouseDown={e => {
+                      const textarea = e.currentTarget;
+                      const visual = textarea.nextElementSibling as HTMLDivElement;
+                      if (!visual) return;
+                      const spans = visual.querySelectorAll('.editor-tag');
+                      const x = e.clientX;
+                      const y = e.clientY;
+                      for (const span of Array.from(spans)) {
+                        const rect = span.getBoundingClientRect();
+                        if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+                          e.preventDefault();
+                          const tagRaw = span.getAttribute('data-raw');
+                          if (tagRaw) handleTagClick(idx, tagRaw);
+                          return;
+                        }
+                      }
+                    }}
                   />
                   <div className="textarea-common textarea-visual">
                     {s.split(/(\{\{.*?\}\})/g).map((part, i) => part.startsWith('{{') ? (
-                      <span key={i} className={`editor-tag ${part.includes('RECIPE:') ? 'editor-tag-recipe' : ''}`} onMouseDown={(e) => { e.preventDefault(); handleTagClick(idx, part); }}>
+                      <span
+                        key={i}
+                        data-raw={part}
+                        className={`editor-tag ${part.includes('RECIPE:') ? 'editor-tag-recipe' : ''}`}
+                        onMouseDown={(e) => { e.preventDefault(); handleTagClick(idx, part); }}
+                      >
                         {part.slice(2, -2).split('|')[1]} {part.slice(2, -2).split('|')[2]} {part.includes('RECIPE:') ? part.slice(2, -2).split('|')[0].split(':')[2] : part.slice(2, -2).split('|')[0]}
                       </span>
                     ) : part)}
@@ -194,38 +234,21 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
                 )}
               </div>
               <div className="step-insert-panel">
-                <select id={`ing-name-select-${idx}`} className="custom-input flex-2" onChange={(e) => {
-                  const unitInput = document.getElementById(`ing-unit-select-${idx}`) as HTMLInputElement;
-                  if (e.target.value.startsWith('RECIPE:')) unitInput.value = 'porce';
-                  else unitInput.value = '';
-                }}>
+                <select id={`ing-name-select-${idx}`} className="custom-input flex-2">
                   <optgroup label="SUROVINY">{editIngs.filter(i => i.name.trim() !== "").map((ing, iIdx) => <option key={iIdx} value={ing.name}>{ing.name}</option>)}</optgroup>
                   <optgroup label="PODRECEPTY">{recipes.filter(r => editSelectedSubIds.includes(r.id)).map(r => <option key={r.id} value={`RECIPE:${r.id}:${r.name}`}>{r.name}</option>)}</optgroup>
                 </select>
                 <input id={`ing-val-input-${idx}`} type="text" className="custom-input flex-1"
                   placeholder="Mn."
-                  onKeyDown={handleNumericInput} /><input
-                  id={`ing-unit-select-${idx}`}
-                  className="custom-input flex-1"
-                  placeholder="Jedn."
-                  list={`units-${idx}`}
-                  onChange={(e) => {
-                    const sel = document.getElementById(`ing-name-select-${idx}`) as HTMLSelectElement;
-                    if (sel?.value.startsWith('RECIPE:')) e.currentTarget.value = 'porce';
-                  }}
-                />
+                  onKeyDown={handleNumericInput} /><input id={`ing-unit-select-${idx}`} className="custom-input flex-1" placeholder="Jedn." list={`units-${idx}`} />
                 <datalist id={`units-${idx}`}>{commonUnits.map(u => <option key={u} value={u} />)}</datalist>
                 <button className="btn insert-btn" onClick={() => {
-                  const sel = document.getElementById(`ing-name-select-${idx}`) as HTMLSelectElement;
-                  const val = document.getElementById(`ing-val-input-${idx}`) as HTMLInputElement;
-                  const unit = document.getElementById(`ing-unit-select-${idx}`) as HTMLInputElement;
+                  const sel = document.getElementById(`ing-name-select-${idx}`) as any;
+                  const val = document.getElementById(`ing-val-input-${idx}`) as any;
+                  const unit = document.getElementById(`ing-unit-select-${idx}`) as any;
                   if (!sel.value || !val.value) return alert("Vyberte položku a zadejte množství.");
-                  const isRecipe = sel.value.startsWith('RECIPE:');
-                  const finalUnit = isRecipe ? 'porce' : unit.value;
-                  const n = [...editSteps];
-                  n[idx] = n[idx] + (n[idx].length > 0 && !n[idx].endsWith(' ') ? ' ' : '') + `{{${sel.value}|${val.value}|${finalUnit}}}`;
-                  setEditSteps(n);
-                  val.value = "";
+                  const n = [...editSteps]; n[idx] = n[idx] + (n[idx].length > 0 && !n[idx].endsWith(' ') ? ' ' : '') + `{{${sel.value}|${val.value}|${unit.value}}}`;
+                  setEditSteps(n); val.value = "";
                 }}>VLOŽIT</button>
               </div>
             </div>
@@ -250,7 +273,7 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
             </select>
             <div className="editor-row">
               <div className="flex-1"><label className="field-label">Množství</label><input className="custom-input" type="text" value={editingTag.amount} onChange={e => setEditingTag({ ...editingTag, amount: e.target.value })} onKeyDown={handleNumericInput} /></div>
-              <div className="flex-1"><label className="field-label">Jednotka</label><input className="custom-input" type="text" value={editingTag.name.startsWith('RECIPE:') ? 'porce' : editingTag.unit} onChange={e => { if (!editingTag.name.startsWith('RECIPE:')) setEditingTag({ ...editingTag, unit: e.target.value }); }} readOnly={editingTag.name.startsWith('RECIPE:')} /></div>
+              <div className="flex-1"><label className="field-label">Jednotka</label><input className="custom-input" type="text" value={editingTag.unit} onChange={e => setEditingTag({ ...editingTag, unit: e.target.value })} /></div>
             </div>
             <div className="modal-actions-list">
               <button className="btn success-btn" onClick={() => {
