@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Recipe, Ingredient, RecipeData } from '../types';
 
 interface RecipeEditorProps {
@@ -18,7 +18,6 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
 }) => {
   const existingRecipe = recipes.find(r => r.id === editId);
 
-  // --- INTERNÍ STAVY EDITORU ---
   const [modalStep, setModalStep] = useState(1);
   const [editName, setEditName] = useState(existingRecipe?.name || '');
   const [editCategoryList, setEditCategoryList] = useState<string[]>(existingRecipe?.categories || ['']);
@@ -31,7 +30,81 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
   const [subSearch, setSubSearch] = useState('');
   const [editingTag, setEditingTag] = useState<{ stepIdx: number, tagRaw: string, name: string, amount: string, unit: string } | null>(null);
 
-  // Validace: V kroku 1 teď kontrolujeme i kategorie
+  const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
+  const visualRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [cursorPositions, setCursorPositions] = useState<Record<number, { top: number, left: number } | null>>({});
+
+  const updateCursor = (idx: number) => {
+  const textarea = textareaRefs.current[idx];
+  const visual = visualRefs.current[idx];
+  if (!textarea || !visual) return;
+
+  const pos = textarea.selectionStart;
+  const textBefore = textarea.value.slice(0, pos);
+  const computed = window.getComputedStyle(visual);
+
+  const mirror = document.createElement('div');
+  mirror.style.position = 'fixed';
+  mirror.style.visibility = 'hidden';
+  mirror.style.zIndex = '-1';
+  mirror.style.top = '0px';
+  mirror.style.left = '0px';
+  mirror.style.width = visual.offsetWidth + 'px';
+  mirror.style.whiteSpace = 'pre-wrap';
+  mirror.style.wordWrap = 'break-word';
+  mirror.style.overflowWrap = 'break-word';
+  mirror.style.overflow = 'hidden';
+  mirror.style.fontFamily = computed.fontFamily;
+  mirror.style.fontSize = computed.fontSize;
+  mirror.style.lineHeight = computed.lineHeight;
+  mirror.style.paddingTop = computed.paddingTop;
+  mirror.style.paddingBottom = computed.paddingBottom;
+  mirror.style.paddingLeft = computed.paddingLeft;
+  mirror.style.paddingRight = computed.paddingRight;
+  mirror.style.boxSizing = computed.boxSizing;
+
+  const tagRegex = /\{\{.*?\}\}/g;
+  let lastIndex = 0;
+  let match;
+
+  while ((match = tagRegex.exec(textBefore)) !== null) {
+    mirror.appendChild(document.createTextNode(textBefore.slice(lastIndex, match.index)));
+
+    const realSpan = Array.from(visual.querySelectorAll('[data-raw]')).find(
+      el => el.getAttribute('data-raw') === match![0]
+    ) as HTMLElement;
+
+    const fakeSpan = document.createElement('span');
+    fakeSpan.style.display = 'inline-block';
+    fakeSpan.style.width = realSpan ? realSpan.offsetWidth + 'px' : '0px';
+    fakeSpan.style.verticalAlign = 'bottom';
+    fakeSpan.textContent = '\u200b';
+    mirror.appendChild(fakeSpan);
+
+    lastIndex = match.index + match[0].length;
+  }
+
+  mirror.appendChild(document.createTextNode(textBefore.slice(lastIndex)));
+
+  const cursorSpan = document.createElement('span');
+  cursorSpan.textContent = '\u200b';
+  mirror.appendChild(cursorSpan);
+
+  document.body.appendChild(mirror);
+
+  const mirrorRect = mirror.getBoundingClientRect();
+  const spanRect = cursorSpan.getBoundingClientRect();
+
+  document.body.removeChild(mirror);
+
+  setCursorPositions(prev => ({
+    ...prev,
+    [idx]: {
+      top: spanRect.top - mirrorRect.top + visual.scrollTop,
+      left: spanRect.left - mirrorRect.left
+    }
+  }));
+};
 
   const handleNumericInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const allowed = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
@@ -51,17 +124,41 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
 
   const handleLocalSave = () => {
     const ingredientTotals = new Map<string, { amount: number, unit: string }>();
+
     editSteps.forEach(step => {
-      const regex = /\{\{(?:RECIPE:\d+:|)(.*?)\|(.*?)\|(.*?)\}\}/g;
+      const regex = /\{\{(?!RECIPE:)(.*?)\|(.*?)\|(.*?)\}\}/g;
       let match;
       while ((match = regex.exec(step)) !== null) {
         const name = match[1].trim();
         const amount = parseFloat(match[2].replace(',', '.'));
         const unit = match[3].trim();
-        if (!isNaN(amount)) {
+        if (name && !isNaN(amount)) {
           const key = name.toLowerCase();
           const existing = ingredientTotals.get(key);
-          if (existing) existing.amount += amount; else ingredientTotals.set(key, { amount, unit });
+          if (existing) existing.amount += amount;
+          else ingredientTotals.set(key, { amount, unit });
+        }
+      }
+    });
+
+    editSteps.forEach(step => {
+      const regex = /\{\{RECIPE:(\d+):([^|]*)\|(.*?)\|porce\}\}/g;
+      let match;
+      while ((match = regex.exec(step)) !== null) {
+        const recipeId = parseInt(match[1]);
+        const amount = parseFloat(match[3].replace(',', '.'));
+        const subRecipe = recipes.find(r => r.id === recipeId);
+        if (subRecipe && !isNaN(amount)) {
+          const ratio = amount / subRecipe.baseServings;
+          subRecipe.ingredients.forEach(ing => {
+            const ingAmount = parseFloat(ing.amount.replace(',', '.'));
+            if (!isNaN(ingAmount)) {
+              const key = ing.name.toLowerCase();
+              const existing = ingredientTotals.get(key);
+              if (existing) existing.amount += ingAmount * ratio;
+              else ingredientTotals.set(key, { amount: ingAmount * ratio, unit: ing.unit });
+            }
+          });
         }
       }
     });
@@ -72,6 +169,13 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
       const total = ingredientTotals.get(key);
       if (total) {
         extractedIngredients.push({ name: ing.name, amount: (Math.round(total.amount * 10) / 10).toString(), unit: total.unit });
+      }
+    });
+
+    ingredientTotals.forEach((val, key) => {
+      const alreadyIn = extractedIngredients.some(i => i.name.toLowerCase() === key);
+      if (!alreadyIn) {
+        extractedIngredients.push({ name: key, amount: (Math.round(val.amount * 10) / 10).toString(), unit: val.unit });
       }
     });
 
@@ -114,35 +218,26 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
           <datalist id="modal-cat-list">{allCategories.map(c => <option key={c} value={c} />)}</datalist>
           <button className="btn secondary-btn small-btn" style={{ marginBottom: '15px' }} onClick={() => setEditCategoryList([...editCategoryList, ''])}>+ KATEGORIE</button>
 
-
           <div className="editor-row">
             <div className="flex-1">
               <label className="field-label">Základní porce</label>
-              <input className="custom-input" type="text" value={editServings}
-                onChange={e => setEditServings(parseInt(e.target.value) || 1)}
-                onKeyDown={handleNumericInput} />   </div>
+              <input className="custom-input" type="text" value={editServings} onChange={e => setEditServings(parseInt(e.target.value) || 1)} onKeyDown={handleNumericInput} />
+            </div>
             <div className="flex-1">
               <label className="field-label">Příprava (min)</label>
-              <input className="custom-input" type="text" value={editPrep}
-                onChange={e => setEditPrep(e.target.value)}
-                onKeyDown={handleNumericInput} />    </div>
+              <input className="custom-input" type="text" value={editPrep} onChange={e => setEditPrep(e.target.value)} onKeyDown={handleNumericInput} />
+            </div>
             <div className="flex-1">
               <label className="field-label">Vaření (min)</label>
-              <input className="custom-input" type="text" value={editCook}
-                onChange={e => setEditCook(e.target.value)}
-                onKeyDown={handleNumericInput} />  </div>
+              <input className="custom-input" type="text" value={editCook} onChange={e => setEditCook(e.target.value)} onKeyDown={handleNumericInput} />
+            </div>
           </div>
-
 
           <label className="field-label">Podrecepty:</label>
           <input className="custom-input sub-search" placeholder="Hledat podrecept..." value={subSearch} onChange={e => setSubSearch(e.target.value)} />
           <div className="sub-recipe-selector">
             {recipes.filter(r => r.id !== editId && r.name.toLowerCase().includes(subSearch.toLowerCase())).map(r => (
-              <button
-                key={r.id}
-                className={`sub-btn ${editSelectedSubIds.includes(r.id) ? 'active' : ''}`}
-                onClick={() => setEditSelectedSubIds(prev => prev.includes(r.id) ? prev.filter(x => x !== r.id) : [...prev, r.id])}
-              >
+              <button key={r.id} className={`sub-btn ${editSelectedSubIds.includes(r.id) ? 'active' : ''}`} onClick={() => setEditSelectedSubIds(prev => prev.includes(r.id) ? prev.filter(x => x !== r.id) : [...prev, r.id])}>
                 {r.name}
               </button>
             ))}
@@ -176,10 +271,16 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
                 <div className="step-num-small">{idx + 1}</div>
                 <div className="textarea-container">
                   <textarea
+
+                    ref={el => { textareaRefs.current[idx] = el; }}
                     className="textarea-common textarea-real"
                     value={s}
-                    onChange={e => { const n = [...editSteps]; n[idx] = e.target.value; setEditSteps(n); }}
-                    onScroll={e => { (e.target as any).nextElementSibling.scrollTop = (e.target as any).scrollTop; }}
+                    onChange={e => { const n = [...editSteps]; n[idx] = e.target.value; setEditSteps(n); updateCursor(idx); }}
+                    onKeyUp={() => updateCursor(idx)}
+                    onMouseUp={() => requestAnimationFrame(() => updateCursor(idx))}
+                    onFocus={() => updateCursor(idx)}
+                    onBlur={() => setCursorPositions(prev => ({ ...prev, [idx]: null }))}
+                    onScroll={e => { (e.target as any).nextElementSibling.scrollTop = (e.target as any).scrollTop; updateCursor(idx); }}
                     onKeyDown={e => {
                       const textarea = e.currentTarget;
                       const pos = textarea.selectionStart;
@@ -189,11 +290,35 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
                       while ((match = tagRegex.exec(val)) !== null) {
                         const start = match.index;
                         const end = match.index + match[0].length;
+
+                        // Backspace/Delete u tagu – otevři edit okno
                         const justAfter = e.key === 'Backspace' && pos === end;
                         const justBefore = e.key === 'Delete' && pos === start;
                         if (justAfter || justBefore) {
                           e.preventDefault();
                           handleTagClick(idx, match[0]);
+                          return;
+                        }
+
+                        // Šipka doleva – přeskoč celý tag
+                        if (e.key === 'ArrowLeft' && pos === end) {
+                          e.preventDefault();
+                          requestAnimationFrame(() => {
+                            textarea.selectionStart = start;
+                            textarea.selectionEnd = start;
+                            updateCursor(idx);
+                          });
+                          return;
+                        }
+
+                        // Šipka doprava – přeskoč celý tag
+                        if (e.key === 'ArrowRight' && pos === start) {
+                          e.preventDefault();
+                          requestAnimationFrame(() => {
+                            textarea.selectionStart = end;
+                            textarea.selectionEnd = end;
+                            updateCursor(idx);
+                          });
                           return;
                         }
                       }
@@ -216,7 +341,11 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
                       }
                     }}
                   />
-                  <div className="textarea-common textarea-visual">
+                  <div
+                    ref={el => { visualRefs.current[idx] = el; }}
+                    className="textarea-common textarea-visual"
+                    style={{ position: 'relative' }}
+                  >
                     {s.split(/(\{\{.*?\}\})/g).map((part, i) => part.startsWith('{{') ? (
                       <span
                         key={i}
@@ -227,6 +356,20 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
                         {part.slice(2, -2).split('|')[1]} {part.slice(2, -2).split('|')[2]} {part.includes('RECIPE:') ? part.slice(2, -2).split('|')[0].split(':')[2] : part.slice(2, -2).split('|')[0]}
                       </span>
                     ) : part)}
+                    {cursorPositions[idx] && (
+                      <span style={{
+                        position: 'absolute',
+                        top: cursorPositions[idx]!.top,
+                        left: cursorPositions[idx]!.left,
+                        width: '2px',
+                        height: '1.2em',
+                        background: 'var(--accent)',
+                        display: 'inline-block',
+                        animation: 'blink 1s step-end infinite',
+                        pointerEvents: 'none',
+                        verticalAlign: 'text-bottom'
+                      }} />
+                    )}
                   </div>
                 </div>
                 {idx !== 0 && (
@@ -234,21 +377,31 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
                 )}
               </div>
               <div className="step-insert-panel">
-                <select id={`ing-name-select-${idx}`} className="custom-input flex-2">
+                <select id={`ing-name-select-${idx}`} className="custom-input flex-2" onChange={(e) => {
+                  const unitInput = document.getElementById(`ing-unit-select-${idx}`) as HTMLInputElement;
+                  if (e.target.value.startsWith('RECIPE:')) unitInput.value = 'porce';
+                  else unitInput.value = '';
+                }}>
                   <optgroup label="SUROVINY">{editIngs.filter(i => i.name.trim() !== "").map((ing, iIdx) => <option key={iIdx} value={ing.name}>{ing.name}</option>)}</optgroup>
                   <optgroup label="PODRECEPTY">{recipes.filter(r => editSelectedSubIds.includes(r.id)).map(r => <option key={r.id} value={`RECIPE:${r.id}:${r.name}`}>{r.name}</option>)}</optgroup>
                 </select>
-                <input id={`ing-val-input-${idx}`} type="text" className="custom-input flex-1"
-                  placeholder="Mn."
-                  onKeyDown={handleNumericInput} /><input id={`ing-unit-select-${idx}`} className="custom-input flex-1" placeholder="Jedn." list={`units-${idx}`} />
+                <input id={`ing-val-input-${idx}`} type="text" className="custom-input flex-1" placeholder="Mn." onKeyDown={handleNumericInput} />
+                <input id={`ing-unit-select-${idx}`} className="custom-input flex-1" placeholder="Jedn." list={`units-${idx}`} onChange={(e) => {
+                  const sel = document.getElementById(`ing-name-select-${idx}`) as HTMLSelectElement;
+                  if (sel?.value.startsWith('RECIPE:')) e.currentTarget.value = 'porce';
+                }} />
                 <datalist id={`units-${idx}`}>{commonUnits.map(u => <option key={u} value={u} />)}</datalist>
                 <button className="btn insert-btn" onClick={() => {
-                  const sel = document.getElementById(`ing-name-select-${idx}`) as any;
-                  const val = document.getElementById(`ing-val-input-${idx}`) as any;
-                  const unit = document.getElementById(`ing-unit-select-${idx}`) as any;
+                  const sel = document.getElementById(`ing-name-select-${idx}`) as HTMLSelectElement;
+                  const val = document.getElementById(`ing-val-input-${idx}`) as HTMLInputElement;
+                  const unit = document.getElementById(`ing-unit-select-${idx}`) as HTMLInputElement;
                   if (!sel.value || !val.value) return alert("Vyberte položku a zadejte množství.");
-                  const n = [...editSteps]; n[idx] = n[idx] + (n[idx].length > 0 && !n[idx].endsWith(' ') ? ' ' : '') + `{{${sel.value}|${val.value}|${unit.value}}}`;
-                  setEditSteps(n); val.value = "";
+                  const isRecipe = sel.value.startsWith('RECIPE:');
+                  const finalUnit = isRecipe ? 'porce' : unit.value;
+                  const n = [...editSteps];
+                  n[idx] = n[idx] + (n[idx].length > 0 && !n[idx].endsWith(' ') ? ' ' : '') + `{{${sel.value}|${val.value}|${finalUnit}}}`;
+                  setEditSteps(n);
+                  val.value = "";
                 }}>VLOŽIT</button>
               </div>
             </div>
@@ -273,7 +426,7 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
             </select>
             <div className="editor-row">
               <div className="flex-1"><label className="field-label">Množství</label><input className="custom-input" type="text" value={editingTag.amount} onChange={e => setEditingTag({ ...editingTag, amount: e.target.value })} onKeyDown={handleNumericInput} /></div>
-              <div className="flex-1"><label className="field-label">Jednotka</label><input className="custom-input" type="text" value={editingTag.unit} onChange={e => setEditingTag({ ...editingTag, unit: e.target.value })} /></div>
+              <div className="flex-1"><label className="field-label">Jednotka</label><input className="custom-input" type="text" value={editingTag.name.startsWith('RECIPE:') ? 'porce' : editingTag.unit} onChange={e => { if (!editingTag.name.startsWith('RECIPE:')) setEditingTag({ ...editingTag, unit: e.target.value }); }} readOnly={editingTag.name.startsWith('RECIPE:')} /></div>
             </div>
             <div className="modal-actions-list">
               <button className="btn success-btn" onClick={() => {
