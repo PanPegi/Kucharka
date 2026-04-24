@@ -57,14 +57,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({
 
           <label className="field-label">Suroviny:</label>
           <div className="tag-container">
-            {effectiveData.ingredients
-  .filter((i: any) => 
-    selectedRecipe.subRecipeIds?.length === 0 || 
-    selectedRecipe.ingredients.some((si: any) => 
-      si.name.toLowerCase() === i.name.toLowerCase()
-    )
-  )
-  .map((i: any, idx: number) => {
+            {effectiveData.ingredients.map((i: any, idx: number) => {
               const myVal = myIngredients[i.name.toLowerCase()];
               let statusClass = 'tag-miss';
               if (myVal !== undefined) {

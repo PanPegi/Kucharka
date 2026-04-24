@@ -35,76 +35,76 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
   const [cursorPositions, setCursorPositions] = useState<Record<number, { top: number, left: number } | null>>({});
 
   const updateCursor = (idx: number) => {
-  const textarea = textareaRefs.current[idx];
-  const visual = visualRefs.current[idx];
-  if (!textarea || !visual) return;
+    const textarea = textareaRefs.current[idx];
+    const visual = visualRefs.current[idx];
+    if (!textarea || !visual) return;
 
-  const pos = textarea.selectionStart;
-  const textBefore = textarea.value.slice(0, pos);
-  const computed = window.getComputedStyle(visual);
+    const pos = textarea.selectionStart;
+    const textBefore = textarea.value.slice(0, pos);
+    const computed = window.getComputedStyle(visual);
 
-  const mirror = document.createElement('div');
-  mirror.style.position = 'fixed';
-  mirror.style.visibility = 'hidden';
-  mirror.style.zIndex = '-1';
-  mirror.style.top = '0px';
-  mirror.style.left = '0px';
-  mirror.style.width = visual.offsetWidth + 'px';
-  mirror.style.whiteSpace = 'pre-wrap';
-  mirror.style.wordWrap = 'break-word';
-  mirror.style.overflowWrap = 'break-word';
-  mirror.style.overflow = 'hidden';
-  mirror.style.fontFamily = computed.fontFamily;
-  mirror.style.fontSize = computed.fontSize;
-  mirror.style.lineHeight = computed.lineHeight;
-  mirror.style.paddingTop = computed.paddingTop;
-  mirror.style.paddingBottom = computed.paddingBottom;
-  mirror.style.paddingLeft = computed.paddingLeft;
-  mirror.style.paddingRight = computed.paddingRight;
-  mirror.style.boxSizing = computed.boxSizing;
+    const mirror = document.createElement('div');
+    mirror.style.position = 'fixed';
+    mirror.style.visibility = 'hidden';
+    mirror.style.zIndex = '-1';
+    mirror.style.top = '0px';
+    mirror.style.left = '0px';
+    mirror.style.width = visual.offsetWidth + 'px';
+    mirror.style.whiteSpace = 'pre-wrap';
+    mirror.style.wordWrap = 'break-word';
+    mirror.style.overflowWrap = 'break-word';
+    mirror.style.overflow = 'hidden';
+    mirror.style.fontFamily = computed.fontFamily;
+    mirror.style.fontSize = computed.fontSize;
+    mirror.style.lineHeight = computed.lineHeight;
+    mirror.style.paddingTop = computed.paddingTop;
+    mirror.style.paddingBottom = computed.paddingBottom;
+    mirror.style.paddingLeft = computed.paddingLeft;
+    mirror.style.paddingRight = computed.paddingRight;
+    mirror.style.boxSizing = computed.boxSizing;
 
-  const tagRegex = /\{\{.*?\}\}/g;
-  let lastIndex = 0;
-  let match;
+    const tagRegex = /\{\{.*?\}\}/g;
+    let lastIndex = 0;
+    let match;
 
-  while ((match = tagRegex.exec(textBefore)) !== null) {
-    mirror.appendChild(document.createTextNode(textBefore.slice(lastIndex, match.index)));
+    while ((match = tagRegex.exec(textBefore)) !== null) {
+      mirror.appendChild(document.createTextNode(textBefore.slice(lastIndex, match.index)));
 
-    const realSpan = Array.from(visual.querySelectorAll('[data-raw]')).find(
-      el => el.getAttribute('data-raw') === match![0]
-    ) as HTMLElement;
+      const realSpan = Array.from(visual.querySelectorAll('[data-raw]')).find(
+        el => el.getAttribute('data-raw') === match![0]
+      ) as HTMLElement;
 
-    const fakeSpan = document.createElement('span');
-    fakeSpan.style.display = 'inline-block';
-    fakeSpan.style.width = realSpan ? realSpan.offsetWidth + 'px' : '0px';
-    fakeSpan.style.verticalAlign = 'bottom';
-    fakeSpan.textContent = '\u200b';
-    mirror.appendChild(fakeSpan);
+      const fakeSpan = document.createElement('span');
+      fakeSpan.style.display = 'inline-block';
+      fakeSpan.style.width = realSpan ? realSpan.offsetWidth + 'px' : '0px';
+      fakeSpan.style.verticalAlign = 'bottom';
+      fakeSpan.textContent = '\u200b';
+      mirror.appendChild(fakeSpan);
 
-    lastIndex = match.index + match[0].length;
-  }
-
-  mirror.appendChild(document.createTextNode(textBefore.slice(lastIndex)));
-
-  const cursorSpan = document.createElement('span');
-  cursorSpan.textContent = '\u200b';
-  mirror.appendChild(cursorSpan);
-
-  document.body.appendChild(mirror);
-
-  const mirrorRect = mirror.getBoundingClientRect();
-  const spanRect = cursorSpan.getBoundingClientRect();
-
-  document.body.removeChild(mirror);
-
-  setCursorPositions(prev => ({
-    ...prev,
-    [idx]: {
-      top: spanRect.top - mirrorRect.top + visual.scrollTop,
-      left: spanRect.left - mirrorRect.left
+      lastIndex = match.index + match[0].length;
     }
-  }));
-};
+
+    mirror.appendChild(document.createTextNode(textBefore.slice(lastIndex)));
+
+    const cursorSpan = document.createElement('span');
+    cursorSpan.textContent = '\u200b';
+    mirror.appendChild(cursorSpan);
+
+    document.body.appendChild(mirror);
+
+    const mirrorRect = mirror.getBoundingClientRect();
+    const spanRect = cursorSpan.getBoundingClientRect();
+
+    document.body.removeChild(mirror);
+
+    setCursorPositions(prev => ({
+      ...prev,
+      [idx]: {
+        top: spanRect.top - mirrorRect.top + visual.scrollTop,
+        left: spanRect.left - mirrorRect.left
+      }
+    }));
+  };
 
   const handleNumericInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const allowed = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
@@ -123,48 +123,48 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
   const isStep2Valid = editSteps.every(s => s.trim() !== "");
 
   const handleLocalSave = () => {
-  const ingredientTotals = new Map<string, { amount: number, unit: string }>();
+    const ingredientTotals = new Map<string, { amount: number, unit: string }>();
 
-  editSteps.forEach(step => {
-    const regex = /\{\{(?!RECIPE:)(.*?)\|(.*?)\|(.*?)\}\}/g;
-    let match;
-    while ((match = regex.exec(step)) !== null) {
-      const name = match[1].trim();
-      const amount = parseFloat(match[2].replace(',', '.'));
-      const unit = match[3].trim();
-      if (name && !isNaN(amount)) {
-        const key = name.toLowerCase();
-        const existing = ingredientTotals.get(key);
-        if (existing) existing.amount += amount;
-        else ingredientTotals.set(key, { amount, unit });
+    editSteps.forEach(step => {
+      const regex = /\{\{(?!RECIPE:)(.*?)\|(.*?)\|(.*?)\}\}/g;
+      let match;
+      while ((match = regex.exec(step)) !== null) {
+        const name = match[1].trim();
+        const amount = parseFloat(match[2].replace(',', '.'));
+        const unit = match[3].trim();
+        if (name && !isNaN(amount)) {
+          const key = name.toLowerCase();
+          const existing = ingredientTotals.get(key);
+          if (existing) existing.amount += amount;
+          else ingredientTotals.set(key, { amount, unit });
+        }
       }
-    }
-  });
-
-  const extractedIngredients: Ingredient[] = editIngs
-    .filter(ing => ing.name.trim() !== '')
-    .map(ing => {
-      const key = ing.name.toLowerCase();
-      const total = ingredientTotals.get(key);
-      return {
-        name: ing.name,
-        amount: total ? (Math.round(total.amount * 10) / 10).toString() : '0',
-        unit: total ? total.unit : ing.unit
-      };
     });
 
-  onSave({
-    name: editName.trim(),
-    categories: editCategoryList.map(c => c.trim().toLowerCase()).filter(c => c !== ""),
-    prepTime: editPrep,
-    cookTime: editCook,
-    baseServings: editServings,
-    ingredients: extractedIngredients,
-    subRecipeIds: editSelectedSubIds,
-    steps: editSteps.filter(s => s.trim() !== ""),
-    updatedAt: Date.now()
-  });
-};
+    const extractedIngredients: Ingredient[] = editIngs
+      .filter(ing => ing.name.trim() !== '')
+      .map(ing => {
+        const key = ing.name.toLowerCase();
+        const total = ingredientTotals.get(key);
+        return {
+          name: ing.name,
+          amount: total ? (Math.round(total.amount * 10) / 10).toString() : '0',
+          unit: total ? total.unit : ing.unit
+        };
+      });
+
+    onSave({
+      name: editName.trim(),
+      categories: editCategoryList.map(c => c.trim().toLowerCase()).filter(c => c !== ""),
+      prepTime: editPrep,
+      cookTime: editCook,
+      baseServings: editServings,
+      ingredients: extractedIngredients,
+      subRecipeIds: editSelectedSubIds,
+      steps: editSteps.filter(s => s.trim() !== ""),
+      updatedAt: Date.now()
+    });
+  };
 
   const handleTagClick = (stepIdx: number, tagRaw: string) => {
     const content = tagRaw.slice(2, -2).split('|');
@@ -372,9 +372,34 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
                   if (!sel.value || !val.value) return alert("Vyberte položku a zadejte množství.");
                   const isRecipe = sel.value.startsWith('RECIPE:');
                   const finalUnit = isRecipe ? 'porce' : unit.value;
+                  const tag = `{{${sel.value}|${val.value}|${finalUnit}}}`;
+
+                  const textarea = textareaRefs.current[idx];
                   const n = [...editSteps];
-                  n[idx] = n[idx] + (n[idx].length > 0 && !n[idx].endsWith(' ') ? ' ' : '') + `{{${sel.value}|${val.value}|${finalUnit}}}`;
-                  setEditSteps(n);
+
+                  if (textarea) {
+                    const start = textarea.selectionStart ?? n[idx].length;
+                    const end = textarea.selectionEnd ?? n[idx].length;
+                    const before = n[idx].slice(0, start);
+                    const after = n[idx].slice(end);
+                    const prefix = before.length > 0 && !before.endsWith(' ') ? ' ' : '';
+                    const suffix = after.length > 0 && !after.startsWith(' ') ? ' ' : '';
+                    n[idx] = before + prefix + tag + suffix + after;
+                    setEditSteps(n);
+
+                    // Obnov pozici kurzoru za vloženým tagem
+                    requestAnimationFrame(() => {
+                      const newPos = start + prefix.length + tag.length + suffix.length;
+                      textarea.selectionStart = newPos;
+                      textarea.selectionEnd = newPos;
+                      textarea.focus();
+                      updateCursor(idx);
+                    });
+                  } else {
+                    n[idx] = n[idx] + (n[idx].length > 0 && !n[idx].endsWith(' ') ? ' ' : '') + tag;
+                    setEditSteps(n);
+                  }
+
                   val.value = "";
                 }}>VLOŽIT</button>
               </div>

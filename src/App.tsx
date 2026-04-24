@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { IonApp, setupIonicReact } from '@ionic/react';
 import './App.css';
 
@@ -17,7 +17,7 @@ const App: React.FC = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [viewHistoryIndex, setViewHistoryIndex] = useState<number | null>(null);
-  const [myIngredients, setMyIngredients] = useState<{[key: string]: string}>(() => 
+  const [myIngredients, setMyIngredients] = useState<{ [key: string]: string }>(() =>
     JSON.parse(localStorage.getItem('my_fridge') || '{}')
   );
   const [selectedFilterCats, setSelectedFilterCats] = useState<string[]>([]);
@@ -31,7 +31,7 @@ const App: React.FC = () => {
   const [editId, setEditId] = useState<number | null>(null);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
-    const helpTexts: { [key: string]: string } = {
+  const helpTexts: { [key: string]: string } = {
     fridge: "LEDNICE\n\n• Zaklikávání kategorií filtruje zobrazované recepty a suroviny.\n• Po kliknutí tlačítka suroviny se budou prioritizovat recepty obsahující touto surovinou(pokud jí máte dostatek).\n• Po zakliknutí se zobrazí možnost zadat přesné množství.\n• Pokud se tam nedá nic, aplikace bude počítat s tím, že máte vždy dostatek suroviny, jinak bude brát v potaz zadané množství.\n• Tlačítka vybrat/zrušit vše změní stav všech surovin.",
     results: "VÝSLEDKY\n\n• Recepty seřazené podle shody kategorie a ingrediencí.",
     manage: "KUCHAŘKA\n\n• Seznam všech receptů.\n• Pomocí hledání najdete jídlo podle názvu.",
@@ -79,30 +79,34 @@ const App: React.FC = () => {
     localStorage.setItem('app-theme', theme);
   }, [theme]);
 
-useEffect(() => {
-  if (recipes.length === 0) return; 
+  const sharedLinkHandled = useRef(false);
 
-  const params = new URLSearchParams(window.location.search);
-  const recipeId = params.get('recipe');
-  const versionIndex = params.get('v');
+  useEffect(() => {
+    if (recipes.length === 0) return;
+    if (sharedLinkHandled.current) return; // již zpracováno
 
-  if (recipeId) {
-    const target = recipes.find(r => r.id === Number(recipeId));
-    if (target) {
-      setSelectedRecipe(target);
-      setViewHistoryIndex(versionIndex !== null ? Number(versionIndex) : null);
-      setViewServings(target.baseServings || 1);
-      setScene('detail');
-      setPrevScene('manage');
+    const params = new URLSearchParams(window.location.search);
+    const recipeId = params.get('recipe');
+    const versionIndex = params.get('v');
+
+    if (recipeId) {
+      const target = recipes.find(r => r.id === Number(recipeId));
+      if (target) {
+        sharedLinkHandled.current = true; // označ jako zpracováno
+        setSelectedRecipe(target);
+        setViewHistoryIndex(versionIndex !== null ? Number(versionIndex) : null);
+        setViewServings(target.baseServings || 1);
+        setScene('detail');
+        setPrevScene('manage');
+      }
     }
-  }
-}, [recipes]);
+  }, [recipes]);
 
   const allIngredientNames = useMemo(() => {
     let relevantRecipes = recipes;
     if (selectedFilterCats.length > 0) {
-      relevantRecipes = recipes.filter(r => 
-        categoryLogic === 'OR' 
+      relevantRecipes = recipes.filter(r =>
+        categoryLogic === 'OR'
           ? r.categories?.some(cat => selectedFilterCats.includes(cat))
           : selectedFilterCats.every(cat => r.categories?.includes(cat))
       );
@@ -116,7 +120,7 @@ useEffect(() => {
   const matchedRecipes = useMemo(() => {
     return recipes.filter(r => {
       if (selectedFilterCats.length === 0) return true;
-      return categoryLogic === 'OR' 
+      return categoryLogic === 'OR'
         ? r.categories?.some(cat => selectedFilterCats.includes(cat))
         : selectedFilterCats.every(cat => r.categories?.includes(cat));
     }).map(r => {
@@ -139,14 +143,14 @@ useEffect(() => {
       let matchedCount = 0;
       requiredNames.forEach(name => {
         const myVal = myIngredients[name];
-        if (myVal === undefined) return; 
-        if (myVal === "") { matchedCount++; return; } 
+        if (myVal === undefined) return;
+        if (myVal === "") { matchedCount++; return; }
         const myAmount = parseFloat(myVal.replace(',', '.'));
         const reqAmount = allRequiredIngs.get(name) || 0;
         if (!isNaN(myAmount) && myAmount >= reqAmount) matchedCount++;
       });
       return { ...r, score: Math.round((matchedCount / requiredNames.length) * 100) };
-    }).sort((a, b) => (b as any).score - (a as any).score); 
+    }).sort((a, b) => (b as any).score - (a as any).score);
   }, [recipes, myIngredients, selectedFilterCats, categoryLogic]);
 
   const effectiveData = useMemo(() => {
@@ -154,7 +158,7 @@ useEffect(() => {
     const base = viewHistoryIndex === null ? selectedRecipe : selectedRecipe.history[viewHistoryIndex];
     const subRecipes = (base.subRecipeIds || []).map(id => recipes.find(r => r.id === id)).filter((r): r is Recipe => !!r);
     const ingredientMap = new Map<string, number>();
-    
+
     const processIngs = (ings: Ingredient[], sourceBaseServings: number) => {
       ings.forEach(ing => {
         const key = `${ing.name.toLowerCase().trim()}|${ing.unit.toLowerCase().trim()}`;
@@ -167,15 +171,15 @@ useEffect(() => {
     };
     subRecipes.forEach(sub => processIngs(sub.ingredients, sub.baseServings));
     processIngs(base.ingredients, base.baseServings);
-    
+
     const mergedIngredients: Ingredient[] = Array.from(ingredientMap.entries()).map(([key, amount]) => {
       const [name, unit] = key.split('|');
       return { name, amount: (Math.round(amount * 10) / 10).toString(), unit };
     });
 
-    return { 
-      ...base, 
-      ingredients: mergedIngredients, 
+    return {
+      ...base,
+      ingredients: mergedIngredients,
       sections: [
         ...subRecipes.map(sub => ({ title: `PŘÍPRAVA: ${sub.name.toUpperCase()}`, content: sub.steps })),
         { title: `DOKONČENÍ: ${base.name.toUpperCase()}`, content: base.steps }
@@ -185,12 +189,12 @@ useEffect(() => {
 
   const handleSaveRecipe = (newData: RecipeData) => {
     const newId = editId || Date.now();
-    let updated = editId 
-      ? recipes.map(r => r.id === editId ? { 
-          ...newData, 
-          id: editId, 
-          history: [{ ...r, versionLabel: (r.history?.length || 0) + 1 }, ...(r.history || [])] 
-        } : r)
+    let updated = editId
+      ? recipes.map(r => r.id === editId ? {
+        ...newData,
+        id: editId,
+        history: [{ ...r, versionLabel: (r.history?.length || 0) + 1 }, ...(r.history || [])]
+      } : r)
       : [...recipes, { ...newData, id: newId, history: [] }];
 
     const savedRecipe = updated.find(r => r.id === newId) as Recipe;
@@ -210,14 +214,14 @@ useEffect(() => {
         const rawContent = part.slice(2, -2).trim();
         const [idPart, customVal, customUnit] = rawContent.split('|').map(s => s?.trim());
         if (idPart.startsWith("RECIPE:")) {
-  const [, recipeId, recipeName] = idPart.split(':');
-  const target = recipes.find(r => r.id === Number(recipeId));
-  return (
-    <strong key={index} className="recipe-link-text" onClick={() => {
-      if (target) { setSelectedRecipe(target); setViewHistoryIndex(null); setViewServings(target.baseServings || 1); setScene('detail'); }
-    }}>{recipeName}</strong>
-  );
-}
+          const [, recipeId, recipeName] = idPart.split(':');
+          const target = recipes.find(r => r.id === Number(recipeId));
+          return (
+            <strong key={index} className="recipe-link-text" onClick={() => {
+              if (target) { setSelectedRecipe(target); setViewHistoryIndex(null); setViewServings(target.baseServings || 1); setScene('detail'); }
+            }}>{recipeName}</strong>
+          );
+        }
         const found = effectiveData?.ingredients.find(i => i.name.toLowerCase() === idPart.toLowerCase());
         if (found) {
           const scaled = (parseFloat(customVal || "0") / (selectedRecipe?.baseServings || 1)) * viewServings;
@@ -239,12 +243,12 @@ useEffect(() => {
         {scene === 'detail' && selectedRecipe && effectiveData && <RecipeDetail selectedRecipe={selectedRecipe} effectiveData={effectiveData} viewHistoryIndex={viewHistoryIndex} setViewHistoryIndex={setViewHistoryIndex} viewServings={viewServings} setViewServings={setViewServings} myIngredients={myIngredients} onDelete={id => { if (window.confirm('Smazat?')) { const u = recipes.filter(x => x.id !== id); setRecipes(u); saveData(u); setScene('manage'); } }} onEdit={(r) => { setEditId(r?.id || null); setScene('editor'); }} onShare={(e, id) => { e.stopPropagation(); const url = `${window.location.origin}${window.location.pathname}?recipe=${id}`; navigator.clipboard.writeText(url).then(() => alert('Zkopírováno!')); }} onBackToCurrent={() => setViewHistoryIndex(null)} renderStepWithIngredients={renderStepWithIngredients} />}
 
         {scene === 'editor' && (
-          <RecipeEditor 
-            editId={editId} 
-            recipes={recipes} 
-            allIngredientNames={allIngredientNames} 
-            allCategories={allCategories} 
-            onSave={handleSaveRecipe} 
+          <RecipeEditor
+            editId={editId}
+            recipes={recipes}
+            allIngredientNames={allIngredientNames}
+            allCategories={allCategories}
+            onSave={handleSaveRecipe}
             onCancel={() => setScene('manage')}
             viewServings={viewServings}
           />
@@ -252,11 +256,11 @@ useEffect(() => {
       </div>
 
       {showHelpModal && (
-        <HelpModal 
-          scene={scene} 
-          helpTexts={helpTexts} 
-          onClose={() => setShowHelpModal(false)} 
-          onOpenSettings={() => setShowSettingsModal(true)} 
+        <HelpModal
+          scene={scene}
+          helpTexts={helpTexts}
+          onClose={() => setShowHelpModal(false)}
+          onOpenSettings={() => setShowSettingsModal(true)}
         />
       )}
 
