@@ -77,6 +77,7 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
       const fakeSpan = document.createElement('span');
       fakeSpan.style.display = 'inline-block';
       fakeSpan.style.width = realSpan ? realSpan.offsetWidth + 'px' : '0px';
+      fakeSpan.style.height = realSpan ? realSpan.offsetHeight + 'px' : '1em';
       fakeSpan.style.verticalAlign = 'bottom';
       fakeSpan.textContent = '\u200b';
       mirror.appendChild(fakeSpan);
@@ -96,6 +97,22 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
     const spanRect = cursorSpan.getBoundingClientRect();
 
     document.body.removeChild(mirror);
+
+    const allTags = /\{\{.*?\}\}/g;
+    let tagMatch;
+    let adjustedPos = pos;
+    while ((tagMatch = allTags.exec(textarea.value)) !== null) {
+      const start = tagMatch.index;
+      const end = tagMatch.index + tagMatch[0].length;
+      if (adjustedPos > start && adjustedPos < end) {
+        adjustedPos = end;
+        requestAnimationFrame(() => {
+          textarea.selectionStart = end;
+          textarea.selectionEnd = end;
+        });
+        break;
+      }
+    }
 
     setCursorPositions(prev => ({
       ...prev,
@@ -151,7 +168,8 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
           amount: total ? (Math.round(total.amount * 10) / 10).toString() : '0',
           unit: total ? total.unit : ing.unit
         };
-      });
+      })
+      .filter(ing => parseFloat(ing.amount) > 0);
 
     onSave({
       name: editName.trim(),
@@ -258,14 +276,67 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
                     onKeyDown={e => {
                       const textarea = e.currentTarget;
                       const pos = textarea.selectionStart;
+                      const visual = visualRefs.current[idx];
                       const val = textarea.value;
                       const tagRegex = /\{\{.*?\}\}/g;
                       let match;
+
+                      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                        e.preventDefault();
+
+                        const lineHeight = parseFloat(window.getComputedStyle(visual!).lineHeight) || 20;
+
+                        // Zjisti aktuální pozici kurzoru přes mirror
+                        const computed = window.getComputedStyle(visual!);
+                        const buildMirror = (upTo: number) => {
+                          const m = document.createElement('div');
+                          // přidej border aby rozměry seděly s visual divem
+                          const borderLeft = parseFloat(computed.borderLeftWidth) || 0;
+                          const borderRight = parseFloat(computed.borderRightWidth) || 0;
+                          m.style.cssText = `position:fixed;visibility:hidden;z-index:-1;top:0;left:0;
+    width:${visual!.clientWidth}px;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:break-word;overflow:hidden;
+    font-family:${computed.fontFamily};font-size:${computed.fontSize};
+    line-height:${computed.lineHeight};padding-top:${computed.paddingTop};
+    padding-bottom:${computed.paddingBottom};padding-left:${computed.paddingLeft};
+    padding-right:${computed.paddingRight};box-sizing:content-box;`;
+                          m.textContent = val.slice(0, upTo);
+                          const s = document.createElement('span');
+                          s.textContent = '\u200b';
+                          m.appendChild(s);
+                          document.body.appendChild(m);
+                          const mr = m.getBoundingClientRect();
+                          const sr = s.getBoundingClientRect();
+                          document.body.removeChild(m);
+                          return { top: sr.top - mr.top, left: sr.left - mr.left };
+                        };
+
+                        const current = buildMirror(pos);
+                        const targetTop = e.key === 'ArrowUp' ? current.top - lineHeight : current.top + lineHeight;
+
+                        let bestPos = pos;
+                        let bestDist = Infinity;
+                        const step = 1;
+
+                        for (let i = 0; i <= val.length; i += step) {
+                          const { top, left } = buildMirror(i);
+                          const dist = Math.abs(top - targetTop) * 10 + Math.abs(left - current.left);
+                          if (dist < bestDist) {
+                            bestDist = dist;
+                            bestPos = i;
+                          }
+                        }
+
+                        requestAnimationFrame(() => {
+                          textarea.selectionStart = bestPos;
+                          textarea.selectionEnd = bestPos;
+                          updateCursor(idx);
+                        });
+                        return;
+                      }
+
                       while ((match = tagRegex.exec(val)) !== null) {
                         const start = match.index;
                         const end = match.index + match[0].length;
-
-                        // Backspace/Delete u tagu – otevři edit okno
                         const justAfter = e.key === 'Backspace' && pos === end;
                         const justBefore = e.key === 'Delete' && pos === start;
                         if (justAfter || justBefore) {
@@ -273,8 +344,6 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
                           handleTagClick(idx, match[0]);
                           return;
                         }
-
-                        // Šipka doleva – přeskoč celý tag
                         if (e.key === 'ArrowLeft' && pos === end) {
                           e.preventDefault();
                           requestAnimationFrame(() => {
@@ -284,8 +353,6 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
                           });
                           return;
                         }
-
-                        // Šipka doprava – přeskoč celý tag
                         if (e.key === 'ArrowRight' && pos === start) {
                           e.preventDefault();
                           requestAnimationFrame(() => {
@@ -297,6 +364,7 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
                         }
                       }
                     }}
+
                     onMouseDown={e => {
                       const textarea = e.currentTarget;
                       const visual = textarea.nextElementSibling as HTMLDivElement;

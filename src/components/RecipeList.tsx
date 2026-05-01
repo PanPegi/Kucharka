@@ -34,8 +34,8 @@ const RecipeList: React.FC<RecipeListProps> = ({
           </div>
         ))}
       </div>
-      <br></br>
-      <button className="btn secondary-btn back-btn-fridge" onClick={onBack}>ZPĚT</button>
+      {/* <br></br> */}
+      {/* <button className="btn secondary-btn back-btn-fridge" onClick={onBack}>ZPĚT</button> */}
     </div>
   );
 };
