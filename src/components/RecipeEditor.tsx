@@ -35,93 +35,103 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
   const [cursorPositions, setCursorPositions] = useState<Record<number, { top: number, left: number } | null>>({});
 
   const updateCursor = (idx: number) => {
-    const textarea = textareaRefs.current[idx];
-    const visual = visualRefs.current[idx];
-    if (!textarea || !visual) return;
+  const textarea = textareaRefs.current[idx];
+  const visual = visualRefs.current[idx];
+  if (!textarea || !visual) return;
 
-    const pos = textarea.selectionStart;
-    const textBefore = textarea.value.slice(0, pos);
-    const computed = window.getComputedStyle(visual);
+  const pos = textarea.selectionStart;
 
-    const mirror = document.createElement('div');
-    mirror.style.position = 'fixed';
-    mirror.style.visibility = 'hidden';
-    mirror.style.zIndex = '-1';
-    mirror.style.top = '0px';
-    mirror.style.left = '0px';
-    mirror.style.width = visual.offsetWidth + 'px';
-    mirror.style.whiteSpace = 'pre-wrap';
-    mirror.style.wordWrap = 'break-word';
-    mirror.style.overflowWrap = 'break-word';
-    mirror.style.overflow = 'hidden';
-    mirror.style.fontFamily = computed.fontFamily;
-    mirror.style.fontSize = computed.fontSize;
-    mirror.style.lineHeight = computed.lineHeight;
-    mirror.style.paddingTop = computed.paddingTop;
-    mirror.style.paddingBottom = computed.paddingBottom;
-    mirror.style.paddingLeft = computed.paddingLeft;
-    mirror.style.paddingRight = computed.paddingRight;
-    mirror.style.boxSizing = computed.boxSizing;
-
-    const tagRegex = /\{\{.*?\}\}/g;
-    let lastIndex = 0;
-    let match;
-
-    while ((match = tagRegex.exec(textBefore)) !== null) {
-      mirror.appendChild(document.createTextNode(textBefore.slice(lastIndex, match.index)));
-
-      const realSpan = Array.from(visual.querySelectorAll('[data-raw]')).find(
-        el => el.getAttribute('data-raw') === match![0]
-      ) as HTMLElement;
-
-      const fakeSpan = document.createElement('span');
-      fakeSpan.style.display = 'inline-block';
-      fakeSpan.style.width = realSpan ? realSpan.offsetWidth + 'px' : '0px';
-      fakeSpan.style.height = realSpan ? realSpan.offsetHeight + 'px' : '1em';
-      fakeSpan.style.verticalAlign = 'bottom';
-      fakeSpan.textContent = '\u200b';
-      mirror.appendChild(fakeSpan);
-
-      lastIndex = match.index + match[0].length;
+  // Uprav pos pokud je uvnitř tagu
+  const allTags = /\{\{.*?\}\}/g;
+  let tagMatch;
+  let adjustedPos = pos;
+  while ((tagMatch = allTags.exec(textarea.value)) !== null) {
+    const start = tagMatch.index;
+    const end = tagMatch.index + tagMatch[0].length;
+    if (adjustedPos > start && adjustedPos < end) {
+      adjustedPos = end;
+      requestAnimationFrame(() => {
+        textarea.selectionStart = end;
+        textarea.selectionEnd = end;
+      });
+      break;
     }
+  }
 
-    mirror.appendChild(document.createTextNode(textBefore.slice(lastIndex)));
+  const computed = window.getComputedStyle(visual);
+  const mirror = document.createElement('div');
+  mirror.style.position = 'fixed';
+  mirror.style.visibility = 'hidden';
+  mirror.style.zIndex = '-1';
+  mirror.style.top = '0px';
+  mirror.style.left = '0px';
+  mirror.style.width = visual.offsetWidth + 'px';
+  mirror.style.whiteSpace = 'pre-wrap';
+  mirror.style.wordWrap = 'break-word';
+  mirror.style.overflowWrap = 'break-word';
+  mirror.style.overflow = 'hidden';
+  mirror.style.fontFamily = computed.fontFamily;
+  mirror.style.fontSize = computed.fontSize;
+  mirror.style.lineHeight = computed.lineHeight;
+  mirror.style.paddingTop = computed.paddingTop;
+  mirror.style.paddingBottom = computed.paddingBottom;
+  mirror.style.paddingLeft = computed.paddingLeft;
+  mirror.style.paddingRight = computed.paddingRight;
+  mirror.style.boxSizing = computed.boxSizing;
 
-    const cursorSpan = document.createElement('span');
-    cursorSpan.textContent = '\u200b';
-    mirror.appendChild(cursorSpan);
+  const rawText = textarea.value.slice(0, adjustedPos);
+  const tagRegex = /\{\{.*?\}\}/g;
+  let lastIndex = 0;
+  let match;
+  const tagOccurrenceMap = new Map<string, number>();
 
-    document.body.appendChild(mirror);
+  while ((match = tagRegex.exec(rawText)) !== null) {
+    mirror.appendChild(document.createTextNode(rawText.slice(lastIndex, match.index)));
 
-    const mirrorRect = mirror.getBoundingClientRect();
-    const spanRect = cursorSpan.getBoundingClientRect();
+    const tagRaw = match[0];
+    const occurrence = tagOccurrenceMap.get(tagRaw) || 0;
+    tagOccurrenceMap.set(tagRaw, occurrence + 1);
 
-    document.body.removeChild(mirror);
+    const allMatchingSpans = Array.from(visual.querySelectorAll('[data-raw]')).filter(
+      el => el.getAttribute('data-raw') === tagRaw
+    ) as HTMLElement[];
+    const realSpan = allMatchingSpans[occurrence] || allMatchingSpans[0];
 
-    const allTags = /\{\{.*?\}\}/g;
-    let tagMatch;
-    let adjustedPos = pos;
-    while ((tagMatch = allTags.exec(textarea.value)) !== null) {
-      const start = tagMatch.index;
-      const end = tagMatch.index + tagMatch[0].length;
-      if (adjustedPos > start && adjustedPos < end) {
-        adjustedPos = end;
-        requestAnimationFrame(() => {
-          textarea.selectionStart = end;
-          textarea.selectionEnd = end;
-        });
-        break;
-      }
-    }
+    const fakeSpan = document.createElement('span');
+    fakeSpan.style.display = 'inline-block';
+    fakeSpan.style.background = 'var(--accent)';
+    fakeSpan.style.borderRadius = '4px';
+    fakeSpan.style.padding = '0 4px';
+    fakeSpan.style.fontWeight = 'bold';
+    fakeSpan.style.fontSize = '0.9em';
+    fakeSpan.style.verticalAlign = 'bottom';
+    fakeSpan.textContent = realSpan ? realSpan.textContent || '\u200b' : '\u200b';
+    mirror.appendChild(fakeSpan);
 
-    setCursorPositions(prev => ({
-      ...prev,
-      [idx]: {
-        top: spanRect.top - mirrorRect.top + visual.scrollTop,
-        left: spanRect.left - mirrorRect.left
-      }
-    }));
-  };
+    lastIndex = match.index + match[0].length;
+  }
+
+  mirror.appendChild(document.createTextNode(rawText.slice(lastIndex)));
+
+  const cursorSpan = document.createElement('span');
+  cursorSpan.textContent = '\u200b';
+  mirror.appendChild(cursorSpan);
+
+  visual.parentElement!.appendChild(mirror);
+
+  const mirrorRect = mirror.getBoundingClientRect();
+  const spanRect = cursorSpan.getBoundingClientRect();
+
+  visual.parentElement!.removeChild(mirror);
+
+  setCursorPositions(prev => ({
+  ...prev,
+  [idx]: {
+    top: spanRect.top - mirrorRect.top + visual.scrollTop,
+    left: spanRect.left - mirrorRect.left + 10  // zkus různé hodnoty: 5, 10, 15, 20
+  }
+}));
+};
 
   const handleNumericInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const allowed = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
