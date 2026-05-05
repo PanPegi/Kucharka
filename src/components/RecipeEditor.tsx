@@ -198,6 +198,47 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
     });
   };
 
+  const [stepHistory, setStepHistory] = useState<Record<number, { past: string[], future: string[] }>>({});
+
+  const pushHistory = (idx: number, oldVal: string) => {
+    setStepHistory(prev => ({
+      ...prev,
+      [idx]: {
+        past: [...(prev[idx]?.past || []), oldVal],
+        future: []
+      }
+    }));
+  };
+
+  const handleUndo = (idx: number) => {
+    const history = stepHistory[idx];
+    if (!history?.past.length) return;
+    const previous = history.past[history.past.length - 1];
+    const newPast = history.past.slice(0, -1);
+    setStepHistory(prev => ({
+      ...prev,
+      [idx]: { past: newPast, future: [editSteps[idx], ...(prev[idx]?.future || [])] }
+    }));
+    const n = [...editSteps];
+    n[idx] = previous;
+    setEditSteps(n);
+  };
+
+  const handleRedo = (idx: number) => {
+    const history = stepHistory[idx];
+    if (!history?.future.length) return;
+    const next = history.future[0];
+    const newFuture = history.future.slice(1);
+    setStepHistory(prev => ({
+      ...prev,
+      [idx]: { past: [...(prev[idx]?.past || []), editSteps[idx]], future: newFuture }
+    }));
+    const n = [...editSteps];
+    n[idx] = next;
+    setEditSteps(n);
+  };
+
+
   const handleTagClick = (stepIdx: number, tagRaw: string) => {
     const content = tagRaw.slice(2, -2).split('|');
     setEditingTag({ stepIdx, tagRaw, name: content[0], amount: content[1] || "", unit: content[2] || "" });
@@ -274,6 +315,8 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
           {editSteps.map((s, idx) => (
             <div key={idx} className="editor-step-card">
               <div className="step-header">
+                <div style={{ display: 'flex', gap: '4px', marginTop: '8px' }}>
+                </div>
                 <div className="step-num-small">{idx + 1}</div>
                 <div className="textarea-container">
                   <textarea
@@ -281,8 +324,13 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
                     ref={el => { textareaRefs.current[idx] = el; }}
                     className="textarea-common textarea-real"
                     value={s}
-                    onChange={e => { const n = [...editSteps]; n[idx] = e.target.value; setEditSteps(n); updateCursor(idx); }}
-                    onKeyUp={() => updateCursor(idx)}
+                    onChange={e => {
+                      pushHistory(idx, s);
+                      const n = [...editSteps];
+                      n[idx] = e.target.value;
+                      setEditSteps(n);
+                      updateCursor(idx);
+                    }} onKeyUp={() => updateCursor(idx)}
                     onMouseUp={() => requestAnimationFrame(() => updateCursor(idx))}
                     onFocus={() => updateCursor(idx)}
                     onBlur={() => setCursorPositions(prev => ({ ...prev, [idx]: null }))}
@@ -458,6 +506,7 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
                   const n = [...editSteps];
 
                   if (textarea) {
+                    pushHistory(idx, n[idx]);
                     const start = textarea.selectionStart ?? n[idx].length;
                     const end = textarea.selectionEnd ?? n[idx].length;
                     const before = n[idx].slice(0, start);
@@ -481,6 +530,20 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
 
                   val.value = "";
                 }}>VLOŽIT</button>
+                <button
+                  className="undo-redo-btn"
+                  style={{ width: '36px', height: '36px', fontSize: '1rem' }}
+                  onClick={() => handleUndo(idx)}
+                  disabled={!stepHistory[idx]?.past.length}
+                  title="Zpět"
+                >↩</button>
+                <button
+                  className="undo-redo-btn"
+                  style={{ width: '36px', height: '36px', fontSize: '1rem' }}
+                  onClick={() => handleRedo(idx)}
+                  disabled={!stepHistory[idx]?.future.length}
+                  title="Vpřed"
+                >↪</button>
               </div>
             </div>
           ))}
@@ -508,11 +571,13 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
             </div>
             <div className="modal-actions-list">
               <button className="btn success-btn" onClick={() => {
+                pushHistory(editingTag.stepIdx, editSteps[editingTag.stepIdx]);
                 const n = [...editSteps];
                 n[editingTag.stepIdx] = n[editingTag.stepIdx].replace(editingTag.tagRaw, `{{${editingTag.name}|${editingTag.amount}|${editingTag.unit}}}`);
                 setEditSteps(n); setEditingTag(null);
               }}>ULOŽIT</button>
               <button className="btn danger-btn" onClick={() => {
+                pushHistory(editingTag.stepIdx, editSteps[editingTag.stepIdx]);
                 const n = [...editSteps];
                 n[editingTag.stepIdx] = n[editingTag.stepIdx].replace(editingTag.tagRaw, "");
                 setEditSteps(n); setEditingTag(null);

@@ -1088,3 +1088,28 @@ body {
 .textarea-real {
   caret-color: transparent !important;
 }
+
+.undo-redo-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+    background: var(--border);
+    color: var(--text);
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+
+.undo-redo-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.undo-redo-btn:not(:disabled):hover {
+    background: var(--accent);
+    color: white;
+}
