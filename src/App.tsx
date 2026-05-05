@@ -8,6 +8,7 @@ import RecipeList from './components/RecipeList';
 import RecipeDetail from './components/RecipeDetail';
 import RecipeEditor from './components/RecipeEditor';
 import HelpModal from './components/HelpModal';
+import SettingsModal from './components/SettingsModal';
 
 setupIonicReact();
 
@@ -83,7 +84,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (recipes.length === 0) return;
-    if (sharedLinkHandled.current) return; // již zpracováno
+    if (sharedLinkHandled.current) return;
 
     const params = new URLSearchParams(window.location.search);
     const recipeId = params.get('recipe');
@@ -92,7 +93,7 @@ const App: React.FC = () => {
     if (recipeId) {
       const target = recipes.find(r => r.id === Number(recipeId));
       if (target) {
-        sharedLinkHandled.current = true; // označ jako zpracováno
+        sharedLinkHandled.current = true;
         setSelectedRecipe(target);
         setViewHistoryIndex(versionIndex !== null ? Number(versionIndex) : null);
         setViewServings(target.baseServings || 1);
@@ -265,26 +266,13 @@ const App: React.FC = () => {
       )}
 
       {showSettingsModal && (
-        <div className="tag-edit-overlay fade-in" onClick={() => setShowSettingsModal(false)}>
-          <div className="tag-edit-modal settings-modal" onClick={e => e.stopPropagation()}>
-            <h2 style={{ color: 'var(--accent)', marginBottom: '20px' }}>Nastavení</h2>
-            <div className="settings-content">
-              <label className="field-label">Vzhled aplikace</label>
-              <select className="custom-input" value={theme} onChange={(e) => setTheme(e.target.value)} style={{ marginBottom: '20px' }}>
-                <option value="dark">Tmavý</option>
-                <option value="light">Světlý</option>
-              </select>
-              {deferredPrompt && (
-                <button className="btn accent-btn small-btn" onClick={() => { deferredPrompt.prompt(); setShowSettingsModal(false); }}>
-                  INSTALOVAT DO MOBILU
-                </button>
-              )}
-            </div>
-            <div className="modal-actions" style={{ marginTop: '30px' }}>
-              <button className="btn success-btn" onClick={() => setShowSettingsModal(false)}>ZAVŘÍT</button>
-            </div>
-          </div>
-        </div>
+        <SettingsModal
+          theme={theme}
+          setTheme={setTheme}
+          deferredPrompt={deferredPrompt}
+          setDeferredPrompt={setDeferredPrompt}
+          onClose={() => setShowSettingsModal(false)}
+        />
       )}
 
       <nav className="nav-bar">

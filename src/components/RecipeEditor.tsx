@@ -35,103 +35,102 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
   const [cursorPositions, setCursorPositions] = useState<Record<number, { top: number, left: number } | null>>({});
 
   const updateCursor = (idx: number) => {
-  const textarea = textareaRefs.current[idx];
-  const visual = visualRefs.current[idx];
-  if (!textarea || !visual) return;
+    const textarea = textareaRefs.current[idx];
+    const visual = visualRefs.current[idx];
+    if (!textarea || !visual) return;
 
-  const pos = textarea.selectionStart;
+    const pos = textarea.selectionStart;
 
-  // Uprav pos pokud je uvnitř tagu
-  const allTags = /\{\{.*?\}\}/g;
-  let tagMatch;
-  let adjustedPos = pos;
-  while ((tagMatch = allTags.exec(textarea.value)) !== null) {
-    const start = tagMatch.index;
-    const end = tagMatch.index + tagMatch[0].length;
-    if (adjustedPos > start && adjustedPos < end) {
-      adjustedPos = end;
-      requestAnimationFrame(() => {
-        textarea.selectionStart = end;
-        textarea.selectionEnd = end;
-      });
-      break;
+    const allTags = /\{\{.*?\}\}/g;
+    let tagMatch;
+    let adjustedPos = pos;
+    while ((tagMatch = allTags.exec(textarea.value)) !== null) {
+      const start = tagMatch.index;
+      const end = tagMatch.index + tagMatch[0].length;
+      if (adjustedPos > start && adjustedPos < end) {
+        adjustedPos = end;
+        requestAnimationFrame(() => {
+          textarea.selectionStart = end;
+          textarea.selectionEnd = end;
+        });
+        break;
+      }
     }
-  }
 
-  const computed = window.getComputedStyle(visual);
-  const mirror = document.createElement('div');
-  mirror.style.position = 'fixed';
-  mirror.style.visibility = 'hidden';
-  mirror.style.zIndex = '-1';
-  mirror.style.top = '0px';
-  mirror.style.left = '0px';
-  mirror.style.width = visual.offsetWidth + 'px';
-  mirror.style.whiteSpace = 'pre-wrap';
-  mirror.style.wordWrap = 'break-word';
-  mirror.style.overflowWrap = 'break-word';
-  mirror.style.overflow = 'hidden';
-  mirror.style.fontFamily = computed.fontFamily;
-  mirror.style.fontSize = computed.fontSize;
-  mirror.style.lineHeight = computed.lineHeight;
-  mirror.style.paddingTop = computed.paddingTop;
-  mirror.style.paddingBottom = computed.paddingBottom;
-  mirror.style.paddingLeft = computed.paddingLeft;
-  mirror.style.paddingRight = computed.paddingRight;
-  mirror.style.boxSizing = computed.boxSizing;
+    const computed = window.getComputedStyle(visual);
+    const mirror = document.createElement('div');
+    mirror.style.position = 'fixed';
+    mirror.style.visibility = 'hidden';
+    mirror.style.zIndex = '-1';
+    mirror.style.top = '0px';
+    mirror.style.left = '0px';
+    mirror.style.width = visual.offsetWidth + 'px';
+    mirror.style.whiteSpace = 'pre-wrap';
+    mirror.style.wordWrap = 'break-word';
+    mirror.style.overflowWrap = 'break-word';
+    mirror.style.overflow = 'hidden';
+    mirror.style.fontFamily = computed.fontFamily;
+    mirror.style.fontSize = computed.fontSize;
+    mirror.style.lineHeight = computed.lineHeight;
+    mirror.style.paddingTop = computed.paddingTop;
+    mirror.style.paddingBottom = computed.paddingBottom;
+    mirror.style.paddingLeft = computed.paddingLeft;
+    mirror.style.paddingRight = computed.paddingRight;
+    mirror.style.boxSizing = computed.boxSizing;
 
-  const rawText = textarea.value.slice(0, adjustedPos);
-  const tagRegex = /\{\{.*?\}\}/g;
-  let lastIndex = 0;
-  let match;
-  const tagOccurrenceMap = new Map<string, number>();
+    const rawText = textarea.value.slice(0, adjustedPos);
+    const tagRegex = /\{\{.*?\}\}/g;
+    let lastIndex = 0;
+    let match;
+    const tagOccurrenceMap = new Map<string, number>();
 
-  while ((match = tagRegex.exec(rawText)) !== null) {
-    mirror.appendChild(document.createTextNode(rawText.slice(lastIndex, match.index)));
+    while ((match = tagRegex.exec(rawText)) !== null) {
+      mirror.appendChild(document.createTextNode(rawText.slice(lastIndex, match.index)));
 
-    const tagRaw = match[0];
-    const occurrence = tagOccurrenceMap.get(tagRaw) || 0;
-    tagOccurrenceMap.set(tagRaw, occurrence + 1);
+      const tagRaw = match[0];
+      const occurrence = tagOccurrenceMap.get(tagRaw) || 0;
+      tagOccurrenceMap.set(tagRaw, occurrence + 1);
 
-    const allMatchingSpans = Array.from(visual.querySelectorAll('[data-raw]')).filter(
-      el => el.getAttribute('data-raw') === tagRaw
-    ) as HTMLElement[];
-    const realSpan = allMatchingSpans[occurrence] || allMatchingSpans[0];
+      const allMatchingSpans = Array.from(visual.querySelectorAll('[data-raw]')).filter(
+        el => el.getAttribute('data-raw') === tagRaw
+      ) as HTMLElement[];
+      const realSpan = allMatchingSpans[occurrence] || allMatchingSpans[0];
 
-    const fakeSpan = document.createElement('span');
-    fakeSpan.style.display = 'inline-block';
-    fakeSpan.style.background = 'var(--accent)';
-    fakeSpan.style.borderRadius = '4px';
-    fakeSpan.style.padding = '0 4px';
-    fakeSpan.style.fontWeight = 'bold';
-    fakeSpan.style.fontSize = '0.9em';
-    fakeSpan.style.verticalAlign = 'bottom';
-    fakeSpan.textContent = realSpan ? realSpan.textContent || '\u200b' : '\u200b';
-    mirror.appendChild(fakeSpan);
+      const fakeSpan = document.createElement('span');
+      fakeSpan.style.display = 'inline-block';
+      fakeSpan.style.background = 'var(--accent)';
+      fakeSpan.style.borderRadius = '4px';
+      fakeSpan.style.padding = '0 4px';
+      fakeSpan.style.fontWeight = 'bold';
+      fakeSpan.style.fontSize = '0.9em';
+      fakeSpan.style.verticalAlign = 'bottom';
+      fakeSpan.textContent = realSpan ? realSpan.textContent || '\u200b' : '\u200b';
+      mirror.appendChild(fakeSpan);
 
-    lastIndex = match.index + match[0].length;
-  }
+      lastIndex = match.index + match[0].length;
+    }
 
-  mirror.appendChild(document.createTextNode(rawText.slice(lastIndex)));
+    mirror.appendChild(document.createTextNode(rawText.slice(lastIndex)));
 
-  const cursorSpan = document.createElement('span');
-  cursorSpan.textContent = '\u200b';
-  mirror.appendChild(cursorSpan);
+    const cursorSpan = document.createElement('span');
+    cursorSpan.textContent = '\u200b';
+    mirror.appendChild(cursorSpan);
 
-  visual.parentElement!.appendChild(mirror);
+    visual.parentElement!.appendChild(mirror);
 
-  const mirrorRect = mirror.getBoundingClientRect();
-  const spanRect = cursorSpan.getBoundingClientRect();
+    const mirrorRect = mirror.getBoundingClientRect();
+    const spanRect = cursorSpan.getBoundingClientRect();
 
-  visual.parentElement!.removeChild(mirror);
+    visual.parentElement!.removeChild(mirror);
 
-  setCursorPositions(prev => ({
-  ...prev,
-  [idx]: {
-    top: spanRect.top - mirrorRect.top + visual.scrollTop,
-    left: spanRect.left - mirrorRect.left + 10  // zkus různé hodnoty: 5, 10, 15, 20
-  }
-}));
-};
+    setCursorPositions(prev => ({
+      ...prev,
+      [idx]: {
+        top: spanRect.top - mirrorRect.top + visual.scrollTop,
+        left: spanRect.left - mirrorRect.left + 10  // zkus různé hodnoty: 5, 10, 15, 20
+      }
+    }));
+  };
 
   const handleNumericInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const allowed = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
@@ -151,11 +150,16 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
 
   const handleLocalSave = () => {
     const ingredientTotals = new Map<string, { amount: number, unit: string }>();
+    const usedSubRecipeIds = new Set<number>();
 
     editSteps.forEach(step => {
-      const regex = /\{\{(?!RECIPE:)(.*?)\|(.*?)\|(.*?)\}\}/g;
+      const recipeRegex = /\{\{RECIPE:(\d+):([^|]*)\|(.*?)\|porce\}\}/g;
+      let recipeMatch;
+      while ((recipeMatch = recipeRegex.exec(step)) !== null) {
+        usedSubRecipeIds.add(parseInt(recipeMatch[1]));
+      }
       let match;
-      while ((match = regex.exec(step)) !== null) {
+      while ((match = recipeRegex.exec(step)) !== null) {
         const name = match[1].trim();
         const amount = parseFloat(match[2].replace(',', '.'));
         const unit = match[3].trim();
@@ -188,7 +192,7 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
       cookTime: editCook,
       baseServings: editServings,
       ingredients: extractedIngredients,
-      subRecipeIds: editSelectedSubIds,
+      subRecipeIds: Array.from(usedSubRecipeIds),
       steps: editSteps.filter(s => s.trim() !== ""),
       updatedAt: Date.now()
     });
@@ -296,19 +300,17 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
 
                         const lineHeight = parseFloat(window.getComputedStyle(visual!).lineHeight) || 20;
 
-                        // Zjisti aktuální pozici kurzoru přes mirror
                         const computed = window.getComputedStyle(visual!);
                         const buildMirror = (upTo: number) => {
                           const m = document.createElement('div');
-                          // přidej border aby rozměry seděly s visual divem
                           const borderLeft = parseFloat(computed.borderLeftWidth) || 0;
                           const borderRight = parseFloat(computed.borderRightWidth) || 0;
                           m.style.cssText = `position:fixed;visibility:hidden;z-index:-1;top:0;left:0;
-    width:${visual!.clientWidth}px;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:break-word;overflow:hidden;
-    font-family:${computed.fontFamily};font-size:${computed.fontSize};
-    line-height:${computed.lineHeight};padding-top:${computed.paddingTop};
-    padding-bottom:${computed.paddingBottom};padding-left:${computed.paddingLeft};
-    padding-right:${computed.paddingRight};box-sizing:content-box;`;
+                          width:${visual!.clientWidth}px;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:break-word;overflow:hidden;
+                          font-family:${computed.fontFamily};font-size:${computed.fontSize};
+                          line-height:${computed.lineHeight};padding-top:${computed.paddingTop};
+                          padding-bottom:${computed.paddingBottom};padding-left:${computed.paddingLeft};
+                          padding-right:${computed.paddingRight};box-sizing:content-box;`;
                           m.textContent = val.slice(0, upTo);
                           const s = document.createElement('span');
                           s.textContent = '\u200b';
@@ -465,7 +467,6 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({
                     n[idx] = before + prefix + tag + suffix + after;
                     setEditSteps(n);
 
-                    // Obnov pozici kurzoru za vloženým tagem
                     requestAnimationFrame(() => {
                       const newPos = start + prefix.length + tag.length + suffix.length;
                       textarea.selectionStart = newPos;

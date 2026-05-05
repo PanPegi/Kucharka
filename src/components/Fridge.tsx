@@ -32,7 +32,7 @@ const Fridge: React.FC<FridgeProps> = ({
   };
 
   const updateAmount = (ing: string, val: string) => {
-    const cleanVal = val.replace(/\D/g, ''); // Regulární výraz povolí jen číslice 0-9
+    const cleanVal = val.replace(/\D/g, '');
     const next = { ...myIngredients };
     next[ing.toLowerCase()] = cleanVal;
     setMyIngredients(next);

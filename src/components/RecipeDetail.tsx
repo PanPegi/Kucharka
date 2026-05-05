@@ -89,7 +89,6 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({
       </div>
 
       <div className="card-actions-row">
-        {/* Tlačítka specifická pro aktuální pohled vs. archiv */}
         {viewHistoryIndex === null ? (
           <>
             <button className="btn danger-btn" onClick={() => onDelete(selectedRecipe.id)}>Smazat</button>
@@ -99,7 +98,6 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({
           <button className="btn secondary-btn" onClick={onBackToCurrent}>Zpět na aktuální</button>
         )}
 
-        {/* Tlačítko Sdílet je teď dostupné VŽDY, nezávisle na tom, zda je to archiv nebo ne */}
         <button 
           className="btn share-btn" 
           onClick={(e) => onShare(e, selectedRecipe.id, viewHistoryIndex)}
